@@ -5,6 +5,7 @@ format: jb-book
 root: intro
 chapters:
 - file: concept
-- file: markdown
-- file: notebooks
-- file: Introduction
+- file: HuggingFace_Trainer
+- file: Ignite
+- file: PyTorchLightning
+- file: Poutyne
