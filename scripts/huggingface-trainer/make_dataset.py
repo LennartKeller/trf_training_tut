@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     updated_features = dataset['train'].features.copy()
     updated_features['titleType'] = title_type_labels
-    dataset.cast(updated_features)
+    dataset = dataset.cast(updated_features)
 
     # Convert genre column
 
@@ -57,12 +57,12 @@ if __name__ == '__main__':
     genre_labels = ClassLabel(num_classes=len(uniq_genres), names=uniq_genres)
 
     genre_labels_encoder = make_multilabel_encoder('genre', genre_labels)
-    dataset = dataset.map(genre_labels_encoder)
+    dataset = dataset.map(genre_labels_encoder) # batched mode does not work here ...
 
     updated_features = dataset['train'].features.copy()
     genre_column = Sequence(feature=genre_labels)
     updated_features['genre'] = genre_column
-    dataset.cast(updated_features)
+    dataset = dataset.cast(updated_features)
 
     # Save dataset to disk
     dataset.save_to_disk('../data/imdb_huggingface')
