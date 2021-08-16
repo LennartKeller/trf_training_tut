@@ -10,7 +10,7 @@
 	* Find Optimal batch size
 	* Find optimal learning rate
 	* Visualize training
-	* "Detect bottlenecks"
+	* "Detect bottlenecks."
 	* Checkpoint the model during training
 	* ArgumentParsing from command line
 

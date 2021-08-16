@@ -5,6 +5,8 @@ format: jb-book
 root: intro
 chapters:
 - file: concept
+- file: Introduction
+- file: Transformers & PyTorch
 - file: HuggingFace_Trainer
 - file: Ignite
 - file: PyTorchLightning
