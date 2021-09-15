@@ -11,7 +11,6 @@ There are numerous frameworks to facilitate this process. This work aims to comp
 
 The rest of this work is structured as follows: First, the Huggingface Transformers library, the core of the Huggingface ecosystem, is shortly presented. Afterwards, the selected training frameworks are presented.
 The actual comparison by carrying out the same experiment with each of them. Finally, a conclusion is drawn.
-# Methodology
 
 
 
