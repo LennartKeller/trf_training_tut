@@ -9,8 +9,8 @@ Even though finetuning is less computationally expensive than training a model f
 Requirements may include multi-gpu training, data loading, ensuring reproducibility, hyperparameter organization, tracking or early stopping.
 There are numerous frameworks to facilitate this process. This work aims to compare a selection of these frameworks and test their suitability to use them with the Huggingface infrastructure.
 
-The rest of this work is structured as follows: First, the Huggingface Transformers library, the core of the Huggingface ecosystem, is shortly presented. Afterwards the selected training frameworks are presented.
-The actual comparison by carrying out the same experiment with each of them. Finally a conclusion is drawn.
+The rest of this work is structured as follows: First, the Huggingface Transformers library, the core of the Huggingface ecosystem, is shortly presented. Afterwards, the selected training frameworks are presented.
+The actual comparison by carrying out the same experiment with each of them. Finally, a conclusion is drawn.
 # Methodology
 
 
