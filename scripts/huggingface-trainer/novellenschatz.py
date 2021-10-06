@@ -1,9 +1,9 @@
-from transformers import Trainer, TrainingArguments, TrainerCallback
-from transformers import BertTokenizerFast, BertForTokenClassification
+from transformers import TrainingArguments, TrainerCallback
+from transformers import BertTokenizerFast, BertForTokenClassification, BertConfig
 from transformers import set_seed
 from datasets import load_from_disk
 
-from model import SentenceOrderingTrainer
+from model import SentenceOrderingTrainer, so_data_collator, make_compute_metrics_func
 
 
 def make_tokenization_func(tokenizer, text_column, *args, **kwargs):
@@ -27,16 +27,13 @@ if __name__ == '__main__':
     
     set_seed(42)
 
-    dataset = load_from_disk('../data/imdb_huggingface')
-    
-    num_classes = dataset['train'].features['titleType'].num_classes
-    num_labels = dataset['train'].features['genre'].feature.num_classes
+    dataset = load_from_disk('/home/keller/Uni/trf_training_tut/scripts/data/rocstories')
 
     tokenizer = BertTokenizerFast.from_pretrained('bert-base-german-cased')
-    model_config = BertForMultiHeadConfig.from_pretrained('bert-base-german-cased', num_labels=num_classes, num_multi_labels=num_labels)
-    model = BertForMultiHeadModel.from_pretrained('bert-base-german-cased', config=model_config)
+    model_config = BertConfig.from_pretrained('bert-base-cased', num_labels=1)
+    model = BertForTokenClassification.from_pretrained('bert-base-cased', config=model_config)
 
-    tokenization = make_tokenization_func(tokenizer=tokenizer, text_column='text', padding=True, truncation=True)
+    tokenization = make_tokenization_func(tokenizer=tokenizer, text_column='text', padding='max_length', truncation=True, add_special_tokens=False)
     dataset = dataset.map(tokenization, batched=True)
 
     rename_func = make_rename_func({'so_targets': 'labels'})
@@ -44,27 +41,36 @@ if __name__ == '__main__':
 
     dataset.set_format('torch')
 
+    metrics_func = make_compute_metrics_func(tokenizer.cls_token_id)
+
     training_args = TrainingArguments(
         output_dir='test',
         overwrite_output_dir=True,
-        learning_rate=10e-5,
-        per_device_train_batch_size=4,
-        per_device_eval_batch_size=8,
+        learning_rate=5e-5,
+        per_device_train_batch_size=8,
+        per_device_eval_batch_size=16,
         evaluation_strategy='steps',
-        eval_steps=200,
-        num_train_epochs=5,
+        gradient_accumulation_steps=1,
+        eval_steps=10,
+        num_train_epochs=3,
         logging_dir='test/logs',
-        logging_steps=200,
+        logging_steps=50,
         save_strategy='steps',
-        save_steps=2000,
-        remove_unused_columns=True
+        save_steps=1000,
+        remove_unused_columns=True,
+        logging_first_step=True,
+        prediction_loss_only=False,
+        label_names=['labels', 'input_ids']
         )
-    
+
     trainer = SentenceOrderingTrainer(
         model=model,
         args=training_args,
         train_dataset=dataset['train'],
-        eval_dataset=dataset['val']
+        eval_dataset=dataset['val'].select([1,2,3]),
+        target_token_id=tokenizer.cls_token_id,
+        data_collator=so_data_collator,
+        compute_metrics=metrics_func
     )
 
     trainer.train()
