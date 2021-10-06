@@ -26,7 +26,8 @@ def make_compute_metrics_func(target_token_id) -> Callable:
             target_logits = logits[input_ids == target_token_id]
             if sent_idx.shape[0] > target_logits.shape[0]:
                 sent_idx = sent_idx[:target_logits.shape[0]]
-            predicted_idx = target_logits.reshape(-1).argsort()
+            # Calling argsort twice on the logits gives us their ranking in ascending order
+            predicted_idx = predicted_idx = np.argsort(np.argsort(target_logits.reshape(-1)))
             tau, pvalue = kendalltau(sent_idx, predicted_idx)
             metrics['kendalls_tau'] = tau
             metrics['acc'] = accuracy_score(sent_idx, predicted_idx)
@@ -94,9 +95,9 @@ class SentenceOrderingTrainer(Trainer):
         batch_input_ids = inputs['input_ids']
         
         # Since we have varying number of labels per instance, we need to compute the loss manually for each one.
-        loss_fn = nn.MSELoss(reduction='none')
-        #batch_loss = torch.tensor(0.0, dtype=torch.float64, requires_grad=True)
-        batch_losses = []
+        loss_fn = nn.MSELoss(reduction='sum')
+        batch_loss = torch.tensor(0.0, dtype=torch.float64, requires_grad=True)
+        #batch_losses = []
         for labels, logits, input_ids in zip(batch_labels, batch_logits, batch_input_ids):
             
             # Firstly, we need to convert the sentence indices to regression targets.
@@ -116,16 +117,16 @@ class SentenceOrderingTrainer(Trainer):
                 targets = targets[:target_logits.size(0)]
             
             # Finally we compute the loss for the current instance and add it to the batch loss
-            #batch_loss = batch_loss + loss_fn(targets, target_logits)
-            batch_losses.append(loss_fn(targets, target_logits))
+            batch_loss = batch_loss + loss_fn(targets, target_logits)
+            #batch_losses.append(loss_fn(targets, target_logits))
             #print('Begin')
             #print('Out: ', target_logits)
             #print('Target: ', targets)
             
         
         # The final loss is obtained by averaging over the number of instances per batch
-        #loss = batch_loss / batch_logits.size(0)
-        loss = pad_sequence(batch_losses, batch_first=True, padding_value=0.0).sum(axis=0).mean()
+        loss = batch_loss / batch_logits.size(0)
+        #loss = pad_sequence(batch_losses, batch_first=True, padding_value=0.0).sum(axis=0).mean()
 
         outputs['loss'] = loss
         return (loss, outputs) if return_outputs else loss 
