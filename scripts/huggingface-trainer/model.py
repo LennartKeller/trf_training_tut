@@ -22,24 +22,21 @@ def make_compute_metrics_func(target_token_id) -> Callable:
         
         metrics = defaultdict(list)
         for sent_idx, input_ids, logits in zip(batch_sent_idx, batch_input_ids, batch_logits):
-            sent_idx = sent_idx[sent_idx != 100].reshape(-1)
+            sent_idx = sent_idx.reshape(-1)
+            input_ids = input_ids.reshape(-1)
+            logits = logits.reshape(-1)
+
+            sent_idx = sent_idx[sent_idx != 100]
             target_logits = logits[input_ids == target_token_id]
             if sent_idx.shape[0] > target_logits.shape[0]:
                 sent_idx = sent_idx[:target_logits.shape[0]]
             # Calling argsort twice on the logits gives us their ranking in ascending order
-            predicted_idx = predicted_idx = np.argsort(np.argsort(target_logits.reshape(-1)))
+            predicted_idx = np.argsort(np.argsort(target_logits))
             tau, pvalue = kendalltau(sent_idx, predicted_idx)
-            metrics['kendalls_tau'] = tau
-            metrics['acc'] = accuracy_score(sent_idx, predicted_idx)
-            metrics['mean_logits'] = logits.reshape(-1).mean()
-            metrics['std_logits'] = logits.reshape(-1).std()
-            # print(predicted_idx)
-            # print(sent_idx)
-            # print(predicted_idx == sent_idx)
-            # print('Acc: ', accuracy_score(sent_idx, predicted_idx))
-            # print('_'*40)
-        
-            # print('Tau: ', tau)
+            metrics['kendalls_tau'].append(tau)
+            metrics['acc'].append(accuracy_score(sent_idx, predicted_idx))
+            metrics['mean_logits'].append(logits.mean())
+            metrics['std_logits'].append(logits.std())
         metrics = {metric: np.mean(scores) for metric, scores in metrics.items()}
         return metrics
     return compute_ranking_func

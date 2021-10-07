@@ -31,13 +31,13 @@ if __name__ == "__main__":
     set_seed(42)
 
     dataset = load_from_disk(
-        "/home/keller/Uni/trf_training_tut/scripts/data/novellenschatz4so"
+        "/home/keller/Uni/trf_training_tut/scripts/data/rocstories"
     )
 
-    tokenizer = BertTokenizerFast.from_pretrained("bert-base-german-cased")
-    model_config = BertConfig.from_pretrained("bert-base-german-cased", num_labels=1)
+    tokenizer = BertTokenizerFast.from_pretrained("bert-base-cased")
+    model_config = BertConfig.from_pretrained("bert-base-cased", num_labels=1)
     model = BertForTokenClassification.from_pretrained(
-        "bert-base-german-cased", config=model_config
+        "bert-base-cased", config=model_config
     )
 
     tokenization = make_tokenization_func(
@@ -57,19 +57,19 @@ if __name__ == "__main__":
     metrics_func = make_compute_metrics_func(tokenizer.cls_token_id)
 
     training_args = TrainingArguments(
-        output_dir="novellenschatz_history",
+        output_dir="checkpoints/rocstories",
         overwrite_output_dir=True,
         learning_rate=3e-5,
         per_device_train_batch_size=8,
         per_device_eval_batch_size=16,
         evaluation_strategy="steps",
         gradient_accumulation_steps=1,
-        eval_steps=200,
+        eval_steps=1000,
         num_train_epochs=3,
-        logging_dir="logs/novellenschatz_history",
-        logging_steps=20,
+        logging_dir="logs/rocstories",
+        logging_steps=200,
         save_strategy="steps",
-        save_steps=500,
+        save_steps=10000,
         remove_unused_columns=True,
         logging_first_step=True,
         prediction_loss_only=False,
@@ -80,7 +80,7 @@ if __name__ == "__main__":
         model=model,
         args=training_args,
         train_dataset=dataset["train"],
-        eval_dataset=dataset["val"],
+        eval_dataset=dataset["val"],  # .select(list(range(300))),
         target_token_id=tokenizer.cls_token_id,
         data_collator=so_data_collator,
         compute_metrics=metrics_func,
@@ -88,4 +88,4 @@ if __name__ == "__main__":
 
     trainer.train()
 
-    trainer.save_model("novellenschatz_history/model")
+    trainer.save_model("final_models/rocstories")
