@@ -5,7 +5,9 @@ python rocstories.py \
     --num_processes 10 \
     --val_check_interval 500 \
     --gpus 1 \
-	--max_epochs 1 \
-    --default_root_dir rocstories \
+	--max_epochs 3 \
+    --default_root_dir checkpoints \
     --auto_lr_find true \
+    --deterministic true \
+    --seed 42 \
 	"$@"

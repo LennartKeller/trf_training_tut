@@ -1,4 +1,5 @@
 from collections import defaultdict
+from os import stat
 from pathlib import Path
 from typing import Any, Callable, Dict, List
 
@@ -22,17 +23,17 @@ from transformers import (
 
 # TODO to avoid duplications move me to own module
 def so_data_collator(batch_entries):
-    """
+    '''
     Custom dataloader to apply padding to the labels.
     TODO document me better :)
-    """
+    '''
     label_dicts = []
 
     # We split the labels from the rest to process them independently
     for entry in batch_entries:
         label_dict = {}
         for key in list(entry.keys()):
-            if "labels" in key:
+            if 'labels' in key:
                 label_dict[key] = entry.pop(key)
         label_dicts.append(label_dict)
 
@@ -62,9 +63,9 @@ class HuggingfaceDatasetWrapper(LightningDataModule):
         eval_batch_size: int = 16,
         mapping_funcs: List[Callable] = None,
         collate_fn: Callable = default_data_collator,
-        train_split_name: str = "train",
-        eval_split_name: str = "val",
-        test_split_name: str = "test",
+        train_split_name: str = 'train',
+        eval_split_name: str = 'val',
+        test_split_name: str = 'test',
     ):
         super().__init__()
         self.dataset = dataset
@@ -88,9 +89,9 @@ class HuggingfaceDatasetWrapper(LightningDataModule):
         # 2. Tokenize the text
         if tokenizer_kwargs is None:
             tokenizer_kwargs = {
-                "truncation": True,
-                "padding": "max_length",
-                "add_special_tokens": False,
+                'truncation': True,
+                'padding': 'max_length',
+                'add_special_tokens': False,
             }
         self.dataset = self.dataset.map(
             lambda e: self.tokenizer(e[self.text_column], **tokenizer_kwargs),
@@ -98,11 +99,11 @@ class HuggingfaceDatasetWrapper(LightningDataModule):
         )
         # 3. Set format of important columns to torch
         self.dataset.set_format(
-            "torch", columns=["input_ids", "attention_mask", self.target_column]
+            'torch', columns=['input_ids', 'attention_mask', self.target_column]
         )
         # 4. If the target columns is not named 'labels' change that
         try:
-            self.dataset = self.dataset.rename_column(self.target_column, "labels")
+            self.dataset = self.dataset.rename_column(self.target_column, 'labels')
         except ValueError:
             # target column should already have correct name
             pass
@@ -130,13 +131,11 @@ class HuggingfaceDatasetWrapper(LightningDataModule):
 
 
 class PlLanguageModelForSequenceOrdering(LightningModule):
-    def __init__(self, model_name_or_path: str, target_token_id: int):
+    def __init__(self, hparams):
         super().__init__()
-        self.target_token_id = torch.tensor(target_token_id)
-        self.model_name_or_path = model_name_or_path
-        self.save_hyperparameters()
+        self.save_hyperparameters(hparams)
         self.base_model = AutoModelForTokenClassification.from_pretrained(
-            model_name_or_path,
+            self.hparams['model_name_or_path'],
             return_dict=True,
             output_hidden_states=True,
             num_labels=1,
@@ -144,21 +143,21 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
 
     def forward(self, inputs: Dict[Any, Any]) -> Dict[Any, Any]:
         # We do not want to compute token classificaiton loss so we remove the labels temporarily
-        labels = inputs.pop("labels")
+        labels = inputs.pop('labels')
         outputs = self.base_model(**inputs)
 
         # # Compute logits for each token in the input squence
-        # last_hidden_state = outputs["last_hidden_state"]
+        # last_hidden_state = outputs['last_hidden_state']
         # logits = self.linear(last_hidden_state)
-        # outputs["logits"] = logits
+        # outputs['logits'] = logits
 
         # And reattach them later on ...
-        inputs["labels"] = labels
+        inputs['labels'] = labels
         return outputs
 
     def _compute_loss(self, batch_labels, batch_logits, batch_input_ids) -> float:
         # Since we have varying number of labels per instance, we need to compute the loss manually for each one.
-        loss_fn = nn.MSELoss(reduction="sum")
+        loss_fn = nn.MSELoss(reduction='sum')
         batch_loss = torch.tensor(0.0, dtype=torch.float64, requires_grad=True)
         for labels, logits, input_ids in zip(
             batch_labels, batch_logits, batch_input_ids
@@ -171,7 +170,7 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
             targets = true_labels.float()
 
             # Secondly, we need to get the logits from each target token in the input sequence
-            target_logits = logits[input_ids == self.target_token_id].reshape(-1)
+            target_logits = logits[input_ids == self.hparams['target_token_id']].reshape(-1)
 
             # Sometimes we will have less target_logits than targets due to trunction of the input
             # In this case, we just consider as many targets as we have logits
@@ -190,11 +189,11 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
         outputs = self(inputs)
 
         # Get sentence indices
-        batch_labels = inputs["labels"]
+        batch_labels = inputs['labels']
         # Get logits from model
-        batch_logits = outputs["logits"]
+        batch_logits = outputs['logits']
         # Get logits for all cls tokens
-        batch_input_ids = inputs["input_ids"]
+        batch_input_ids = inputs['input_ids']
 
         loss = self._compute_loss(
             batch_labels=batch_labels,
@@ -202,9 +201,9 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
             batch_input_ids=batch_input_ids,
         )
         self.log(
-            "train_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True
+            'train_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True
         )
-        outputs["loss"] = loss
+        outputs['loss'] = loss
         return outputs
 
     def validation_step(self, inputs, batch_idx):
@@ -219,11 +218,11 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
                 inputs[key] = value.detach().cpu().numpy()
 
         # Get sentence indices
-        batch_labels = inputs["labels"]
+        batch_labels = inputs['labels']
         # Get logits from model
-        batch_logits = outputs["logits"]
+        batch_logits = outputs['logits']
         # Get logits for all cls tokens
-        batch_input_ids = inputs["input_ids"]
+        batch_input_ids = inputs['input_ids']
 
         metrics = defaultdict(list)
         for sent_idx, input_ids, logits in zip(
@@ -235,7 +234,7 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
 
             sent_idx = sent_idx[sent_idx != 100]
             target_logits = logits[
-                input_ids == self.target_token_id.detach().cpu().numpy()
+                input_ids == self.hparams['target_token_id']
             ]
             if sent_idx.shape[0] > target_logits.shape[0]:
                 sent_idx = sent_idx[: target_logits.shape[0]]
@@ -244,15 +243,15 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
             predicted_idx = np.argsort(np.argsort(target_logits))
             tau, pvalue = kendalltau(sent_idx, predicted_idx)
             acc = accuracy_score(sent_idx, predicted_idx)
-            metrics["kendalls_tau"].append(tau)
-            metrics["acc"].append(acc)
-            metrics["mean_logits"].append(logits.mean().item())
-            metrics["std_logits"].append(logits.std().item())
+            metrics['kendalls_tau'].append(tau)
+            metrics['acc'].append(acc)
+            metrics['mean_logits'].append(logits.mean().item())
+            metrics['std_logits'].append(logits.std().item())
         metrics = {
-            f"val_{metric}": np.mean(scores).item()
+            f'val_{metric}': np.mean(scores).item()
             for metric, scores in metrics.items()
         }
-        metrics["loss"] = outputs["loss"].item()
+        metrics['loss'] = outputs['loss'].item()
         self.log_dict(metrics, prog_bar=True, logger=True, on_epoch=True, on_step=True)
         return metrics
 
@@ -260,7 +259,16 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
         return self.validation_step(inputs, batch_idx)
 
     def configure_optimizers(self):
-        return torch.optim.AdamW(params=self.base_model.parameters(), lr=3e-5)
+        return torch.optim.AdamW(params=self.base_model.parameters(), lr=self.hparams['lr'])
+    
+    @classmethod
+    def add_model_specific_args(cls, parent_parser):
+        parser = parent_parser.add_argument_group(cls.__name__)
+        parser.add_argument('--model_name_or_path', type=str, default='bert-base-cased')
+        parser.add_argument('--lr', type=float, default=3e-5)
+        parser.add_argument('--target_token_id', type=int, default=101)
+        return parent_parser
+
 
 
 class HugginfaceWrapper(LightningModule):
@@ -275,24 +283,24 @@ class HugginfaceWrapper(LightningModule):
     def training_step(self, batch, batch_idx):
         self.train()
         outputs = self.forward(batch)
-        loss = outputs["loss"]
+        loss = outputs['loss']
         if loss is None:
-            raise Exception("No loss returned by model. Check your input data.")
-        self.log("train_loss", loss, prog_bar=True, logger=True)
+            raise Exception('No loss returned by model. Check your input data.')
+        self.log('train_loss', loss, prog_bar=True, logger=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
         self.eval()
         outputs = self.forward(batch)
-        loss = outputs["loss"]
+        loss = outputs['loss']
         if loss is None:
-            raise Exception("No loss returned by model. Check your input data.")
-        self.log("val_loss", loss, prog_bar=True, logger=True)
+            raise Exception('No loss returned by model. Check your input data.')
+        self.log('val_loss', loss, prog_bar=True, logger=True)
         # accuracy
-        labels = batch["labels"]
+        labels = batch['labels']
         predictions = outputs.logits.argmax(dim=1)
         acc = torchmetrics.functional.accuracy(target=labels, preds=predictions)
-        self.log("val_acc", acc, prog_bar=True, logger=True)
+        self.log('val_acc', acc, prog_bar=True, logger=True)
 
     def configure_optimizers(self):
         opt = torch.optim.AdamW(self.model.parameters(), lr=5e-5)
@@ -310,24 +318,24 @@ class PlTransformerBaseModel(LightningModule):
     def training_step(self, batch, batch_idx):
         self.train()
         outputs = self.forward(batch)
-        loss = outputs["loss"]
+        loss = outputs['loss']
         if loss is None:
-            raise Exception("No loss returned by model. Check your input data.")
-        self.log("train_loss", loss, prog_bar=True, logger=True)
+            raise Exception('No loss returned by model. Check your input data.')
+        self.log('train_loss', loss, prog_bar=True, logger=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
         self.eval()
         outputs = self.forward(batch)
-        loss = outputs["loss"]
+        loss = outputs['loss']
         if loss is None:
-            raise Exception("No loss returned by model. Check your input data.")
-        self.log("val_loss", loss, prog_bar=True, logger=True)
+            raise Exception('No loss returned by model. Check your input data.')
+        self.log('val_loss', loss, prog_bar=True, logger=True)
         # accuracy
-        labels = batch["labels"]
+        labels = batch['labels']
         predictions = outputs.logits.argmax(dim=1)
         acc = torchmetrics.functional.accuracy(target=labels, preds=predictions)
-        self.log("val_acc", acc, prog_bar=True, logger=True)
+        self.log('val_acc', acc, prog_bar=True, logger=True)
 
     def configure_optimizers(self):
         opt = torch.optim.AdamW(self.parameters(), lr=5e-5)
@@ -348,7 +356,7 @@ class SaveHuggingfaceModelCheckpointCallback(Callback):
         super().__init__()
         self.dir = Path(dir)
         if self.dir.is_file():
-            raise Exception("Save dir should be directory but is a file")
+            raise Exception('Save dir should be directory but is a file')
         self.steps = steps
 
     def _save_model(self, pl_module, checkpoint_name):
@@ -360,7 +368,7 @@ class SaveHuggingfaceModelCheckpointCallback(Callback):
             return
         if trainer.global_step % self.steps == 0:
             self._save_model(
-                pl_module=pl_module, checkpoint_name=f"checkpoint-{trainer.global_step}"
+                pl_module=pl_module, checkpoint_name=f'checkpoint-{trainer.global_step}'
             )
 
     def on_epoch_end(self, trainer: Trainer, pl_module: LightningModule) -> None:

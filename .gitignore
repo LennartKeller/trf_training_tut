@@ -2,6 +2,7 @@ final_models/
 rocstories/
 test/
 test_backup/
+lightning_logs/
 lightning-logs/
 logs/
 checkpoints/

@@ -1,9 +1,9 @@
 from argparse import ArgumentParser
 
 from datasets import load_from_disk
-from pytorch_lightning import Trainer
-from pytorch_lightning.utilities.cli import LightningCLI
-from transformers import AutoModelForTokenClassification, AutoTokenizer
+from pytorch_lightning import Trainer, seed_everything
+from pytorch_lightning.loggers.tensorboard import TensorBoardLogger
+from transformers import AutoTokenizer
 
 from pl_modules import (
     HuggingfaceDatasetWrapper,
@@ -13,35 +13,43 @@ from pl_modules import (
 
 
 def main(hparams):
-    print(hparams)
-    print('Loading model & tokenizer.')
-    tokenizer = AutoTokenizer.from_pretrained('bert-base-cased')
-    # transformers_model = AutoModelForTokenClassification.from_pretrained(
-    #         'bert-base-cased', return_dict=True, num_labels=1
-    #     )
-    # model = PlLanguageModelForSequenceOrdering(model=transformers_model, target_token_id=tokenizer.cls_token_id)
-    model = PlLanguageModelForSequenceOrdering(model_name_or_path='bert-base-cased', target_token_id=tokenizer.cls_token_id)
-    print('Loading datasets.')
-    
-    data = load_from_disk('../data/rocstories')
+    seed_everything(hparams.seed)
+    print("Loading model & tokenizer.")
+    tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
+    model = PlLanguageModelForSequenceOrdering(hparams=hparams)
+    print("Loading datasets.")
+
+    data = load_from_disk("../data/rocstories")
+
     # Downsampling for debugging...
-    #data = data.filter(lambda _, index: index < 100, with_indices=True)
+    # data = data.filter(lambda _, index: index < 100, with_indices=True)
 
     dataset = HuggingfaceDatasetWrapper(
-        data, text_column='text', target_column='so_targets', tokenizer=tokenizer, mapping_funcs=[], collate_fn=so_data_collator
+        data,
+        text_column="text",
+        target_column="so_targets",
+        tokenizer=tokenizer,
+        mapping_funcs=[],
+        collate_fn=so_data_collator,
     )
 
-    print('Initializing trainer.')
-    trainer = Trainer.from_argparse_args(hparams)
+    print("Initializing trainer.")
+    tensorboard_logger = TensorBoardLogger(save_dir="logs/")
+    trainer = Trainer.from_argparse_args(hparams, logger=tensorboard_logger)
 
-    print('Start training.')
+    print("Start tuning.")
+    trainer.tune(model=model, datamodule=dataset)
+    print("Start training.")
     trainer.fit(model=model, datamodule=dataset)
+    print("Start testing.")
     trainer.test()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = ArgumentParser()
+    parser.add_argument('--seed', type=int, default=0)
     parser = Trainer.add_argparse_args(parser)
+    parser = PlLanguageModelForSequenceOrdering.add_model_specific_args(parser)
     args = parser.parse_args()
     print(args)
     main(args)
