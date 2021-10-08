@@ -22,8 +22,11 @@ def main(hparams):
     model = PlLanguageModelForSequenceOrdering(model=transformers_model, target_token_id=tokenizer.cls_token_id)
 
     print('Loading datasets.')
-    # Downsampling for debugging...
+    
     data = load_from_disk('../data/rocstories')
+    # Downsampling for debugging...
+    data = data.filter(lambda _, index: index < 100, with_indices=True)
+
     dataset = HuggingfaceDatasetWrapper(
         data, text_column='text', target_column='so_targets', tokenizer=tokenizer, mapping_funcs=[], collate_fn=so_data_collator
     )

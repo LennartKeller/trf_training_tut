@@ -143,6 +143,7 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
         # )
         self.model = model
         self.target_token_id = torch.tensor(target_token_id)
+        #self.save_hyperparameters()
 
     def forward(self, inputs: Dict[Any, Any]) -> Dict[Any, Any]:
         # We do not want to compute token classificaiton loss so we remove the labels temporarily
@@ -250,8 +251,8 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
         #self.log('val_loss', loss)
         return metrics
 
-    def test_step(self, inputs):
-        return self.validation_step(inputs)
+    def test_step(self, inputs, batch_idx):
+        return self.validation_step(inputs, batch_idx)
 
     def configure_optimizers(self):
         return torch.optim.AdamW(params=self.model.parameters(), lr=3e-5)
