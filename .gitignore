@@ -1,6 +1,11 @@
+final_models/
+rocstories/
 test/
 test_backup/
 lightning-logs/
+logs/
+checkpoints/
+
 scripts/data/
 # Byte-compiled / optimized / DLL files
 __pycache__/
