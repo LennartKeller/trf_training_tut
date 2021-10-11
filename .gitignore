@@ -6,8 +6,8 @@ lightning_logs/
 lightning-logs/
 logs/
 checkpoints/
-
-scripts/data/
+.DS_Store/
+.vscode/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
