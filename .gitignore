@@ -8,6 +8,7 @@ logs/
 checkpoints/
 .DS_Store/
 .vscode/
+100KStories.csv
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
