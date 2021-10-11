@@ -107,7 +107,9 @@ def make_shuffle_func(sep_token):
             sent_idx = list(range(len(sents)))
             sents_with_idx = list(zip(sents, sent_idx))
             shuffle(sents_with_idx)
-            text = f'{sep_token} ' + f' {sep_token} '.join([s[0] for s in sents_with_idx]) 
+            text = f'{sep_token} ' + f' {sep_token} '.join(
+                [s[0]for s in sents_with_idx]
+            ) 
             so_targets = [s[1] for s in sents_with_idx]
             shuffled_entry = {'text': text, 'so_targets': so_targets}
             converted_entries.append(shuffled_entry)
@@ -157,10 +159,6 @@ dataset.save_to_disk('rocstories')
 
 
 ```{code-cell} ipython3
-{
-    "tags": [
-        "remove-cell"
-    ]
-}
+:tags: ["remove-cell"]
 ! rm -r rocstories
 ```

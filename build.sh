@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Removing __build folder" &&
-rm -rf ./text/__build/ &&
+jupyter-book clean text --all &&
 echo "Building PDF" &&
 jupyter-book build ./text/ --all --builder pdflatex &&
 echo "Building HTML" &&
