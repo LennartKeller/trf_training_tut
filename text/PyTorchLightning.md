@@ -75,8 +75,9 @@ profiling
 
 ##### TODOs
 
-* Check if loading from checkpoint restores the correct weights
-* Check if logging can be improved (e.g. are the val metrics that are logged averaged over the complete val set?)
-* check what callbacks are available (=> How can we use tensorboard for tracking the experiment)
+* Check if loading from checkpoint restores the correct weights (yes)
+* Check if logging can be improved (e.g. are the val metrics that are logged averaged over the complete val set?) 
+* check what callbacks are available (=> How can we use tensorboard for tracking the experiment) (yes)
 * Does multi gpu training work out of the box?
-* Are there some cool features that can improve training
+* Are there some cool features that can improve training?
+

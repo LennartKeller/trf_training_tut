@@ -2,12 +2,15 @@
 # Learn more at https://jupyterbook.org/customize/toc.html
 
 format: jb-book
-root: intro
+root: Home
 chapters:
-- file: concept
+#- file: concept
 - file: Introduction
-- file: TransformersAndPyTorch
+- file: HuggingfaceEcosystem
+- file: Experiment
 - file: HuggingFace_Trainer
-- file: Ignite
+#- file: Ignite
 - file: PyTorchLightning
 - file: Poutyne
+- file: Comparison
+- file: Conclusion
