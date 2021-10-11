@@ -9,6 +9,7 @@ checkpoints/
 .DS_Store/
 .vscode/
 100KStories.csv
+ROCStories_winter2017 - ROCStories_winter2017.csv
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
