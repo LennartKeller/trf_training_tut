@@ -1,3 +1,15 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.10.3
+kernelspec:
+  display_name: Python 3 (ipykernel)
+  language: python
+  name: python3
+---
 # Experimental Design
 
 ## Task
@@ -37,6 +49,8 @@ Applying this task to all kinds of different textual domains can be a fruitful q
 
 ## Data-preparation
 
-To read in the data and shuffle the sentences as well as adding the special tokens we use Huggingface Datasets library which provides a variety of useful functions for manipulating text data.
-Because a Huggingface Datasets are fully compatible with PyTorchs own class for data loading it can also be used by all non-Huggingface libraries without any further adjustments.
+To load the stories, shuffle the sentences, and further prepare, we use Huggingface Datasets library, which provides various useful functions for manipulating text data.
+Because Huggingface Datasets are fully compatible with PyTorch's class for data-loading, it can also be used by all non-Huggingface libraries without any further adjustments.
 
+The prepreparation itself is simple:
+<!-- Include building dataset notebook here...-->
