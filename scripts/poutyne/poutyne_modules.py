@@ -62,10 +62,9 @@ def so_data_collator(batch_entries):
 
 
 class PoutyneSequenceOrderingLoss:
-
     def __init__(self, target_token_id):
         self.target_token_id = target_token_id
-    
+
     def __call__(self, outputs, targets) -> float:
         batch_labels = targets["labels"]
         batch_logits = outputs["logits"]
@@ -74,7 +73,9 @@ class PoutyneSequenceOrderingLoss:
         # Since we have varying number of labels per instance, we need to compute the loss manually for each one.
         loss_fn = nn.MSELoss(reduction="sum")
         batch_loss = torch.tensor(0.0, dtype=torch.float64, requires_grad=True)
-        for labels, logits, input_ids in zip(batch_labels, batch_logits, batch_input_ids):
+        for labels, logits, input_ids in zip(
+            batch_labels, batch_logits, batch_input_ids
+        ):
 
             # Firstly, we need to convert the sentence indices to regression targets.
             # To avoid exploding gradients, we norm them to be in range 0 <-> 1
@@ -99,50 +100,30 @@ class PoutyneSequenceOrderingLoss:
         return loss
 
 
-def hugginface_loss(outputs: Dict[str, Any], targets: Any) -> float:
-    """
-    Returns the loss of the huggingface transformers model.
-    """
-    return outputs["loss"]
+def make_compute_metrics_func(target_token_id) -> Callable:
+    def compute_ranking_func(eval_prediction: EvalPrediction) -> Dict[str, float]:
+        batch_sent_idx, batch_input_ids = eval_prediction.label_ids
+        # We convert the logits with shape (batch_size, seq_len, 1) to be in shape (batch_size, seq_len)
+        batch_logits = eval_prediction.predictions.squeeze(2)
 
+        metrics = defaultdict(list)
+        for sent_idx, input_ids, logits in zip(
+            batch_sent_idx, batch_input_ids, batch_logits
+        ):
+            sent_idx = sent_idx.reshape(-1)
+            input_ids = input_ids.reshape(-1)
+            logits = logits.reshape(-1)
 
-def dummy_loss(*args, **kwargs):
-    print(args)
-    print(kwargs)
-    return 1.0
-
-
-class TransformerPoutyneCollator:
-    def __init__(
-        self, y_keys: Union[str, List[str]] = None, custom_collator: Callable = None
-    ):
-        self.y_keys = y_keys
-        self.custom_collator = (
-            custom_collator if custom_collator is not None else default_data_collator
-        )
-
-    def __call__(self, inputs: Tuple[Dict]) -> Tuple[Dict, Any]:
-        batch_size = len(inputs)
-        batch = self.custom_collator(inputs)
-        if self.y_keys is None:
-            y = torch.tensor(float("nan")).repeat(batch_size)
-        elif isinstance(self.y_keys, list):
-            # If we want to compute the loss later on we can remove the labels from input since we do not need the original loss.
-            y = {
-                key: batch.pop(key) if "labels" in key else batch.get(key)
-                for key in self.y_keys
-            }
-        else:
-            y = batch.get(self.y_keys)
-
-        return batch, y
-
-
-class TransformerPoutyneWrapper(nn.Module):
-    def __init__(self, transformer):
-        super().__init__()
-        self.transformer = transformer
-    def __repr__(self):
-        return f'{self.__class__.__name__}({repr(self.transformer)})'
-    def forward(self, inputs):
-        return self.transformer(**inputs)
+            sent_idx = sent_idx[sent_idx != 100]
+            target_logits = logits[input_ids == target_token_id]
+            if sent_idx.shape[0] > target_logits.shape[0]:
+                sent_idx = sent_idx[: target_logits.shape[0]]
+            # Calling argsort twice on the logits gives us their ranking in ascending order
+            predicted_idx = np.argsort(np.argsort(target_logits))
+            tau, pvalue = kendalltau(sent_idx, predicted_idx)
+            metrics["kendalls_tau"].append(tau)
+            metrics["acc"].append(accuracy_score(sent_idx, predicted_idx))
+            metrics["mean_logits"].append(logits.mean())
+            metrics["std_logits"].append(logits.std())
+        metrics = {metric: np.mean(scores) for metric, scores in metrics.items()}
+        return metrics
