@@ -72,7 +72,7 @@ class PoutyneSequenceOrderingLoss:
 
     def __call__(self, outputs, targets) -> float:
         batch_labels = targets["labels"]
-        batch_logits = outputs["logits"]
+        batch_logits = outputs
         batch_input_ids = targets["input_ids"]
 
         # Since we have varying number of labels per instance, we need to compute the loss manually for each one.
@@ -81,11 +81,13 @@ class PoutyneSequenceOrderingLoss:
         for labels, logits, input_ids in zip(
             batch_labels, batch_logits, batch_input_ids
         ):
-
             # Firstly, we need to convert the sentence indices to regression targets.
             # To avoid exploding gradients, we norm them to be in range 0 <-> 1
             # Also we need to remove the padding entries (-100)
             true_labels = labels[labels != -100].reshape(-1)
+            print(labels)
+            print(input_ids)
+            print(self.target_token_id)
             targets = true_labels.float()
 
             # Secondly, we need to get the logits from each target token in the input sequence
@@ -106,11 +108,13 @@ class PoutyneSequenceOrderingLoss:
 
 
 def make_compute_metrics_func(target_token_id) -> Callable:
-    def compute_ranking_func(outputs: Dict, target: Any) -> Dict[str, float]:
-        batch_sent_idx = outputs["labels"]
-        batch_input_ids = outputs["input_ids"]
+    def compute_ranking_func(outputs: Dict, targets: Any) -> Dict[str, float]:
+        batch_sent_idx = targets["labels"]
+        batch_input_ids = targets["input_ids"]
         batch_logits = outputs["logits"]
-
+        print("labels", batch_sent_idx)
+        print("input_ids", batch_input_ids)
+        print("logits", batch_logits)
         metrics = defaultdict(list)
         for sent_idx, input_ids, logits in zip(
             batch_sent_idx, batch_input_ids, batch_logits
