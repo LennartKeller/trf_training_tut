@@ -9,6 +9,7 @@ sections:
 - file: Introduction
 - file: HuggingfaceEcosystem
 - file: Experiment
+- file: Prequisites.md
 - file: HuggingFace_Trainer
 #- file: Ignite
 - file: PyTorchLightning

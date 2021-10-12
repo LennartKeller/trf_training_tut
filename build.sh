@@ -1,5 +1,6 @@
 #!/bin/bash
-
+echo "Running code formatting" &&
+black . &&
 echo "Removing __build folder" &&
 jupyter-book clean ./text/ --all &&
 echo "Building PDF" &&

@@ -11,6 +11,7 @@ checkpoints/
 100KStories.csv
 ROCStories_winter2017 - ROCStories_winter2017.csv
 novellenschatz4so/
+runs/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
