@@ -107,9 +107,9 @@ class PoutyneSequenceOrderingLoss:
 
 def make_compute_metrics_func(target_token_id) -> Callable:
     def compute_ranking_func(outputs: Dict, target: Any) -> Dict[str, float]:
-        batch_sent_idx = outputs['labels']
-        batch_input_ids = outputs['input_ids']
-        batch_logits = outputs['logits']
+        batch_sent_idx = outputs["labels"]
+        batch_input_ids = outputs["input_ids"]
+        batch_logits = outputs["logits"]
 
         metrics = defaultdict(list)
         for sent_idx, input_ids, logits in zip(
@@ -132,4 +132,5 @@ def make_compute_metrics_func(target_token_id) -> Callable:
             metrics["std_logits"].append(logits.std())
         metrics = {metric: np.mean(scores) for metric, scores in metrics.items()}
         return metrics
+
     return compute_ranking_func
