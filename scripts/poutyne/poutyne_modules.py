@@ -106,10 +106,10 @@ class PoutyneSequenceOrderingLoss:
 
 
 def make_compute_metrics_func(target_token_id) -> Callable:
-    def compute_ranking_func(eval_prediction: EvalPrediction) -> Dict[str, float]:
-        batch_sent_idx, batch_input_ids = eval_prediction.label_ids
-        # We convert the logits with shape (batch_size, seq_len, 1) to be in shape (batch_size, seq_len)
-        batch_logits = eval_prediction.predictions.squeeze(2)
+    def compute_ranking_func(outputs: Dict, target: Any) -> Dict[str, float]:
+        batch_sent_idx = outputs['labels']
+        batch_input_ids = outputs['input_ids']
+        batch_logits = outputs['logits']
 
         metrics = defaultdict(list)
         for sent_idx, input_ids, logits in zip(
