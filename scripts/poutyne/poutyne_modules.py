@@ -1,8 +1,13 @@
 from typing import Any, Callable, Dict, List, Tuple, Union
+import numpy as np
 import torch
-from torch import FloatStorage, nn
+from torch import nn
 from torch.nn.utils.rnn import pad_sequence
 from transformers import default_data_collator
+from transformers import EvalPrediction
+from sklearn.metrics import accuracy_score
+from scipy.stats import kendalltau
+from collections import defaultdict
 
 ####################################################
 #                                                  #
@@ -127,3 +132,4 @@ def make_compute_metrics_func(target_token_id) -> Callable:
             metrics["std_logits"].append(logits.std())
         metrics = {metric: np.mean(scores) for metric, scores in metrics.items()}
         return metrics
+    return compute_ranking_func
