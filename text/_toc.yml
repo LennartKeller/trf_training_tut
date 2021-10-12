@@ -11,7 +11,6 @@ sections:
 - file: Experiment
 - file: Prequisites.md
 - file: HuggingFace_Trainer
-#- file: Ignite
 - file: PyTorchLightning
 - file: Poutyne
 - file: Comparison

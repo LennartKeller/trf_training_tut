@@ -22,7 +22,7 @@ from transformers import (
 
 
 # TODO to avoid duplications move me to own module
-def so_data_collator(batch_entries):
+def so_data_collator(batch_entries, label_key="so_targets"):
     """
     Custom dataloader to apply padding to the labels.
     TODO document me better :)
@@ -33,7 +33,7 @@ def so_data_collator(batch_entries):
     for entry in batch_entries:
         label_dict = {}
         for key in list(entry.keys()):
-            if "labels" in key:
+            if label_key in key:
                 label_dict[key] = entry.pop(key)
         label_dicts.append(label_dict)
 

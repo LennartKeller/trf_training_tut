@@ -12,6 +12,7 @@ checkpoints/
 ROCStories_winter2017 - ROCStories_winter2017.csv
 novellenschatz4so/
 runs/
+poutyne_model/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -10,6 +10,18 @@ kernelspec:
   language: python
   name: python3
 ---
+
+```{code-cell} ipython3
+:tags: ["remove-cell"]
+from datasets import set_caching_enabled
+set_caching_enabled(False)
+
+import pprint
+pp = pprint.PrettyPrinter(depth=6)
+print = pp.pprint
+```
+
+
 # Experimental Design
 
 ## Task
@@ -60,10 +72,9 @@ Applying this task to all kinds of different textual domains can be a fruitful q
 To load the stories, shuffle the sentences, and further prepare, we use Huggingface Datasets library, which provides various useful functions for manipulating text data.
 Because Huggingface Datasets are fully compatible with PyTorch's class for data-loading, it can also be used by all non-Huggingface libraries without any further adjustments.
 
-The prepreparation itself is simple:
-<!-- Include building dataset notebook here...-->
+The preparation itself is simple:
+
 ```{code-cell} ipython3
-from pprint import pprint
 from datasets import Dataset, DatasetDict
 ```
 
@@ -74,23 +85,26 @@ dataset = Dataset.from_csv('../scripts/data/ROCStories_winter2017 - ROCStories_w
 dataset
 ```
 
-We got 52.665 stories. Each one has a length of five sentences. Also we have short title for each story, but we discard them and won't include it in our shuffled texts.
+We got 52.665 stories. Each one has a length of five sentences. Additionally, each text has a short title, but we discard them.
 
 ```{code-cell} ipython3
 len(dataset)
 ```
 
 ```{code-cell} ipython3
-pprint(dataset[0])
+print(dataset[0])
 ```
 
-As next step, we prepare the text by shuffling the sentences and creating labels for each entry indicating the original order. Also we add special tokens as prefix for each sentence.
+Next, we create the training data by shuffling the sentences and creating labels indicating the original order. Also, we add special tokens to each sentence.
 
-To apply this steps to the data, we use the `.map`-method of the `Dataset`-class. Like nearly all other methods of this class it works out-of-place, meaning that it returns a new dataset with the changes instead of changing the datset it was called on.
+We implement the shuffling process using the `.map`-method of the `Dataset`-class.
+Following the library's out-of-place policy, the `.map`-method returns a new dataset containing the changes instead of changing the original dataset, it was called on.
 
-The `.map`-method works in two modes: bacht or non-batched. In either mode it receives a dictionary as input where each key represents a column if the dataset.
-In non-bachted mode the values of the input-dictionary are the values of one entry in the dataset. In batched mode they are lists with multiple entries.
-The following funcation only works in both modes since it converts both input formats to the same intermediate format, but in terms of speed batched-mode should be preffered.
+The `.map`-method has two modes: batch-mode or single entry mode. In either way it receives a dictionary as input where each key represents a column of the dataset.
+In single entry mode, the values of the input dictionary hold one entry in the dataset.
+In batch mode, the values are lists containing more than one entry.
+The following function only works in both modes since it converts both input formats to the same intermediate form, but in general, the batch mode should be preferred to save time.
+The output of the function has to be a dictionary in the same format as the input.
 
 ```{code-cell} ipython3
 from random import shuffle
@@ -129,7 +143,8 @@ def make_shuffle_func(sep_token):
     return shuffle_stories
 ```
 
-`[CLS]` is the special token of BERT directly derived models, which while pretraining learns a represenation of the whole input sequence. We will use it as our sentence-token.
+`[CLS]` is one of the specials tokens of models directly descending from BERT. During the pretraining stage, it learns a representation of the whole input sequence and thus only occurs once in each input.
+Since we do not need a representation of the input as a whole, we use it as the special sentence token.
 
 ```{code-cell} ipython3
 map_func = make_shuffle_func('[CLS]')
@@ -139,13 +154,16 @@ map_func = make_shuffle_func('[CLS]')
 dataset = dataset.map(map_func, batched=True)
 ```
 
-Now our dataset has two additional columns: The `text`column contains the shuffled and concatenated sentences and the `so_targets` columnm contains the indicies of the sentences in the original order. For example in the first text in the dataset the first sentence in the shuffled text is at the 4th place in the original order.
+After applying the shuffle function, the dataset has two additional columns. The `text` column contains the shuffled and concatenated sentences, and the `so_targets` column contains the indices of the sentences in the original order. For example, in the first text in the dataset, the first sentence in the shuffled text is 4th place in the original order.
 
 ```{code-cell} ipython3
-pprint(dataset[0])
+print(dataset[0])
 ```
 
-Lastly we want to split our dataset into the subset: The train-set will be used for training, the validation set can be used to validate the performance while the training or for hyperparamter optimazation and the testset will be used for the final evulation of a trained and optimized model.
+Lastly, we want to split our dataset into three subsets.
+The train-set is used for training.
+The validation set can be used to validate the performance during training or hyperparameter optimization.
+The test set will be used for the final evaluation of the final model.
 
 ```{code-cell} ipython3
 train_test = dataset.train_test_split(test_size=0.2, seed=42)

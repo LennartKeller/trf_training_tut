@@ -2,6 +2,8 @@
 
 ```{figure} ./figures/pika.jpeg
 :name: Pika
+:scale: 50%
+:align: left
 
 Hang in there
 ```
