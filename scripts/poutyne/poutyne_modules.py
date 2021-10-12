@@ -8,6 +8,7 @@ from transformers import EvalPrediction
 from sklearn.metrics import accuracy_score
 from scipy.stats import kendalltau
 from collections import defaultdict
+from functools import partial
 
 ####################################################
 #                                                  #
@@ -72,7 +73,7 @@ class PoutyneSequenceOrderingLoss:
 
     def __call__(self, outputs, targets) -> float:
         batch_labels = targets["labels"]
-        batch_logits = outputs
+        batch_logits = outputs["logits"]
         batch_input_ids = targets["input_ids"]
 
         # Since we have varying number of labels per instance, we need to compute the loss manually for each one.
@@ -85,9 +86,6 @@ class PoutyneSequenceOrderingLoss:
             # To avoid exploding gradients, we norm them to be in range 0 <-> 1
             # Also we need to remove the padding entries (-100)
             true_labels = labels[labels != -100].reshape(-1)
-            print(labels)
-            print(input_ids)
-            print(self.target_token_id)
             targets = true_labels.float()
 
             # Secondly, we need to get the logits from each target token in the input sequence
@@ -107,14 +105,14 @@ class PoutyneSequenceOrderingLoss:
         return loss
 
 
-def make_compute_metrics_func(target_token_id) -> Callable:
-    def compute_ranking_func(outputs: Dict, targets: Any) -> Dict[str, float]:
-        batch_sent_idx = targets["labels"]
-        batch_input_ids = targets["input_ids"]
-        batch_logits = outputs["logits"]
-        print("labels", batch_sent_idx)
-        print("input_ids", batch_input_ids)
-        print("logits", batch_logits)
+def make_compute_metrics_functions(target_token_id) -> Callable:
+    def compute_ranking_func(
+        outputs: Dict, targets: Any, metric_key: str
+    ) -> Dict[str, float]:
+        batch_sent_idx = targets["labels"].detach().cpu().numpy()
+        batch_input_ids = targets["input_ids"].detach().cpu().numpy()
+        batch_logits = outputs.detach().cpu().numpy()
+
         metrics = defaultdict(list)
         for sent_idx, input_ids, logits in zip(
             batch_sent_idx, batch_input_ids, batch_logits
@@ -130,11 +128,17 @@ def make_compute_metrics_func(target_token_id) -> Callable:
             # Calling argsort twice on the logits gives us their ranking in ascending order
             predicted_idx = np.argsort(np.argsort(target_logits))
             tau, pvalue = kendalltau(sent_idx, predicted_idx)
+            acc = accuracy_score(sent_idx, predicted_idx)
             metrics["kendalls_tau"].append(tau)
-            metrics["acc"].append(accuracy_score(sent_idx, predicted_idx))
+            metrics["acc"].append(acc)
             metrics["mean_logits"].append(logits.mean())
             metrics["std_logits"].append(logits.std())
         metrics = {metric: np.mean(scores) for metric, scores in metrics.items()}
-        return metrics
+        return metrics[metric_key]
 
-    return compute_ranking_func
+    metrics = []
+    for metric in ("acc", "kendalls_tau", "mean_logits", "std_logits"):
+        metric_func = partial(compute_ranking_func, metric_key=metric)
+        metric_func.__name__ = metric
+        metrics.append(metric_func)
+    return metrics

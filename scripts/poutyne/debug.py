@@ -16,7 +16,7 @@ from poutyne_modules import (
     make_tokenization_func,
     make_rename_func,
     PoutyneSequenceOrderingLoss,
-    make_compute_metrics_func,
+    make_compute_metrics_functions,
 )
 
 
@@ -45,7 +45,7 @@ transformer = AutoModelForTokenClassification.from_pretrained(
 
 dataset = load_from_disk("../data/rocstories/")
 # Downsampling for debugging...
-dataset = dataset.filter(lambda _, index: index < 300, with_indices=True)
+# dataset = dataset.filter(lambda _, index: index < 300, with_indices=True)
 
 
 # In[5]:
@@ -109,14 +109,17 @@ wrapped_transformer = ModelWrapper(transformer)
 optimizer = AdamW(wrapped_transformer.parameters(), lr=LEARNING_RATE)
 loss_fn = PoutyneSequenceOrderingLoss(target_token_id=tokenizer.cls_token_id)
 
-metric_func = MetricWrapper(make_compute_metrics_func(tokenizer.cls_token_id))
+metrics = [
+    MetricWrapper(func)
+    for func in make_compute_metrics_functions(tokenizer.cls_token_id)
+]
 
 model = Model(
-    wrapped_transformer, optimizer, loss_fn, batch_metrics=[metric_func], device=DEVICE
+    wrapped_transformer, optimizer, loss_fn, batch_metrics=metrics, device=DEVICE
 )
 
 
-# In[ ]:
+# In[11]:
 
 
 model.fit_generator(train_dataloader, val_dataloader, epochs=N_EPOCHS)
@@ -125,13 +128,13 @@ model.fit_generator(train_dataloader, val_dataloader, epochs=N_EPOCHS)
 # In[ ]:
 
 
-test_loss = model.evaluate_generator(test_dataloader)
+test_data = model.evaluate_generator(test_dataloader)
 
 
 # In[ ]:
 
 
-test_loss
+print(test_data)
 
 
 # In[ ]:
