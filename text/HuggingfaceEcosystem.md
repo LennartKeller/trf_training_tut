@@ -73,7 +73,7 @@ Relying on PyTorch as the underlying deep learning framework comes with one cave
 Due to PyTorch's research-orientated nature, it is entirely up to the users to implement the training process. While this is no problem when researching and experimenting with new techniques, it is time-consuming in the practitioner's case.
 When applying standard models to tasks like text classification, implementing the training loop is an obstacle that only increases development time. Also, it introduces a new space for making errors.
 
-In most application-oriented scenarios, the training loop looks like this:
+In most application-oriented scenarios, the training loop roughly looks like this:
 
 ```python
 ...

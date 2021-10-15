@@ -46,13 +46,12 @@ There are various methods proposed ranging from relatively simple ones like appl
 Because we do not care much about achieving state-of-the-art results, we opt for one of the most straightforward approaches and frame it as a regression task.
 {numref}`fig-task-desc` visualizes this approach.
 The model should output a regression score for each sentence in the input, indicating its position in the original text.
-
-To achieve this a special token is added as prefix to each sentence. This special token is our target while training and it should output the a value near to the original index of the setence in the correct ordered text.
-As loss function, we chose a simple MSE regression loss.
-The target value for each sentence token is not normalized and this ranges from 0 to $N$ where $N$ is the number of sentences in the input sequence.
+Therefore, a special token is added as a prefix to each sentence. This special token is our target while training, and it should output a value near to the original index of the sentence in the correct ordered text.
+The loss is measured using the Mean-Squared-Error objective
+The target value for each sentence token is not normalized and ranges from 0 to $N$ where $N$ is the number of sentences in the input sequence.
 Another even more straightforward approach would be to add a final layer to the network with a fixed size of neurons (one for each sentence), but this would mean we had to know the number of sentences in the input beforehand, which would harm the usability of the model.
 
-Since the position of the target tokens varies from input to input we need our language model to output one logit for each token. Two Huggingface model variants return a suitable output `<...ModelType...>ForTokenClassification` or `<...ModelType...>ForQuestionAnswering`. We chose the first one, but all the code in the following section should also run when employing a model with a question-answering head.
+Since the position of the target tokens in the input sequences differs, we need our language model to output one logit for each token. Two Huggingface model variants return a suitable output `<...ModelType...>ForTokenClassification` or `<...ModelType...>ForQuestionAnswering`. We chose the first one, but all the code in the following section should also run when employing a model with a question-answering head.
 
 ## Metrics
 
@@ -69,10 +68,10 @@ __Kendalls Tau__
 
 In contrast to accuracy, Kendall Tau is a ranking correlation coefficient that accounts for partially correct parts of a ranking.
 It measures the difference between pairs of sentences correctly predicted as following and all other mispredicted pairs. 
-To correct this value by the chance of randomly predicting a correct pair of sentences this value is divided by the total number of unique ways to pick to senteces from the sequence
+To correct for the chance of randomly predicting correct pairs of sentences, the value is divided by the total number of unique ways to pick two sentences from the sequence.
 
 $$
-\tau_{\textrm{Kendall}} = \frac{\textrm{# Correctly predicted pairs of sentences} - \textrm{# Misredicted pairs of sentences}}{\binom{N}{2}}
+\tau_{\textrm{Kendall}} = \frac{\#\textrm{Correctly predicted pairs of sentences} - \#\textrm{Misredicted pairs of sentences}}{\binom{N}{2}}
 $$
 
 
