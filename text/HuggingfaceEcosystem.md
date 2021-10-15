@@ -17,9 +17,9 @@ kernelspec:
 from datasets import set_caching_enabled
 set_caching_enabled(False)
 
-import pprint
-pp = pprint.PrettyPrinter(depth=6, compact=True)
-print = pp.pprint
+# import pprint
+# pp = pprint.PrettyPrinter(depth=6, compact=True)
+# print = pp.pprint
 ```
 
 # The Huggingface ecosystem
@@ -53,7 +53,7 @@ To make all these libraries as interoperable as possible, the standard data exch
 from transformers import AutoTokenizer, AutoModel
 from datasets import Dataset
 
-model = AutoModel.from_pretrained("bert-base-cased")
+model = AutoModel.from_pretrained("bert-base-cased", add_pooling_layer=False)
 tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
 
 dataset = Dataset.from_dict({"text": ["Dictionaries? Everywhere!"]})

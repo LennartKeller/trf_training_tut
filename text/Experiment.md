@@ -16,9 +16,9 @@ kernelspec:
 from datasets import set_caching_enabled
 set_caching_enabled(False)
 
-import pprint
-pp = pprint.PrettyPrinter(depth=6)
-print = pp.pprint
+# import pprint
+# pp = pprint.PrettyPrinter(depth=6)
+# print = pp.pprint
 ```
 
 
