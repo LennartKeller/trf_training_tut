@@ -1,9 +1,9 @@
 #!/bin/bash
-echo "Running code formatting" &&
+printf "\n\nRunning code formatting\n\n" &&
 black . &&
-echo "Removing __build folder" &&
+printf "\n\nRemoving __build folder\n\n" &&
 jupyter-book clean ./text/ --all &&
-echo "Building PDF" &&
+printf "\n\nBuilding PDF\n\n" &&
 jupyter-book build ./text/ --all --builder pdflatex &&
-echo "Building HTML" &&
+printf "\n\nBuilding HTML\n\n" &&
 jupyter-book build ./text/ --all --builder html

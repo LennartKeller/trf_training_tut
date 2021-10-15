@@ -108,7 +108,9 @@ def identity(batch):
 
 data_loader = DataLoader(dataset['train'], batch_size=2, collate_fn=identity)
 batch = next(iter(data_loader))
-print(batch)
+print(len(batch))
+print(type(batch))
+print(batch[0].keys())
 ```
 
 Huggingface provides a collate function that can convert tokenized data into batches in a suitable format.
@@ -168,7 +170,45 @@ Now the data is in the correct format for training.
 
 ## Loss function
 
-Since stated in the experimental design, we use a plain Mean-Squared-Error regression loss. Still, since we only want to consider the special tokens, we have to select them before the actual computation. To achieve this, we need the `input_ids` to figure out their position in the sequence.
+As stated in the experimental design, we use a plain Mean-Squared-Error regression loss. Still, we only want to consider the special tokens, so we must select them before the actual computation. Therefore, we need the `input_ids` to figure out their position in the sequence.
+To compute the loss for one single batch, we add the loss scores of all sentences of one text and take the average of all batch entries.
+Due to computational constraints, transformer-based language models typically have a limit on the input size. So our inputs might have to be truncated to fit into the model. In this case, we discard the labels for the sentences left out and only consider the data that fits into the model.
+
+The following listing contains a general implementation of the loss function:
+
+```python
+import torch
+from torch import nn
+
+def sentence_ordering_loss(batch_logits, batch_targets, batch_input_ids) -> torch.Tensor:
+    # Since we have varying number of labels per instance, we need to compute the loss manually for each one.
+    loss_fn = nn.MSELoss(reduction="sum")
+    batch_loss = torch.tensor(0.0, dtype=torch.float64, requires_grad=True)
+    for labels, logits, input_ids in zip(
+        batch_labels, batch_logits, batch_input_ids
+    ):
+        # Firstly, we need to convert the sentence indices to regression targets.
+        # Also we need to remove the padding entries (-100)
+        true_labels = labels[labels != -100].reshape(-1)
+        targets = true_labels.float()
+
+        # Secondly, we need to get the logits from each target token in the input sequence
+        target_logits = logits[input_ids == self.target_token_id].reshape(-1)
+
+        # Sometimes, we will have less target_logits than targets due to trunction of the input.
+        # In this case, we just consider as many targets as we have logits
+        if target_logits.size(0) < targets.size(0):
+            targets = targets[: target_logits.size(0)]
+
+        # Finally we compute the loss for the current instance and add it to the batch loss
+        batch_loss = batch_loss + loss_fn(targets, target_logits)
+
+    # The final loss is obtained by averaging over the number of instances per batch
+    loss = batch_loss / batch_logits.size(0)
+
+    return loss
+```
+
 
 
 

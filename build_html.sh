@@ -1,7 +1,7 @@
 #!/bin/bash
-echo "Running code formatting" &&
+printf "\n\nRunning code formatting\n\n" &&
 black . &&
-echo "Removing old html build" &&
+printf "\n\nRemoving old html build\n\n" &&
 jupyter-book clean ./text/ --html &&
-echo "Building HTML" &&
+printf "\n\nBuilding HTML\n\n" &&
 jupyter-book build ./text/ --all --builder html

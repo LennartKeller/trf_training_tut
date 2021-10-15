@@ -9,8 +9,23 @@ Hang in there
 ```
 ## TODOS
 
-### Code
+## Checklist for comparison
 
+* GPU/ MultiGPU
+* Checkpointing (with different strategies)
+* Logging (Tensorboard, STDOUT, etc.)
+* Other Tweaks:
+    * Half precision
+    * Gradient clipping
+* Custom metrics
+* Custom loss ...
+* CLI Interface
+* (Verwaltung und Vergleich mehrer Durchläufe)
+* Metadatenhandling 
+
+
+### Code
+* Get your head around metrics in Lightning
 * Finalize training scripts
 * Search for specials of each framework
 * Implement checkpointing for each framework

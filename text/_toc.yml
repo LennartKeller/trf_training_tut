@@ -10,7 +10,7 @@ sections:
 - file: HuggingfaceEcosystem
 - file: Experiment
 - file: Prequisites.md
-- file: HuggingFace_Trainer
+- file: HuggingFaceTrainer
 - file: PyTorchLightning
 - file: Poutyne
 - file: Comparison

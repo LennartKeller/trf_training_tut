@@ -34,7 +34,17 @@ def so_data_collator(batch_entries, label_key="so_targets"):
         label_dict = {}
         for key in list(entry.keys()):
             if label_key in key:
-                label_dict[key] = entry.pop(key)
+                labels = entry.pop(key)
+                if not isinstance(labels, torch.Tensor):
+                    if isinstance(labels, np.ndarray):
+                        labels = torch.from_numpy(labels)
+                    if isinstance(labels, list):
+                        labels = torch.tensor(labels)
+                    else:
+                        raise Exception(
+                            "Labels should be of type torch.Tensor, np.ndarray or list"
+                        )
+                label_dict[key] = labels
         label_dicts.append(label_dict)
 
     # Everything except our labels can easily be handled be transformers default collator
@@ -47,7 +57,6 @@ def so_data_collator(batch_entries, label_key="so_targets"):
             batch_first=True,
             padding_value=-100,
         )
-
         batch[label] = labels
     return batch
 
@@ -129,6 +138,9 @@ class HuggingfaceDatasetWrapper(LightningDataModule):
             collate_fn=self.collate_fn,
         )
 
+    def map(self, *args, **kwargs):
+        self.dataset = self.dataset.map(*args, **kwargs)
+
 
 class PlLanguageModelForSequenceOrdering(LightningModule):
     def __init__(self, hparams):
@@ -143,6 +155,7 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
 
     def forward(self, inputs: Dict[Any, Any]) -> Dict[Any, Any]:
         # We do not want to compute token classificaiton loss so we remove the labels temporarily
+
         labels = inputs.pop("labels")
         outputs = self.base_model(**inputs)
 
@@ -165,6 +178,7 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
 
             # Firstly, we need to convert the sentence indices to regression targets.
             # To avoid exploding gradients, we norm them to be in range 0 <-> 1
+            # labels = labels / labels.max()
             # Also we need to remove the padding entries (-100)
             true_labels = labels[labels != -100].reshape(-1)
             targets = true_labels.float()
@@ -180,6 +194,8 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
                 targets = targets[: target_logits.size(0)]
 
             # Finally we compute the loss for the current instance and add it to the batch loss
+            print("#", targets)
+            print("*", target_logits)
             batch_loss = batch_loss + loss_fn(targets, target_logits)
 
         # The final loss is obtained by averaging over the number of instances per batch
@@ -187,7 +203,7 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
 
         return loss
 
-    def training_step(self, inputs: Dict[Any, Any], batch_idx: int) -> float:
+    def _forward_with_loss(self, inputs):
         outputs = self(inputs)
 
         # Get sentence indices
@@ -202,14 +218,18 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
             batch_logits=batch_logits,
             batch_input_ids=batch_input_ids,
         )
-        self.log(
-            "train_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True
-        )
         outputs["loss"] = loss
+
         return outputs
 
+    def training_step(self, inputs: Dict[Any, Any], batch_idx: int) -> float:
+        outputs = self._forward_with_loss(inputs)
+        loss = outputs["loss"]
+        self.log("loss", loss, logger=True)
+        return loss
+
     def validation_step(self, inputs, batch_idx):
-        outputs = self.training_step(inputs, batch_idx)
+        outputs = self._forward_with_loss(inputs)
 
         # Detach all torch.tensors and convert them to np.arrays
         for key, value in outputs.items():
@@ -247,25 +267,26 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
             metrics["acc"].append(acc)
             metrics["mean_logits"].append(logits.mean().item())
             metrics["std_logits"].append(logits.std().item())
+
+        metrics["loss"] = outputs["loss"].item()
+
+        # Add val prefix to each metric name and compute mean over the batch.
         metrics = {
             f"val_{metric}": np.mean(scores).item()
             for metric, scores in metrics.items()
         }
-        metrics["loss"] = outputs["loss"].item()
-        self.log_dict(metrics, prog_bar=True, logger=True, on_epoch=True, on_step=True)
+        self.log_dict(metrics, prog_bar=True, logger=True, on_epoch=True)
         return metrics
 
     def test_step(self, inputs, batch_idx):
         return self.validation_step(inputs, batch_idx)
 
     def configure_optimizers(self):
-        return torch.optim.AdamW(
-            params=self.base_model.parameters(), lr=self.hparams["lr"]
-        )
+        return torch.optim.Adam(params=self.parameters(), lr=self.hparams["lr"])
 
-    @classmethod
-    def add_model_specific_args(cls, parent_parser):
-        parser = parent_parser.add_argument_group(cls.__name__)
+    @staticmethod
+    def add_model_specific_args(parent_parser):
+        parser = parent_parser.add_argument_group("PlLanguageModelForSequenceOrdering")
         parser.add_argument("--model_name_or_path", type=str, default="bert-base-cased")
         parser.add_argument("--lr", type=float, default=3e-5)
         parser.add_argument("--target_token_id", type=int, default=101)

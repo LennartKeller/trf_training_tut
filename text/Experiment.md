@@ -54,12 +54,35 @@ Another even more straightforward approach would be to add a final layer to the 
 
 Since the position of the target tokens varies from input to input we need our language model to output one logit for each token. Two Huggingface model variants return a suitable output `<...ModelType...>ForTokenClassification` or `<...ModelType...>ForQuestionAnswering`. We chose the first one, but all the code in the following section should also run when employing a model with a question-answering head.
 
+## Metrics
+
+To measure the performance of our model, we use two metrics.
+
+__Accuracy__
+
+Accuracy measures how many sentences per instance are indexed correctly.
+Accuracy gives a rough estimate of how well the model performs, but it can paint a misleading picture since it does not fully account for our task's ranking aspect.
+For example, suppose that the model would correctly predict that sentence $B$ follows sentence $A$ and expects them to be at position $0$ and $1$ in the total ordering.
+But in reality, they are the last sentences of the text. So, in this case, the accuracy would be $0$ (assuming that all other predictions were also wrong).
+
+__Kendalls Tau__
+
+In contrast to accuracy, Kendall Tau is a ranking correlation coefficient that accounts for partially correct parts of a ranking.
+It measures the difference between pairs of sentences correctly predicted as following and all other mispredicted pairs. 
+To correct this value by the chance of randomly predicting a correct pair of sentences this value is divided by the total number of unique ways to pick to senteces from the sequence
+
+$$
+\tau_{\textrm{Kendall}} = \frac{\textrm{# Correctly predicted pairs of sentences} - \textrm{# Misredicted pairs of sentences}}{\binom{N}{2}}
+$$
+
+
+
 ## Dataset
 
 We use the ROCStories dataset (version 2017). It consists of 52.665 short stories with a fixed length of five sentences. This dataset is commonly used in the literature because its stories mainly depict concrete actions, making them relatively simple to understand without leaving much space for ambiguities. This property makes it a good fit for testing the general capabilities of language models on this task.
 
 ```{warning}
-Eventhough, the ROCStories dataset is freely available to the public, anyone who wants to use it has to submit contact data. So the dataset itself is not included in the Github-Repository and must be downloaded independently from https://cs.rochester.edu/nlp/rocstories/
+Even though the ROCStories dataset is freely available to the public, anyone who wants to use it has to submit contact data. So the dataset itself is not included in the Github-Repository and must be downloaded independently from https://cs.rochester.edu/nlp/rocstories/
 ```
 
 ```{note}
@@ -67,10 +90,10 @@ In addition, we tested the same experimental setup on a dataset of sentences sam
 Applying this task to all kinds of different textual domains can be a fruitful question itself but lies outside the scope of this work.
 ```
 
-## Data-preparation
+### Dataset-preparation
 
-To load the stories, shuffle the sentences, and further prepare, we use Huggingface Datasets library, which provides various useful functions for manipulating text data.
-Because Huggingface Datasets are fully compatible with PyTorch's class for data-loading, it can also be used by all non-Huggingface libraries without any further adjustments.
+To load the stories, shuffle the sentences, and further prepare, we use Huggingface's Datasets library, which provides various useful functions for manipulating text data.
+Because Huggingface Datasets are fully compatible with PyTorch's class for data-loading, they can also be used by all non-Huggingface libraries without further adjustments.
 
 The preparation itself is simple:
 
