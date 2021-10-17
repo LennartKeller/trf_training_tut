@@ -27,6 +27,128 @@ set_caching_enabled(False)
 The following experiments share the same general logic, but the concrete implementation will differ in minor details since each framework has another structural approach.
 So before we start, we will take a short look at the general logic for the data loading parts of the experiment, as well as the computation of the loss function and evaluation metrics
 
+## Dataset-preparation
+
+To load the stories, shuffle the sentences, and further prepare, we use Huggingface's Datasets library, which provides various useful functions for manipulating text data.
+Because Huggingface Datasets are fully compatible with PyTorch's class for data-loading, they can also be used by all non-Huggingface libraries without further adjustments.
+
+The preparation itself is simple:
+
+```{code-cell} ipython3
+from datasets import Dataset, DatasetDict
+```
+
+At first, we load the dataset in its original format.
+
+```{code-cell} ipython3
+dataset = Dataset.from_csv('../scripts/data/ROCStories_winter2017 - ROCStories_winter2017.csv')
+dataset
+```
+
+We got 52.665 stories. Each one has a length of five sentences. Additionally, each text has a short title, but we discard them.
+
+```{code-cell} ipython3
+len(dataset)
+```
+
+```{code-cell} ipython3
+print(dataset[0])
+```
+
+Next, we create the training data by shuffling the sentences and creating labels indicating the original order. Also, we add special tokens to each sentence.
+
+We implement the shuffling process using the `.map`-method of the `Dataset`-class.
+Following the library's out-of-place policy, the `.map`-method returns a new dataset containing the changes instead of changing the dataset it was called on.
+
+The `.map`-method has two modes: batch-mode or single entry mode. In either way it receives a dictionary as input where each key represents a column of the dataset.
+In single entry mode, the values of the input dictionary hold one entry in the dataset.
+In batch mode, the values are lists containing more than one entry.
+The following function only works in both modes since it converts both input formats to the same intermediate form, but in general, the batch mode should be preferred to save time.
+The output of the function has to be a dictionary in the same format as the input.
+
+```{code-cell} ipython3
+from random import shuffle
+from random import seed as set_seed
+
+def make_shuffle_func(sep_token):
+    def shuffle_stories(entries, seed=42):
+        set_seed(seed)
+        entries_as_dicts = [
+            dict(zip(entries, values))
+            for values in zip(*entries.values())
+        ]
+        converted_entries = []
+        for entry in entries_as_dicts:
+            sents = [
+                entry[key]
+                for key in sorted(
+                    [key for key in entry.keys() if key.startswith('sentence')
+                    ], key=lambda x: int(x[-1])
+                )
+            ]
+            sent_idx = list(range(len(sents)))
+            sents_with_idx = list(zip(sents, sent_idx))
+            shuffle(sents_with_idx)
+            text = f'{sep_token} ' + f' {sep_token} '.join(
+                [s[0]for s in sents_with_idx]
+            ) 
+            so_targets = [s[1] for s in sents_with_idx]
+            shuffled_entry = {'text': text, 'so_targets': so_targets}
+            converted_entries.append(shuffled_entry)
+        new_entry = {
+            key: [entry[key] for entry in converted_entries]
+            for key in converted_entries[0]
+        }
+        return new_entry
+    return shuffle_stories
+```
+
+`[CLS]` is one of the specials tokens of models directly descending from BERT. During the pretraining stage, it learns a representation of the whole input sequence and thus only occurs once in each input.
+Since we do not need a representation of the input as a whole, we use it as the special sentence token.
+
+```{code-cell} ipython3
+map_func = make_shuffle_func('[CLS]')
+```
+
+```{code-cell} ipython3
+dataset = dataset.map(map_func, batched=True)
+```
+
+After applying the shuffle function, the dataset has two additional columns. The `text` column contains the shuffled and concatenated sentences, and the `so_targets` column contains the indices of the sentences in the original order. For example, in the first text in the dataset, the first sentence in the shuffled text is 4th place in the original order.
+
+```{code-cell} ipython3
+print(dataset[0])
+```
+
+Lastly, we want to split our dataset into three subsets.
+The train-set is used for training.
+The validation set can be used to validate the performance during training or hyperparameter optimization.
+The test set will be used for the final evaluation of the final model.
+
+```{code-cell} ipython3
+train_test = dataset.train_test_split(test_size=0.2, seed=42)
+
+test_validation = train_test['test'].train_test_split(test_size=0.3, seed=42)
+
+dataset = DatasetDict({
+    'train': train_test['train'],
+    'test': test_validation['train'],
+    'val': test_validation['test']})
+dataset
+```
+
+Finally, we save the dataset.
+
+```{code-cell} ipython3
+dataset.save_to_disk('rocstories')
+```
+
+
+```{code-cell} ipython3
+:tags: ["remove-cell"]
+! rm -r rocstories
+```
+
 ## Data loading
 
 ```{figure} ./figures/DataFlow.png
