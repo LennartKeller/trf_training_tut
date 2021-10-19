@@ -32,13 +32,19 @@ In 2018 on the same day that Google published its research implementation of BER
 
 From here on, this repository quickly evolved into the Transformers library, which sits at the core of the Huggingface NLP infrastructure. The goal of the transformers library is to provide the majority of transformer-based neural language models alongside all of the extra tooling required to use them.
 
-
-On this path the Huggingface team also started to add support for other deep learning frameworks than PyTorch, such as Tensorflow or the newly created JAX library. But these features are relatively new and subject to frequent significant changes, so that this work will only focus on the much more stable PyTorch branch of the Transformers library.
+Originating as a pure PyTorch library, Hugginface widened its scope over the last two years and began integrating other deep learning frameworks such as Tensorflow or the newly created Flax library.
+<!--On this path the Huggingface team also started to add support for other deep learning frameworks than PyTorch, such as Tensorflow or the newly created JAX library.-->
+But these additions are relatively unstable and subject to frequent significant changes, so that this work will only focus on the much more stable PyTorch branch of the Transformers library.
 
 ## `tokenizers`
 
-A notable characteristic of these models is that they all ship with a custom tokenizer. These tokenizers are subword tokenizers that were fitted to represent the vocabulary of the training data of the models with a fixed size vocabulary.
-Huggingface provides another library called `tokenizers`. It provides the a general framework to load all the tokenizers of each model.
+A notable characteristic of these models is that they all ship with a custom, fitted tokenizer. 
+Most of them operate on a subword level and were trained to represent the vocabulary of the pretraining data of the models with a fixed size vocabulary.
+Huggingface provides the `tokenizers` library that offers implementations of the most common tokenizer models. These tokenizers come in two versions, a fast one written in Rust and a slower python implementation. For the sake of speed, the fast version should be preferred most of the time
+
+```{Note}
+As of the time of writing, Huggingface does not provide precompiled packages of the `tokenizers` library for the new Apple-Silicon architecture. So a working Rust stack has to be installed on the machine to compile the package locally during installation.
+```
 
 ## `datasets`
 
