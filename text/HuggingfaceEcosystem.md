@@ -118,4 +118,4 @@ But not only can it become quite tedious to write this loop (or variations of it
 
 Another implication of outsourcing this process to the users hits when the models grow in size. Modern language models require a massive amount of memory even when trained with tiny batch sizes. There are strategies to overcome these limitations, like gradient accumulation. But all these tricks again have to be implemented by the user.
 While one can argue that most of these tweaks are pretty easy to implement, and there is a vast number of educational material available, the downside comes very clear when working with models that do not even fit on a single GPU. These models have to be trained in a distributed manner across multiple devices. When doing so, the training loop itself gets much more complex and challenging to implement.
-Various frameworks aim at streamlining the training of neural networks for the user.
+Various frameworks aim at streamlining the training of neural networks for the user. 

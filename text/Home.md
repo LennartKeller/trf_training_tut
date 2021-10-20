@@ -1,4 +1,4 @@
-# Training Transformers
+# Preface 
 
 ```{figure} ./figures/pika.jpeg
 :name: Pika
@@ -7,6 +7,13 @@
 
 Hang in there
 ```
+
+For the sake of readability the listings in this texts are shortened if necesarry. To take a look at the whole code, please visit the associated [GitHub-Repository](https://github.com/LennartKeller/trf_training_tut)
+<br>
+<br>
+<br>
+<br>
+<br>
 ## TODOS
 
 ## Checklist for comparison

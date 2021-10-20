@@ -1,5 +1,6 @@
 from collections import defaultdict
 from typing import Callable, Dict
+from dataclasses import dataclass, field
 
 import numpy as np
 import torch
@@ -19,6 +20,11 @@ from transformers import (
     default_data_collator,
 )
 
+@dataclass
+class ModelArgs:
+    model_name_or_path: str = field(
+        default="bert-base-cased", metadata={"help": "Path to pretrained model or model or id in huggingface hub."}
+    )
 
 def make_compute_metrics_func(target_token_id) -> Callable:
     def compute_ranking_func(eval_prediction: EvalPrediction) -> Dict[str, float]:
