@@ -2,10 +2,14 @@ from transformers import Trainer, TrainingArguments, HfArgumentParser
 from transformers import AutoModel, AutoTokenizer
 from dataclasses import dataclass, field
 
+
 @dataclass
 class ModelArgs:
     model_name_or_path: str = field(
-        default="bert-base-cased", metadata={"help": "Path to pretrained model or model or id in huggingface hub."}
+        default="bert-base-cased",
+        metadata={
+            "help": "Path to pretrained model or model or id in huggingface hub."
+        },
     )
 
 
