@@ -1,3 +1,16 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.10.3
+kernelspec:
+  display_name: Python 3 (ipykernel)
+  language: python
+  name: python3
+---
+
 # Huggingface Trainer
 
 ## Design & Philophy
@@ -24,12 +37,12 @@ By design, the `Trainer` is one monolithic block that handles the training end-t
 There are two different options to customize certain aspects of the training.
 
 Firstly, callbacks can be created using a dedicated API.
-These callbacks are then executed at certain events while training (i.e. the end of an epoch).
+These callbacks are then executed at certain events while training (i.e., the end of an epoch).
 The main purpose of callbacks is not to modify but to extend the `Trainer`.
 Callbacks are an easy tool to define additional operations, like pruning the model after each epoch or modifying the gradients before each update-step of the optimizer.
 
 Secondly, if a task requires modifying the `train-test-val`-loop itself, creating a custom trainer via subclassing is the best option.
-Each of these loops is structured in a two-fold way. A method that ends with `<train/test/val>-step` defines the logic to process a single batch of data, while the `<train/test/val>-step` methods define the loops as a whole. So it is possible to device whether to change parts of these stages or to rewrite them completly.
+Each of these loops is structured in a two-fold way. A method that ends with `<train/test/val>-step` defines the logic to process a single batch of data, while the `<train/test/val>-step` methods define the loops as a whole. So it is possible to device whether to change parts of these stages or to rewrite them completely.
 
 __Training Arguments__
 
@@ -151,7 +164,7 @@ training_args = TrainingArguments(
 	...,
 )
 ```
-A minor but useful trait of the `EvalPrediction` objecs that their content get converted from `torch.tensors` to `np.arrays`. Because, most predefined validation metrics use `Numpy`, this saves some lines of code.
+A minor but useful trait of the `EvalPrediction` objecs that their content get converted from `torch.tensors` to `np.arrays`. Because most predefined validation metrics use `Numpy`, this saves some lines of code.
 
 __HfArgumentParser__
 
@@ -159,10 +172,119 @@ Most experiments are repeated several times with different parameters. Changing 
 Making the hyperparameters adjustable via a command-line interface decouples the hyperparameters from the rest of the code and alleviates this issue.
 While there are arguably a lot of different solutions to this problem with many strategies that are more sophisticated than a command-line interface, it is a good start. It has the advantage of being platform-independent without requiring additional dependencies. Also, it does not require learning additional tooling.
 
-Huggingface comes with a built-in solution to build command-line interfaces for controling hyperparameters.
-The `HfArgumentParser` class 
+Huggingface comes with a built-in solution called `HfArgumentParser`. It creates command-line interfaces by exposing the fields of `dataclasses` to command-line arguments. 
+Since `dataclasses` are widely used in the Huggingface ecosystem to define configurations (i.e., TrainingArguments), it can be used to controll the configuration of nearly each aspect of the training. Only the 
+
+```{code-cell} ipython
+from dataclasses import dataclass, field
+from transformers import HfArgumentParser
+
+@dataclass
+class TrainArgs:
+    batch_size: int = field(
+        default = 8,
+        metadata = {"help": "Number of batched for training."}
+    )
+
+parser = HfArgumentParser(TrainArgs)
+parser.print_help()
+# In the real world the .parse_args... method
+# would be called without any arguments
+# to parse data from the commandline.
+train_args = parser.parse_args_into_dataclasses(["--batch_size", "4"])
+print(train_args)
+```
+
+### Complete code
+
+When everything is plugged together the experiment itself, looks like this:
 
 
+```python
+from transformers import TrainingArguments, HfArgumentParser
+from transformers import AutoModelForTokenClassification, AutoConfig, AutoTokenizer
+from transformers import set_seed
+from datasets import load_from_disk
+
+from model import (
+    SentenceOrderingTrainer,
+    so_data_collator,
+    make_compute_metrics_func,
+    ModelArgs,
+    make_tokenization_func,
+)
+
+
+if __name__ == "__main__":
+
+    args_parser = HfArgumentParser((ModelArgs, TrainingArguments))
+    model_args, training_args = args_parser.parse_args_into_dataclasses()
+
+    # Add fixed args
+    training_args.label_names = ["labels", "input_ids"]
+
+    set_seed(training_args.seed)
+
+    dataset = load_from_disk(
+        "/home/keller/Uni/trf_training_tut/scripts/data/rocstories"
+    )
+
+    tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path)
+
+    if tokenizer.cls_token != "[CLS]":
+        print(
+            f"Model does not a have a [CLS] token. Updating the data with token {tokenizer.cls_token} ..."
+        )
+
+        def replace_cls_token(entry):
+            texts = entry["text"]
+            replaced_texts = []
+            for text in texts:
+                replaced_texts.append(text.replace("[CLS]", tokenizer.cls_token))
+            entry["text"] = replaced_texts
+            return entry
+
+        dataset = dataset.map(replace_cls_token, batched=True)
+
+    model_config = AutoConfig.from_pretrained(
+        model_args.model_name_or_path, num_labels=1
+    )
+    model = AutoModelForTokenClassification.from_pretrained(
+        model_args.model_name_or_path, config=model_config
+    )
+
+    tokenization = make_tokenization_func(
+        tokenizer=tokenizer,
+        text_column="text",
+        padding="max_length",
+        truncation=True,
+        add_special_tokens=False,
+    )
+    dataset = dataset.map(tokenization, batched=True)
+
+    dataset = dataset.rename_column("so_targets", "labels")
+
+    dataset.set_format("torch")
+
+    metrics_func = make_compute_metrics_func(tokenizer.cls_token_id)
+
+    trainer = SentenceOrderingTrainer(
+        model=model,
+        args=training_args,
+        train_dataset=dataset["train"],
+        eval_dataset=dataset["val"],
+        target_token_id=tokenizer.cls_token_id,
+        data_collator=so_data_collator,
+        compute_metrics=metrics_func,
+    )
+
+    trainer.train()
+
+    trainer.save_model(model_args.final_checkpoint_path)
+
+```
+This script is fully customaizable via command-line arguments.
+Note, that the trainer itself and all other helper functions are outsourced to a extern file and only imported for the sake of readability.
 
 ## Conclusion
 
