@@ -14,7 +14,9 @@ from pl_modules import (
 
 
 def main(hparams):
+
     seed_everything(hparams.seed)
+
     print("Loading tokenizer.")
     tokenizer = AutoTokenizer.from_pretrained(hparams.model_name_or_path)
 
@@ -22,7 +24,7 @@ def main(hparams):
     data = load_from_disk("../data/rocstories")
 
     # Downsampling for debugging...
-    data = data.filter(lambda _, index: index < 5000, with_indices=True)
+    # data = data.filter(lambda _, index: index < 5000, with_indices=True)
 
     dataset = HuggingfaceDatasetWrapper(
         data,
@@ -36,19 +38,20 @@ def main(hparams):
     )
 
     if tokenizer.cls_token != "[CLS]":
-        print("Non BERT-Model. Updating special sentence token.")
+        print(
+            f"Model does not a have a [CLS] token. Updating the data with token {tokenizer.cls_token} ..."
+        )
 
-        def replace_special_token(entry, sent_token=tokenizer.sep_token):
-            for idx, text in enumerate(entry["text"]):
-                text = text.replace("[CLS]", sent_token)
-                print(text)
-                entry["text"][idx] = text
+        def replace_cls_token(entry):
+            texts = entry["text"]
+            replaced_texts = []
+            for text in texts:
+                replaced_texts.append(text.replace("[CLS]", tokenizer.cls_token))
+            entry["text"] = replaced_texts
             return entry
 
-        dataset.map(replace_special_token, batched=True)
-
-        hparams.target_token_id = tokenizer.sep_token_id
-        print(f"Updated special token id: {hparams.target_token_id}")
+        dataset = dataset.map(replace_cls_token, batched=True)
+        hparams.target_token_id = tokenizer.cls_token_id
 
     print("Loading model.")
     model = PlLanguageModelForSequenceOrdering(hparams=hparams)
@@ -84,5 +87,4 @@ if __name__ == "__main__":
     parser = Trainer.add_argparse_args(parser)
     parser = PlLanguageModelForSequenceOrdering.add_model_specific_args(parser)
     args = parser.parse_args()
-    print(args)
     main(args)

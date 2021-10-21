@@ -25,7 +25,9 @@ Each step or aspect of the training process can be extended or customized by ove
 A PyTorchLightning based project is composed of three main classes. 
 
 
-## Models
+## Classes
+
+### Models
 
 __LightningModule__
 
@@ -80,8 +82,7 @@ This strategy ensures that while loading an old checkpoint it is entirly obvious
 
 For special networks architectures requiring further customization, `LightningModules` also expose lifecycle hooks for many steps throughout the training.
 
-
-## Data
+### Data
 
 `PyTorchLightning` also comes with a custom module called `LightningDataModule` that handles data loading, preparation, and splitting.
 Its primary purpose is to provide the train-, test- and validation splits of the dataset.
