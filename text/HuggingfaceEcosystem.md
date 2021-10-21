@@ -84,23 +84,29 @@ In most application-oriented scenarios, the training loop roughly looks like thi
 ```python
 ...
 model = create_model()
+model.to(DEVICE)
 train_data, val_data = load_data()
 optimizer = torch.optim.SGD(lr=5e-5, params=model.parameters())
 for train_step, batch in enumerate(train_data):
+    model.train()
     input_data, targets = batch
     input_data = input_data.to(DEVICE)
     targets = targets.to(DEVICE)
     outputs = model(input_data)
     loss = loss_function(outputs, targets)
+    
     # Compute gradients w.r.t the input data
     loss.backward() 
     # Update the parameters of the model
     optimizer.step() 
     # Clear the gradients before next step
-    optimizer.zero_grad() 
+    optimizer.zero_grad()
+
     train_log(train_step, loss)
+
     # Validate the performance of the model every 100 train steps
     if train_step % 100 == 0:
+        model.eval()
         for val_step, batch in enumerate(val_data):
                 input_data, targets = batch
                 input_data = input_data.to(DEVICE)
@@ -110,6 +116,7 @@ for train_step, batch in enumerate(train_data):
                 val_loss = loss_function(outputs, targets).detach().cpu()
                 # Compute other val metrics (i.e. accuracy)
                 val_score = other_metric(outputs, targets)
+                
                 val_log(val_step, val_loss, val_loss)
 ...
 ```
