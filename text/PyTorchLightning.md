@@ -13,15 +13,18 @@ kernelspec:
 
 # PyTorch Lightning
 
-## Design & Philosophy
-
-PyTorch-Lightning does not make many assumptions and gives (or leaves) many steps into the hand of the user
-But it provides the user with a custom API that divides the training process in a sequence of single atomic steps.
-It provides a lot of valuable tweaks like training with half-precision, automatic tuning of the learning rate, and integrations into hyperparameter tuning frameworks.
-The documentation is exhaustive, with many tutorials (texts and videos) and many best practices and user guides on how to build a model.
-It comes with different backends that support multi-device training, not only on GPUs but also on other acceleratory like TPUs. These backends also support distributed training across different machines or processing nodes in a cluster.
-Also, it provides ways to control the training via a CLI interface.
-Each step or aspect of the training process can be extended or customized by overwriting specific methods or using callbacks.
+## Introduction
+In contrast to the Huggingface `Trainer`, PyTorch Lightning takes a different approach.
+The goal of this framework is to handle the training but also the building of a model itself.
+In its philosophy, a model and its inference-, training and prediction logic are no separate things that can be exchanged independently.
+Instead, it brings these fuses together by binding all this steps to the model.
+In doing so, PyTorch-Lightning does not make many assumptions on the nature of the model or the training itself. Therefore, the user has great flexbility to implement nearly everything that comes into mind.
+It provides a custom API that divides the training process in a sequence of single atomic steps.
+Also, it offers a lot of valuable tweaks like training with half-precision, automatic tuning of the learning rate, and integrations into hyperparameter tuning frameworks or into command-line interfaces.
+The documentation is exhaustive, with many tutorials (texts and videos) and many best practices and user guides on building a model.
+It supports different backends to train not only on GPUs but also on other acceleratory like TPUs.
+These backends also support distributed training across different machines or processing nodes in a cluster.
+Each fixed step or aspect of the training process can be extended or customized by overwriting specific methods or using callbacks.
 A PyTorchLightning based project is composed of three main classes. 
 
 
@@ -31,18 +34,8 @@ A PyTorchLightning based project is composed of three main classes.
 
 __LightningModule__
 
-* Wraps a model 
-* Overwritable methods to control:
-	* A single inference step
-	* A train step
-	* Test/ Val step
-	* Configuration of the optimizer
-	* Logging
-	* Initialization of the model
-	* Storing model specific hyperparameters
-	* Other hooks for certrain steps of the training process
 
-The model (aka neural network) is implemented in a `LightningModule`.
+The neural network (i.e., a lanugage model)  is implemented in a `LightningModule`.
 This class inherits from PyTorchs `nn.Module` class. `nn.Modules` are the basic building blocks of neural networks in PyTorch. In essence, they store a set of parameters, for example, weights of a single layer alongside with `.forward`-method that defines the computational logic.
 `nn. Modules` are designed to work recursively. One module can be composed of several submodules so that each building block of a neural network, starting from single layers up to a network, can be implemented in this one class.
 
@@ -60,25 +53,25 @@ class DenseLayer(nn.Module):
     def forward(self, inputs):
         return torch.matmul(inputs, self.weights)
 
-dense = DenseLayer(512, 16)
+network = nn.Sequential(DenseLayer(512, 16), DenseLayer(16, 8), DenseLayer(8, 2))
 inputs = torch.randn(8, 512)  # Batchsize 8
-outputs = dense(inputs)
+outputs = network(inputs)
 print(outputs.size())
+print(issubclass(network, nn.Module))
 ```
-A `LightningModule` is designed to replace the outmost `nn.Module` instance, meaning the one that holds a complete network.
+The `LightningModule` is intended to replace the outmost `nn.Module` instance, meaning the one that holds a complete network.
 It extends the `nn.Module` class with new methods, designed to structure not only the logic of a single forward pass but also other steps like a complete train-, test- or validation-steps.
 Similar to plain `nn.Modules`, the `.forward`-methods defines a simple forward step through the network.
 The `.train_step` method handles the computation of the loss. Likewise, the `.validation_step` and `.test_step` methods are required to define the calculation of the validation metrics or the prediction of instances.
 Logging of the training can also be done directly within these methods, using the polyvalent `.log`- or `log-dict`-methods.
 
-In contrast to plain `PyTorch`, where the optimizer is regarded as an external object that can be replaced without changing the model itself, `PyTorchLightning` takes a different approach and moves the optimizer and its configuration into the model via a `configure_optimizer` method.
+In contrast to plain `PyTorch,` the optimizer is not regarded as an external object. Instead its configuration is moved into the `configure_optimizer`-method of the model.
 
-In `PyTorchLightning` there is a differentiation between hyperparameters that directly belong to the model and those that control different training aspects. This is because all hyperparameters of the model are stored in the model. 
+In `PyTorchLightning` there is a clear differentiation of hyperparameters.
+Hyperparameters that affect the model (like the number of hidden layers) are directly assigned to the model and saved with each checkpoint.
 By default, each argument of the constructor is considered to be a hyperparameter.
-By calling the `.save_hyperparameters`-method in the constructor, these arguments are saved in a `.hparams`-attribute.
-Another way to pass and store hyperparameters to the model is to pass them as dict-like object into the constructor and then call the save
-All parameters in this attribute get explicitly saved with each checkpointing of a `LightningModule`.
-This strategy ensures that while loading an old checkpoint it is entirly obvious which hyperparameters were used to train it.
+By calling the `.save_hyperparameters`-method in the constructor, these arguments are serialized into a `.hparams`-attribute.
+This strategy ensures that while loading an old checkpoint, it is entirely transparent which hyperparameters were used to train it.
 
 For special networks architectures requiring further customization, `LightningModules` also expose lifecycle hooks for many steps throughout the training.
 
@@ -109,6 +102,9 @@ Most notably, it has built-in support for creating command-line interfaces that 
 To do so, it uses Pythons own `argparse` library and each of the three main classes offers methods to add its hyperparameters to the parser. Each class also comes with classmethods, that allow them to be initiated using from parsed arguments.
 
 __Tuning__
+
+
+## Implemenation
 
 
 

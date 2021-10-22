@@ -194,8 +194,6 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
                 targets = targets[: target_logits.size(0)]
 
             # Finally we compute the loss for the current instance and add it to the batch loss
-            print("#", targets)
-            print("*", target_logits)
             batch_loss = batch_loss + loss_fn(targets, target_logits)
 
         # The final loss is obtained by averaging over the number of instances per batch
@@ -287,9 +285,11 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
     @staticmethod
     def add_model_specific_args(parent_parser):
         parser = parent_parser.add_argument_group("PlLanguageModelForSequenceOrdering")
-        parser.add_argument("--model_name_or_path", type=str, default="bert-base-cased")
-        parser.add_argument("--lr", type=float, default=3e-5)
-        parser.add_argument("--target_token_id", type=int, default=101)
+        parser.add_argument(
+            "--model.model_name_or_path", type=str, default="bert-base-cased"
+        )
+        parser.add_argument("--model.lr", type=float, default=3e-5)
+        parser.add_argument("--model.target_token_id", type=int, default=101)
         return parent_parser
 
 

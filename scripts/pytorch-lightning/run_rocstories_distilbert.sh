@@ -3,19 +3,20 @@ export TOKENIZERS_PARALLELISM=false
 export CUDA_VISIBLE_DEVICES="0,1,2,3"
 
 python rocstories.py \
-	--gradient_clip_val 1.0 \
-    --num_processes 10 \
-    --val_check_interval 200 \
-    --log_every_n_steps 50 \
-    --enable_checkpointing true \
-    --gpus 1 \
-	--max_epochs 3 \
-    --default_root_dir lightning_runs/rocstories \
-    --lr 3e-5 \
-    --deterministic true \
-    --seed 42 \
-    --model_name_or_path distilbert-base-cased \
-    --accelerator ddp_spawn \
-    --train_batch_size 16 \
-    --val_batch_size 32 \
-	"$@"
+    --model.lr 3e-5 \
+    --model.model_name_or_path distilbert-base-cased \
+    --run.train_batch_size 16 \
+    --run.val_batch_size 32 \
+    --run.seed 42 \
+    --tensorboard.name "rocstories_distilbert" \
+    --tensorboard.save_dir "lightning_runs/logs" \
+    --trainer.gradient_clip_val 1.0 \
+    --trainer.num_processes 10 \
+    --trainer.val_check_interval 200 \
+    --trainer.log_every_n_steps 50 \
+    --trainer.gpus 1 \
+    --trainer.max_epochs 3 \
+    --trainer.default_root_dir lightning_runs/rocstories \
+    --trainer.deterministic true \
+    --trainer.accelerator ddp_spawn \
+    "$@"
