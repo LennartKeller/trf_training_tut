@@ -68,29 +68,29 @@ Logging of the training can also be done directly within these methods, using th
 In contrast to plain `PyTorch,` the optimizer is not regarded as an external object. Instead its configuration is moved into the `configure_optimizer`-method of the model.
 
 In `PyTorchLightning` there is a clear differentiation of hyperparameters.
-Hyperparameters that affect the model (like the number of hidden layers) are directly assigned to the model and saved with each checkpoint.
-By default, each argument of the constructor is considered to be a hyperparameter.
+For example, Hyperparameters that affect the model (like the number of hidden layers) are directly assigned to the model and saved with each checkpoint.
+By default, each argument of the constructor of a `LighntningModule` is considered to be a hyperparameter.
 By calling the `.save_hyperparameters`-method in the constructor, these arguments are serialized into a `.hparams`-attribute.
 This strategy ensures that while loading an old checkpoint, it is entirely transparent which hyperparameters were used to train it.
 
-For special networks architectures requiring further customization, `LightningModules` also expose lifecycle hooks for many steps throughout the training.
+<!--For special networks architectures requiring further customization, `LightningModules` also expose lifecycle hooks for many steps throughout the training.-->
 
 ### Data
 
-`PyTorchLightning` also comes with a custom module called `LightningDataModule` that handles data loading, preparation, and splitting.
-Its primary purpose is to provide the train-, test- and validation splits of the dataset.
-Each split has a corresponding method, which must return a dataloader object.
-
-Operations like loading the data or further preparation (i.e. tokenization) can be implemented by a `.prepare_data`-method.
-
-In a distributed computing environment, additional `.setup`- and `teardown`-methods can be implemented to define operations that should be applied to the data on each computing unit independently.
-
+`PyTorchLightning` also comes with a custom solutiuon to handle data operations.
+Data is organized in a `LighningDataModule`. Similar, to the `LightningModule` the intention is to structure all data loading, preparing and splitting related logic into a single module.
+Its primary purpose is to provide the train-, test- and validation splits of the dataset as `DataLoaders`.
+In a `.prepare_data`-method the user can specify all required steps to load and prepare the data.
+A special feature of the `LightningDataModule` is its ability to adapt to distributed environments.
+While the `.prepare_data`-method get called once when the training is started, there are a also additional `.setup`- and `teardown`-methods that can be used to define operations to the data which are executed on each computing unit independetnly. While the `.setup`-method is called before the training and the `.teardown`-method is excecuted after the training is finished.
 
 __Trainer__
 
 The `Trainer` object handles the actual training.
 It receives the model and data (wrapped in Lightning modules) alongside all training-specific hyperparameters, like the number of epochs, the devices to train on, or a list of loggers to log the progress.
-Customization via subclassing of the trainer is not the intended way. Instead, `PyTorchLightning` provides an API for Plugins and Callbacks that can control the different stages of the training. 
+Customization via subclassing of the trainer is not the intended way. Instead, `PyTorchLightning` provides an API for Plugins and Callbacks that can control the different stages of the training.
+Callbacks are intended to implement steps that are not strictly necessary for training. Rather, they should be used to implement additional steps, like logging or applying non-essetinal operations to the model (i.e., weigh pruning after each epoch).
+Like the other main modules, the `Trainer` itself stores all parameters relevant to the training.
 
 ## Features
 
