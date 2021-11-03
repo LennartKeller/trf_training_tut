@@ -13,55 +13,81 @@ kernelspec:
 
 # Huggingface Trainer
 
-## Introductino
- 
-The most natural pick for training a Huggingface model is the `Trainer` that ships with the `transformers` library itself.
-It is designed to handle the training of Huggingface models in "most standard cases."
-
-Naturally, the `Trainer` is designed to work in the Huggingface ecosystem.
-It receives the data as Huggingface-`Datasets` and expects the models to follow the conventions of the `transformers` library.
-In theory, other custom models could be used with the `Trainer`, but the developers warn that this might lead to strange side effects.
-
-The `Trainer`-class is one single monolithic block that handles the training with all its aspects end-to-end.
-
+Since Huggingface proclaimed goal is to provide an environment to develop and train all sorts of language models, they also ship a solution for training models.
+It is called the `Trainer` and comes with the `transformers` library itself.
+Of course, it is profoundly integrated into the Huggingface-ecosystem and can train most `transformers` models out of the box.
 
 ## Classes
 
-__Trainer__
+### Trainer
 
-Unsurprisingly, the `Trainer` class handles the training. 
+Design-wise, the `Trainer` is one single class that handles the training end-to-end.
 Its configuration is outsourced to a `TrainingArguments` class that stores all relevant parameters for training.
 These arguments are passed to the `Trainer`  alongside a model and a dataset during initialization.
-The training then starts automatically. Since Huggingface models compute the loss internally, in most standard cases, the `Trainer`  passes the input data to the model, extracts the loss from the output, and does the backward step. It also has built-in logging capabilities to log the loss and other metrics.
-Another main advantage of the `Trainer` lies in its ability to do multi-device training without requiring the user to care of dispatching the model and data to all devices manually. Also, it comes with an extension that allows more sophisticated tweaks, like training with half-precision.
+The training then starts automatically.
+Since Huggingface models compute the loss internally, the `Trainer` passes the input data to the model, extracts the loss from the output, and does the backward step.
+It also handles additional steps to monitor the training process, like saving checkpoints of the model or logging the loss and other validation metrics.
+A significant advantage of using the `Trainer` is its ability to do multi-device training without requiring the user to care about dispatching the models and data to multiple accelerators.
+Also, it comes with an extension that allows more sophisticated tweaks, like training with 16bit-precision.
 
-There are two different options to customize certain aspects of the training.
+### Extending the `Trainer`
 
-Firstly, callbacks can be created using a dedicated API.
-These callbacks are then executed at certain events while training (i.e., the end of an epoch).
-The primary purpose of callbacks is not to modify but to extend the `Trainer`.
-Callbacks are an easy tool to define additional read-only operations, like logging or saving certain parts of a model.
+There are two different options to customize certain aspects of the behavior of the `Trainer`.
+One option the customize the `Trainer` is the callback API
+Callbacks are executed at certain events while the trainnig (e.g., at the end of an epoch) and they have access to many different things like the model or the `Trainer`.
+But they are limited to read only operations which limits their scope to things like logging, saving certain parts of a model or stopping the training if a certain condition is met.
 
-Secondly, if a task requires modifying the `train-test-val`-loop itself, creating a custom trainer via subclassing is the best option.
-Each of these loops is structured in a two-fold way. A method that ends with `<train/test/val>-step` defines the logic to process a single batch of data, while the `<train/test/val>-step` methods define the loops as a whole. So it is possible to device whether to change parts of these stages or to rewrite them completely.
+If further changes to the `Trainer` are required, the recommended way is to subclass it and create a custom version.
+Internally, the `Trainer` structures the training into different substeps and exposes each of them via a method.
+By overwriting these methods, it is possible to change certain parts of the logic without rewriting the rest of the code that would not be changed anyway. 
+The most important methods to modify the `train-test-val`-loop itself are the `<train/test/val>-step` methods and the `compute_loss` method.
+These methods implement the essential individual training steps and are used in all higher-order methods that handle the complete train, test, or validation loop.
 
-__Training Arguments__
+### Logging
 
-As stated above, the hyperparameters of training are passed to the trainer as a `TrainingArguments` object. One of the advantages is that this class can easily be serialized and saved to different formats. Also, it works seamlessly with `Transformers` built-in parsing class, so the parameters can easily be made available through a command-line interface.
+Logging is simple and is done automatically if a `logdir` is specified in the `TrainingArguments`. 
+By default, it saves the logs to disk, using a Tensorboard-compliant format.
+Additional logging steps, can be implemented by either overwriting the `.log`-method of Trainer or by using callbacks.
+There are already some pre-built callbacks available to log the progress a text format or to log it using Weights and Biases.
+
+#### Custom metrics
+
+<!--Also a list of validation metrics can be computed by passing a function to the `Trainer` during initialization, and they automatically get logged too.
+Another option to add custom metrics to the `Trainer` is to overwrite the -->
 
 
-## Features
-Furthermore, the `Trainer` class not only handles the training loop but comes with additional features.
-Most notably, it supports multi-device training out of the box.
-Another essential aspect of machine learning experiments is logging the progress during training and saving checkpoints for further evaluation.
-The `Trainer` class is capable of doing both.
-By default, it logs the progress to the standard output of the current runtime environment (e.g., command line or notebook). 
+### Training Arguments
 
-If additionally, a `logdir` is specified, it also saves the logs to disk, using a Tensorboard-compliant format.
+As stated above, a `TrainingArguments` object stores all hyperparameters of the training.
+Storing all parameters in a single objects is useful to enable a proper reproducibility, since this object can easily be serialized and saved to disk.
+Also, the `TrainingArguments` class works seamlessly with `Transformers` built-in parsing class, so the parameters can easily be made available through a command-line interface.
 
-Validation metrics can be computed by passing a function to the trainer during initialization, and they automatically get logged, using one (or more) of its logging modules.
-Even more exotic features, like training with half-precision, are supported.
+### HfArgumentParser
 
+Most experiments are repeated several times with different parameters. Changing the hyperparameters directly in the code comes with several caveats.
+Most importantly, it can harm reproducibility since tracking changes in the source code requires either version control and a strict commit regime or keeping several versions of the same file with different parameters. Also, it can be tedious the search for the location of all parameters across the code manually.
+Making the hyperparameters adjustable via a command-line interface decouples the hyperparameters from the rest of the code and alleviates this issue.
+While there are arguably a lot of different solutions to this problem with many strategies that are more sophisticated than a command-line interface, it is a good start. It has the advantage of being platform-independent without requiring additional dependencies. Also, it does not require learning additional tooling.
+
+Huggingface comes with a built-in solution called `HfArgumentParser`. It creates command-line interfaces by exposing the fields of `dataclasses` as command-line arguments. 
+Since many classes of the `transformers` library have corresponding configuration `dataclasses` that store all their parameters, the `HfArgumentParser` can be used to control nearly every aspect of the training. The example below shows how easy it is to create custom dataclasses, so that 
+
+```{code-cell} ipython
+from dataclasses import dataclass, field
+from transformers import HfArgumentParser
+
+@dataclass
+class TrainArgs:
+    batch_size: int = field(
+        default = 8,
+        metadata = {"help": "Number of batched for training."}
+    )
+
+parser = HfArgumentParser(TrainArgs)
+parser.print_help()
+train_args = parser.parse_args_into_dataclasses(["--batch_size", "4"])
+print(train_args)
+```
 
 ## Implementation
 
@@ -71,7 +97,7 @@ Another possibility would be to create a custom model with a sentence ordering h
 
 Because of this, we choose the more straightforward solution and create a custom `SentenceOrderingTrainer.`
 
-__Loss function__
+### Loss function
 
 ```python
 class SentenceOrderingTrainer(Trainer):
@@ -120,7 +146,7 @@ This way, all data of the current batch is available, which is especially helpfu
 In addition, to our custom loss function, we also add another attribute to the `Trainer`, which holds the id of the target sentence token.
 We leave the rest of the `Trainer` untouched.
 
-__Metrics__
+### Metrics
 
 Computing custom metrics while training does not require overwriting methods.
 Instead, we can initialize the `Trainer` with a function that computes all additional metrics.
@@ -167,36 +193,8 @@ training_args = TrainingArguments(
 ```
 A minor but valuable trait of the `EvalPrediction` objects is that their content gets converted from `torch.tensors` to `np.arrays`. Because most predefined validation metrics use `Numpy`, this saves some manual conversions.
 
-__HfArgumentParser__
 
-Most experiments are repeated several times with different parameters. Changing the hyperparameters directly in the code comes with several caveats. Most importantly, it can harm reproducibility since tracking changes in the source code requires either version control and a strict commit regime or keeping several versions of the same file with different parameters. Also, it can be tedious the search for the location of all parameters across the code manually.
-Making the hyperparameters adjustable via a command-line interface decouples the hyperparameters from the rest of the code and alleviates this issue.
-While there are arguably a lot of different solutions to this problem with many strategies that are more sophisticated than a command-line interface, it is a good start. It has the advantage of being platform-independent without requiring additional dependencies. Also, it does not require learning additional tooling.
-
-Huggingface comes with a built-in solution called `HfArgumentParser`. It creates command-line interfaces by exposing the fields of `dataclasses` as command-line arguments. 
-Since many classes of the `transformers` library have corresponding configuration `dataclasses` that store all their parameters, the `HfArgumentParser` can be used to control nearly every aspect of the training. The example below shows how easy it is to create custom dataclasses, so that 
-
-```{code-cell} ipython
-from dataclasses import dataclass, field
-from transformers import HfArgumentParser
-
-@dataclass
-class TrainArgs:
-    batch_size: int = field(
-        default = 8,
-        metadata = {"help": "Number of batched for training."}
-    )
-
-parser = HfArgumentParser(TrainArgs)
-parser.print_help()
-# In the real world the .parse_args... method
-# would be called without any arguments
-# to parse data from the commandline.
-train_args = parser.parse_args_into_dataclasses(["--batch_size", "4"])
-print(train_args)
-```
-
-### Complete code
+## Complete code
 
 When we plug everything together, the code of our experiment looks like this:
 
