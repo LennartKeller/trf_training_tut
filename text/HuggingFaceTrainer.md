@@ -34,12 +34,13 @@ Also, it comes with an extension that allows more sophisticated tweaks, like tra
 
 There are two different options to customize certain aspects of the behavior of the `Trainer`.
 One option the customize the `Trainer` is the callback API
-Callbacks are executed at certain events while the trainnig (e.g., at the end of an epoch) and they have access to many different things like the model or the `Trainer`.
-But they are limited to read only operations which limits their scope to things like logging, saving certain parts of a model or stopping the training if a certain condition is met.
+Callbacks are executed at certain events while the training (e.g., at the end of an epoch).
+They have access to many different things like the model or the current state of the `Trainer`.
+However, their access is limited to read-only operations, limiting their scope to things like logging, saving certain parts of a model, or stopping the training if a specific condition is met.
 
 If further changes to the `Trainer` are required, the recommended way is to subclass it and create a custom version.
 Internally, the `Trainer` structures the training into different substeps and exposes each of them via a method.
-By overwriting these methods, it is possible to change certain parts of the logic without rewriting the rest of the code that would not be changed anyway. 
+By overwriting these methods, it is possible to change certain parts of the logic without rewriting the rest of the code that would not be changed anyway.
 The most important methods to modify the `train-test-val`-loop itself are the `<train/test/val>-step` methods and the `compute_loss` method.
 These methods implement the essential individual training steps and are used in all higher-order methods that handle the complete train, test, or validation loop.
 
@@ -47,20 +48,23 @@ These methods implement the essential individual training steps and are used in 
 
 Logging is simple and is done automatically if a `logdir` is specified in the `TrainingArguments`. 
 By default, it saves the logs to disk, using a Tensorboard-compliant format.
-Additional logging steps, can be implemented by either overwriting the `.log`-method of Trainer or by using callbacks.
-There are already some pre-built callbacks available to log the progress a text format or to log it using Weights and Biases.
+Additional logging can be implemented by either overwriting the `.log`-method of Trainer or by using callbacks.
+There are already some pre-built callbacks available. For example, to log the progress to Weights and Biases.
 
 #### Custom metrics
 
-<!--Also a list of validation metrics can be computed by passing a function to the `Trainer` during initialization, and they automatically get logged too.
-Another option to add custom metrics to the `Trainer` is to overwrite the -->
 
+If not only the loss should be logged the `Trainer` has to equipped with other performance measures.
+Computing custom metrics while training does not require overwriting methods.
+Instead, we can initialize the `Trainer` with a function that computes all additional metrics at one.
+This methods receives a `EvalPrediction` object that holds all predictions of the model and the true targets.
+The output of the function ought to be a dictionary with the name of the metric as key and the score as value.
 
 ### Training Arguments
 
 As stated above, a `TrainingArguments` object stores all hyperparameters of the training.
-Storing all parameters in a single objects is useful to enable a proper reproducibility, since this object can easily be serialized and saved to disk.
-Also, the `TrainingArguments` class works seamlessly with `Transformers` built-in parsing class, so the parameters can easily be made available through a command-line interface.
+Storing all parameters in a single object is useful to enable proper reproducibility since this object can easily be serialized and saved to disk as json using its `.to_json_string`-method.
+Also, the `TrainingArguments` class works seamlessly with `transformers` built-in CLI-parser class, so the parameters can easily be made available through a command-line interface.
 
 ### HfArgumentParser
 
@@ -91,13 +95,11 @@ print(train_args)
 
 ## Implementation
 
-To use a custom loss function the developers recommend creating a custom class by inheriting from the `Trainer` and overwriting the `.compute_loss` method.
-
-Another possibility would be to create a custom model with a sentence ordering head, that just like the other Huggingface models, computes the loss internally when called with labels. However, creating a custom model requires more work since each model has to come with a configuration object and follow strict guidelines to be interoperable with other Huggingface code.
-
-Because of this, we choose the more straightforward solution and create a custom `SentenceOrderingTrainer.`
-
 ### Loss function
+
+To do the sentence-ordering, we employ a language model with a standard token-classification-head.
+The only thing we need to do is to ensure that while training or custom loss function is used and not the standard one of the model.
+To do so, we follow the guidelines and create our custom version of the `Trainer` with a custom `.compute_loss` function.
 
 ```python
 class SentenceOrderingTrainer(Trainer):
@@ -140,16 +142,30 @@ class SentenceOrderingTrainer(Trainer):
         return (loss, outputs) if return_outputs else loss
 ```
 
-The implementation of the `.compute_loss` method is straightforward.
-It receives the model and the input data as inputs.
+The implementation <!--of the `.compute_loss` method --> is straightforward.
+The `.compute_loss` method receives the model and the input data as inputs.
 This way, all data of the current batch is available, which is especially helpful in cases like ours where we need to check the input to compute the loss.
 In addition, to our custom loss function, we also add another attribute to the `Trainer`, which holds the id of the target sentence token.
 We leave the rest of the `Trainer` untouched.
 
 ### Metrics
 
-Computing custom metrics while training does not require overwriting methods.
-Instead, we can initialize the `Trainer` with a function that computes all additional metrics.
+Since we also want to evaluate our model using two different metrics, we need to write a function that computes both.
+In contrast to the `.compute_loss`-method, which receives the input, this function only receives an `EvalPrediction` object.
+An `EvalPrediction` contains the model's outputs and the labels from the dataset.
+However, similar to the loss function, computing the metrics requires access to the input data to retrieve the indices of the target tokens. 
+To control the content of an `EvalPrediction`, object we can use the `label_names` parameter of the `TrainingArguments`. 
+It receives a list of keys from the input batches of the model.
+These entries get copied to the `EvalPrediction` object.
+This way, we can incorporate the labels and the `input_ids` of tokens in the `EvalPrediction` object.
+
+```python
+training_args = TrainingArguments(
+    ...,
+    label_names=["labels", "input_ids"],
+    ...,
+)
+```
 
 ```python
 def make_compute_metrics_func(target_token_id) -> Callable:
@@ -181,22 +197,12 @@ def make_compute_metrics_func(target_token_id) -> Callable:
     return compute_ranking_func
 ```
 
-In contrast to the `.compute_loss`-method, which receives the input, this method only receives an EvalPrediciton object, a dictionary containing the model's outputs, and the labels from the dataset.
-However, similar to the loss function, computing the metrics requires access to the input data to retrieve the indices of the target tokens. To control the content of an `EvalPrediction`, object we can use the `label_names` parameter of the `TrainingArguments`. It receives a list of keys from the input. These keys then get copied to the `EvalPrediction` objects.
-
-```python
-training_args = TrainingArguments(
-	...,
-	label_names=["labels", "input_ids"],
-	...,
-)
-```
-A minor but valuable trait of the `EvalPrediction` objects is that their content gets converted from `torch.tensors` to `np.arrays`. Because most predefined validation metrics use `Numpy`, this saves some manual conversions.
-
+A minor but valuable trait of the `EvalPrediction` objects is that their content gets converted from `torch.tensors` to `np.arrays`. 
+Because most predefined validation metrics use `Numpy`, this saves some manual conversions.
 
 ## Complete code
 
-When we plug everything together, the code of our experiment looks like this:
+If move all our code from above into ownn module the rest of the code looks like this:
 
 ```python
 from transformers import TrainingArguments, HfArgumentParser
@@ -282,6 +288,7 @@ if __name__ == "__main__":
 
 ```
 
+This script is fully configurable via the command line and can be used to test various models and parameter combination on our sentence ordering task.
 
 ## Conclusion
 
