@@ -14,7 +14,7 @@ kernelspec:
 # Huggingface Trainer
 
 Since Huggingface proclaimed goal is to provide an environment to develop and train all sorts of language models, they also ship a solution for training models.
-It is called the `Trainer` and comes with the `transformers` library itself.
+It is called the `Trainer` and it is integrated into the `transformers` library itself.
 Of course, it is profoundly integrated into the Huggingface-ecosystem and can train most `transformers` models out of the box.
 
 ## Classes
@@ -33,48 +33,51 @@ Also, it comes with an extension that allows more sophisticated tweaks, like tra
 ### Extending the `Trainer`
 
 There are two different options to customize certain aspects of the behavior of the `Trainer`.
-One option the customize the `Trainer` is the callback API
+Additional read-only operations can be implemented with the callback API.
 Callbacks are executed at certain events while the training (e.g., at the end of an epoch).
 They have access to many different things like the model or the current state of the `Trainer`.
-However, their access is limited to read-only operations, limiting their scope to things like logging, saving certain parts of a model, or stopping the training if a specific condition is met.
+However, since they can not manipulate their environment, their scope is limited to logging, saving certain parts of a model, or stopping the training if a specific condition is met.
 
-If further changes to the `Trainer` are required, the recommended way is to subclass it and create a custom version.
-Internally, the `Trainer` structures the training into different substeps and exposes each of them via a method.
+If further changes to the `Trainer` are required, the recommended way is to subclass it and create a custom via inheritance.
+Internally, the `Trainer` structures the training into different sub-steps and exposes them via a method for each of them.
 By overwriting these methods, it is possible to change certain parts of the logic without rewriting the rest of the code that would not be changed anyway.
 The most important methods to modify the `train-test-val`-loop itself are the `<train/test/val>-step` methods and the `compute_loss` method.
-These methods implement the essential individual training steps and are used in all higher-order methods that handle the complete train, test, or validation loop.
+These methods implement the essential individual training steps and are called within methods that implement higher-order steps like the `.train`-method, which handles the complete training loop.
+
 
 ### Logging
 
-Logging is simple and is done automatically if a `logdir` is specified in the `TrainingArguments`. 
-By default, it saves the logs to disk, using a Tensorboard-compliant format.
+If a `logdir` is specified in the `TrainingArguments`-object, logging is enabled automatically.
+By default, the `Trainer` logs the progress in two formats.
+It logs the progress to the console, and it saves the logs to disk, using a Tensorboard-compliant format.
 Additional logging can be implemented by either overwriting the `.log`-method of Trainer or by using callbacks.
-There are already some pre-built callbacks available. For example, to log the progress to Weights and Biases.
+There are already some pre-built callbacks available. For example, to log the progress to Weights and Biases or a CSV table.
 
 #### Custom metrics
 
-
-If not only the loss should be logged the `Trainer` has to equipped with other performance measures.
-Computing custom metrics while training does not require overwriting methods.
-Instead, we can initialize the `Trainer` with a function that computes all additional metrics at one.
-This methods receives a `EvalPrediction` object that holds all predictions of the model and the true targets.
-The output of the function ought to be a dictionary with the name of the metric as key and the score as value.
+Since the `Trainer` is agnostic towards the task it is used with; it only logs the loss from the model by default.
+Additionally, metrics can be added by equipping the `Trainer` with a function that computes them during initialization.
+This function is expected to receive an `EvalPrediction` object.
+This object holds all predictions of the model and the valid labels.
+The output of the custom metric function ought to be a dictionary containing the name of the metric as key and the score as value.
 
 ### Training Arguments
 
 As stated above, a `TrainingArguments` object stores all hyperparameters of the training.
-Storing all parameters in a single object is useful to enable proper reproducibility since this object can easily be serialized and saved to disk as json using its `.to_json_string`-method.
-Also, the `TrainingArguments` class works seamlessly with `transformers` built-in CLI-parser class, so the parameters can easily be made available through a command-line interface.
+Storing all parameters in a single object is helpful to ensuring reproducibility since this object can easily be serialized and saved to disk as JSON using its `.to_json_string`-method.
+Also, the `TrainingArguments` class works seamlessly with `transformers` built-in CLI-parser class, which helps make the configuration of an experiment available through a command-line interface.
 
 ### HfArgumentParser
 
-Most experiments are repeated several times with different parameters. Changing the hyperparameters directly in the code comes with several caveats.
+Most experiments are repeated several times with different parameters. By default, these parameters have to be changed directly in the source code, which is not ideal for several reasons.
 Most importantly, it can harm reproducibility since tracking changes in the source code requires either version control and a strict commit regime or keeping several versions of the same file with different parameters. Also, it can be tedious the search for the location of all parameters across the code manually.
-Making the hyperparameters adjustable via a command-line interface decouples the hyperparameters from the rest of the code and alleviates this issue.
-While there are arguably a lot of different solutions to this problem with many strategies that are more sophisticated than a command-line interface, it is a good start. It has the advantage of being platform-independent without requiring additional dependencies. Also, it does not require learning additional tooling.
+Making the hyperparameters adjustable via a command-line interface decouples their configuration from the rest of the code, which should be fixed and alleviates this issue.
+While there are arguably a lot of different solutions to this problem with many strategies that are more sophisticated than a command-line interface, it is a good first step. 
+Firstly, it has the advantage of being platform-independent without requiring additional dependencies. Secondly, it does not require learning additional tooling or the installation of additional software to control the different experiments.
 
-Huggingface comes with a built-in solution called `HfArgumentParser`. It creates command-line interfaces by exposing the fields of `dataclasses` as command-line arguments. 
-Since many classes of the `transformers` library have corresponding configuration `dataclasses` that store all their parameters, the `HfArgumentParser` can be used to control nearly every aspect of the training. The example below shows how easy it is to create custom dataclasses, so that 
+Huggingface provides a built-in solution for building these interfaces called `HfArgumentParser`. 
+It is a extended version of Pythons `argsparse` parser and creates command-line interfaces by parsing the fields of `dataclasses` and them as command-line arguments.
+Since most configuration classes of the `transformers` library are `dataclasses,` the `HfArgumentParser` can flexibly control nearly every aspect of the training. Also it can be easily extended by creating custom `dataclasses` that hold additional parameters (like in listing )
 
 ```{code-cell} ipython
 from dataclasses import dataclass, field
@@ -97,8 +100,8 @@ print(train_args)
 
 ### Loss function
 
-To do the sentence-ordering, we employ a language model with a standard token-classification-head.
-The only thing we need to do is to ensure that while training or custom loss function is used and not the standard one of the model.
+For the sentence ordering task, we employ a language model with a standard token-classification-head.
+However, since the task requires a custom loss function, we have to discard the loss of the model.
 To do so, we follow the guidelines and create our custom version of the `Trainer` with a custom `.compute_loss` function.
 
 ```python
@@ -141,7 +144,7 @@ class SentenceOrderingTrainer(Trainer):
         outputs["loss"] = loss
         return (loss, outputs) if return_outputs else loss
 ```
-
+This way to `Trainer` does not use the loss of the model.
 The implementation <!--of the `.compute_loss` method --> is straightforward.
 The `.compute_loss` method receives the model and the input data as inputs.
 This way, all data of the current batch is available, which is especially helpful in cases like ours where we need to check the input to compute the loss.
@@ -154,9 +157,7 @@ Since we also want to evaluate our model using two different metrics, we need to
 In contrast to the `.compute_loss`-method, which receives the input, this function only receives an `EvalPrediction` object.
 An `EvalPrediction` contains the model's outputs and the labels from the dataset.
 However, similar to the loss function, computing the metrics requires access to the input data to retrieve the indices of the target tokens. 
-To control the content of an `EvalPrediction`, object we can use the `label_names` parameter of the `TrainingArguments`. 
-It receives a list of keys from the input batches of the model.
-These entries get copied to the `EvalPrediction` object.
+To control the content of an `EvalPrediction`, object we can use the `label_names` parameter of the `TrainingArguments`. With this argument, we can specify additional fields that get copied from the input batches to the `EvalPrediction` objects.
 This way, we can incorporate the labels and the `input_ids` of tokens in the `EvalPrediction` object.
 
 ```python
@@ -202,7 +203,9 @@ Because most predefined validation metrics use `Numpy`, this saves some manual c
 
 ## Complete code
 
-If move all our code from above into ownn module the rest of the code looks like this:
+After moving our custom code for the `Trainer` and the metric function to an external module the rest of the code to implement the experiment looks like Listing (TODO). Note that we also created a custom `ModelArgs` `dataclass` to control which model we want to use and the path where the final model is saved after the training is finished. Because other models use different special tokens we need to exchange them if needed using the `replace_cls_token` function.
+Another helpful feature of the `transformers` library is the `set_seed` function that controls the random seed of all relevant libraries like PyTorch, Numpy, or Tensorflow at once.
+
 
 ```python
 from transformers import TrainingArguments, HfArgumentParser
@@ -288,28 +291,29 @@ if __name__ == "__main__":
 
 ```
 
-This script is fully configurable via the command line and can be used to test various models and parameter combination on our sentence ordering task.
-
 ## Conclusion
 
-The Huggingface `Trainer` is a good choice when it comes to training models on standard tasks that are well supported.
+The Huggingface `Trainer` is a perfect choice when training models on standard tasks that are well supported.
 In these cases, it enables to train models effortlessly without requiring to write much code.
-It has a lot of useful out-of-the-box features, like gradient clipping, half-precision training, support of distributed training or logging to Tensorboard, which make it feasible for training large models on large datasets. In the best case, when the dataset is already available as Huggingface `Dataset` and the model task is also supported by the `transformers` library, it comes down to a few lines of code to train the model without having to really dive deep into any internals along the way.
+In the best case, when the dataset is already available as Huggingface `Dataset`, it comes down to a few lines of code to train the model without having to dive deep into any internals along the way.
+
+Also, it has many useful out-of-the-box features, like gradient clipping, half-precision training, support of distributed training or logging to Tensorboard, which make it feasible for training large models on large datasets.
 
 Nonetheless, there are a few issues if one wants to leave the carved-out paths.
-Like the rest of Huggingface's software, the' transformers' library is relatively young and fastly evolving. 
+Like the rest of Huggingface's software, the `transformers` library is relatively young and evolvs at great speed.
 Huggingface's self-proclaimed goal is to provide an easy-to-use all-in-one infrastructure for NLP with language models and incorporate new models, architectures, and developments as quickly as possible.
 On this path, sacrifices have to be made.
 
 One area that seems to suffer from the speedy development is documentation.
-It is sufficient and provides all essential information, but it can be very sparse in detail at times. 
-Often, there are multiple options to choose from when customizing something. 
-For example, the default optimizer can be exchanged during the initialization of the `Trainer`, by simply passing another one to it.
-Another possibility would be to create a custom `Trainer` and to overwrite the `.create_optimizer`-method.
-In these cases, the documentation lacks hints to decide which way to go.
+It is sufficient and provides all essential information, but it can sometimes be very sparse in detail.
+Often, there are multiple options to choose from when customizing something.
+For example, the default optimizer can be exchanged during the initialization of the `Trainer`, by simply passing another one to it, or by overwriting `.create_optimizer`-method.
+In cases like this one, the documentation lacks hints to decide which way to go.
+
 Other times the documentation does not paint the whole picture of the behavior of the described object.
 In these cases, it might become necessary to take a look into the source code itself.
 
-There it becomes evident that the `Trainer` could use some refactoring.
+By looking into the source code of `Trainer`, it becomes evident that it could use some refactoring.
 Especially, its high-level methods, like the `.train`-method, are very complex since they do much heavy lifting, for example, dispatching the training to multiple devices.
 While the preferred way to customize the training is to subclass the `Trainer` and overwrite methods, this is only feasible for the low-level methods that define single steps. Even tiny adjustments to the high-level methods can require copying code or rewriting certain parts.
+
