@@ -75,9 +75,9 @@ Making the hyperparameters adjustable via a command-line interface decouples the
 While there are arguably a lot of different solutions to this problem with many strategies that are more sophisticated than a command-line interface, it is a good first step. 
 Firstly, it has the advantage of being platform-independent without requiring additional dependencies. Secondly, it does not require learning additional tooling or the installation of additional software to control the different experiments.
 
-Huggingface provides a built-in solution for building these interfaces called `HfArgumentParser`. 
-It is a extended version of Pythons `argsparse` parser and creates command-line interfaces by parsing the fields of `dataclasses` and them as command-line arguments.
-Since most configuration classes of the `transformers` library are `dataclasses,` the `HfArgumentParser` can flexibly control nearly every aspect of the training. Also it can be easily extended by creating custom `dataclasses` that hold additional parameters (like in listing )
+Huggingface provides a built-in solution for building these interfaces called `HfArgumentParser`.
+It is an extended version of Pythons `argsparse` parser and creates command-line interfaces by parsing the fields of `dataclasses` and them as command-line arguments.
+Since most configuration classes of the `transformers` library are `dataclasses,` the `HfArgumentParser` can flexibly control nearly every aspect of the training. Also, it can be easily extended by creating custom `dataclasses` that hold additional parameters (like in listing )
 
 ```{code-cell} ipython
 from dataclasses import dataclass, field
@@ -103,6 +103,11 @@ print(train_args)
 For the sentence ordering task, we employ a language model with a standard token-classification-head.
 However, since the task requires a custom loss function, we have to discard the loss of the model.
 To do so, we follow the guidelines and create our custom version of the `Trainer` with a custom `.compute_loss` function.
+The implementation <!--of the `.compute_loss` method --> is straightforward.
+The `.compute_loss` method receives the model and the input data as inputs, which is especially helpful in cases like ours where we need to check the `input_ids` to compute the loss.
+In addition, to our custom loss function, we also add another attribute to the `Trainer`, which holds the id of the target sentence token in order to find the correct tokens in the input sequence.
+We leave the rest of the `Trainer` untouched.
+
 
 ```python
 class SentenceOrderingTrainer(Trainer):
@@ -144,21 +149,22 @@ class SentenceOrderingTrainer(Trainer):
         outputs["loss"] = loss
         return (loss, outputs) if return_outputs else loss
 ```
-This way to `Trainer` does not use the loss of the model.
-The implementation <!--of the `.compute_loss` method --> is straightforward.
-The `.compute_loss` method receives the model and the input data as inputs.
-This way, all data of the current batch is available, which is especially helpful in cases like ours where we need to check the input to compute the loss.
-In addition, to our custom loss function, we also add another attribute to the `Trainer`, which holds the id of the target sentence token.
-We leave the rest of the `Trainer` untouched.
+
+
 
 ### Metrics
 
-Since we also want to evaluate our model using two different metrics, we need to write a function that computes both.
-In contrast to the `.compute_loss`-method, which receives the input, this function only receives an `EvalPrediction` object.
+To compute custom metrics while validation we need to create a function.
+The function computes both metrics that we want to use at one.
+In contrast to the `.compute_loss`-method, which receives the input, it receives an `EvalPrediction` object as input.
 An `EvalPrediction` contains the model's outputs and the labels from the dataset.
-However, similar to the loss function, computing the metrics requires access to the input data to retrieve the indices of the target tokens. 
-To control the content of an `EvalPrediction`, object we can use the `label_names` parameter of the `TrainingArguments`. With this argument, we can specify additional fields that get copied from the input batches to the `EvalPrediction` objects.
+However, similar to the loss function, computing the metrics requires access to the input data to retrieve the indices of the target tokens.
+To control the content of an `EvalPrediction` object we can use the `label_names` parameter of the `TrainingArguments`.
+With this argument, we can specify additional fields that get copied from the input batches to the `EvalPrediction` objects.
 This way, we can incorporate the labels and the `input_ids` of tokens in the `EvalPrediction` object.
+
+A minor but valuable trait of the `EvalPrediction` objects is that their content gets converted from `torch.tensors` to `np.arrays`.
+Because most validation metrics from other libraries use Numpy, we do not need to convert the data manually.
 
 ```python
 training_args = TrainingArguments(
@@ -198,14 +204,39 @@ def make_compute_metrics_func(target_token_id) -> Callable:
     return compute_ranking_func
 ```
 
-A minor but valuable trait of the `EvalPrediction` objects is that their content gets converted from `torch.tensors` to `np.arrays`. 
-Because most predefined validation metrics use `Numpy`, this saves some manual conversions.
+### Custom CLI arguments
+
+We use the `HfArgumentParser` to make the parameters of our experiment controllable via the command line. There are four types of parameters that we want to control.
+In addition to the arguments for training, we also want to control the type of the model. 
+Custom parameters can easily be added by creating a custom `dataclass`. 
+We create a  class `ModelArgs` that has two fields. One to specify the name or path to the model and a second parameter to specify the path where the final model is saved after training.
+
+```python
+from dataclasses import dataclass, field
+
+@dataclass
+class ModelArgs:
+    model_name_or_path: str = field(
+        default="bert-base-cased",
+        metadata={
+            "help": "Path to pretrained model or model or its name to load it from Huggingface Hub."
+        },
+    )
+
+    final_checkpoint_path: str = field(
+        default=None, metadata={"help": "Path to save the final model."}
+    )
+```
 
 ## Complete code
 
-After moving our custom code for the `Trainer` and the metric function to an external module the rest of the code to implement the experiment looks like Listing (TODO). Note that we also created a custom `ModelArgs` `dataclass` to control which model we want to use and the path where the final model is saved after the training is finished. Because other models use different special tokens we need to exchange them if needed using the `replace_cls_token` function.
-Another helpful feature of the `transformers` library is the `set_seed` function that controls the random seed of all relevant libraries like PyTorch, Numpy, or Tensorflow at once.
+After moving our custom code for the `Trainer` and the metric function to an external module, the rest of the code to implement the experiment looks like Listing (TODO).
+There are only two steps left to complete the script.
+Firstly, we must ensure that our data always contains the correct special tokens for ordering the sentences.
+Since we prepared the data beforehand by adding BERTs special `[SEP]`-token as a prefix to each sentence, we have to ensure that these tokens are replaced if necessary using the  `replace_cls_token` function.
 
+Lastly, we want to control the randomness in our experiment to make it consistently reproducible.
+The `transformers` library comes with a helpful function called `set_seed`, which controls the state of all random number generators of Python itself, Numpy and PyTorch at once.
 
 ```python
 from transformers import TrainingArguments, HfArgumentParser
