@@ -32,6 +32,7 @@ Also there is a growing ecosystem of third party extensions that easily be used 
 ## Classes
 
 A PyTorchLightning based projects comprises three main classes that implement the model, the storing and processing of the training data and the training process itself.
+
 ### `LightningModule`
 
 The neural network (i.e., a language model)  is implemented using the `LightningModule`.
@@ -68,65 +69,61 @@ A `LightningModule` is intended to replace the outmost `nn.Module` instance of a
 It extends the `nn.Module` class with new methods, designed to structure not only the logic of a single forward pass but also other steps like a complete train-, test- or validation-steps.
 Like plain `nn.Modules`, the `.forward`-methods defines a simple forward step through the network.
 
-### Training, Testing, Validation
+#### Training, Testing, Validation
 
 The `.forward`-method only defines the flow of the data through the model. For the logic of training, validation and testing there are three methods called `.train_step`,  `.validation_step` and `.test_step`.
 They all define how a single batch of data should be handled at these steps.
 Typically the `.train_step`-method computes the loss score and the other two methods compute other validaiton metrics.
 
-### Optimizer
+#### Model Hyperparameters and checkpoints
 
-<!--In contrast to plain `PyTorch,` the optimizer is not regarded as an external object. Instead, it is directly bound to a model and its configuration is moved into the `configure_optimizer`-method of the model.-->
+In `PyTorchLightning`, a lot of effort has been made to organize the hyperparameters of an experiment.
+Most notably, there is a strict separation of hyperparameters that directly belong to the model itself or other than ones that control different aspects of the training.
 
-In PyTorch Lightnings view of a model the optimizer is not an external object but also a part of the model. Its configuration should be handled by the `.configure_optimizer`-method. This method must return an instance of any optimizer from PyTorch, that was initialized with the models parameters. This way the learning rate becomes part of the models hyperparameters.
+Parameters of the model are bound to its instance. This strategy ensures that the hyperparameter combination is saved with each checkpoint.
+By default, each argument in the constructor of a `LighntningModule` is considered a hyperparameter.
+By calling the `.save_hyperparameters`-method in the constructor, these arguments get serialized into a `.hparams`-attribute.
+The `.save_hyperparameters` can be modified to exclude arguments that aren't hyperparameters.
+Another way to organize the parameters is to pass them to the `.save_hyperoarameters`-method as a dictionary. This approach is practical in cases where the constructor has to handle not only parameters.
 
-### Model Hyperparameters
+#### Logging
 
-In `PyTorchLightning` there a lot of effort has been done to organize the hyperparameters of an experiment.
-Most notably, there is a strict seperation of hyperparameters that diretly belong the the models itself or other than ones that control different aspect the training.
-Model specific parameters are bound to the instance of the `Lightning 
-
-For example, Hyperparameters that affect the model (like the number of hidden layers) are directly assigned to the model and saved with each checkpoint.
-By default, each argument of the constructor of a `LighntningModule` is considered to be a hyperparameter.
-By calling the `.save_hyperparameters`-method in the constructor, these arguments are serialized into a `.hparams`-attribute.
-This strategy ensures that while loading an old checkpoint, it is entirely transparent which hyperparameters were used to train it.
-
-```{code-cell} ipython3
-# MORE TO COME HERE
-```
-
-### Logging
-
-Since the logic of training and validation is bound to a model, logging must also be implemented here.
-A `LighntingModule` has to possible options for logging metrics. A `.log`-methods that can log a single score or a `log-dict`-methods that can be used to log multiple scores stored in a dictionary (with names as keys and the score as values).
-These methods can be used from any method making them not only feasible for logging validation but also training scores or other things.
+Logging of various metrics can be handled freely by using the logging methods of the `LightningModule`.
+There are two options available. 
+A `.log`-methods that can log a single score or a `log-dict`-methods that can be used to log multiple scores stored in a dictionary (with names as keys and the score as values).
 
 ### `LighningDataModule`
 
-`PyTorchLightning` also comes with a custom solution for data operations called `LighningDataModule`.
-Like the `LightningModule`, it holds the code to load and prepare the data for training and testing.
-A class derived from `LighntningDataModule` must implement four required methods. 
+`PyTorchLightning` also comes with a custom solution to bundle data-related operations into a single object.
+It is called `LighningDataModule` and should contain the code to load and prepare the data for training and testing.
+A class derived from `LighntningDataModule` must implement four required methods.
 The `.prepare_data`-method should implement all steps required to load the data and convert it in a suitable format.
 To return the splits for training, testing and evaluation, there are `.train|.test|.val_loader`-methods. Each of them has to return a `DataLoader` object.
 
 Another feature of the `LightningDataModule` is its ability to adapt to distributed environments.
 While the `.prepare_data`-method is called once at the beginning of the training, there are also additional `.setup`- and `teardown`-methods.
-These methods can define operations that are executed on each computing unit independently. 
-While the `.setup`-method is called before the training and the `.teardown`-method is executed after the training is finished.
+These methods can define operations pre- and post-training steps that need to be performed at each accelerator independently.
 
 ### `Trainer`
 
 The `Trainer` object handles the actual training.
 It receives the model and data (wrapped in Lightning modules) alongside all training-specific hyperparameters, like the number of epochs, the devices to train on, or a list of loggers to log the progress.
-Customization via subclassing of the trainer is not the intended way. Instead, `PyTorchLightning` provides an API for Plugins and Callbacks that can control the different stages of the training.
-Callbacks are intended to implement steps that are not strictly necessary for training. Instead, they can define additional steps, like logging or applying non-essential operations to the model (i.e., weigh pruning after each epoch).
-Like the other main modules, the `Trainer` itself stores all parameters relevant to the training.
+In contrast to the `LightningModule` and `LightningDataModule` the `Trainer` itself is not intended to be customized in any way. Since their respective objects contain all model or data related code, the `Trainer` is better kept untouched.
 
+Instead, if necessary, the functions of the `Trainer` can be extended with callbacks and plugins. Both of them can add custom operations to different stages of the training.
+Callbacks implement steps that are not strictly necessary for training. Instead, they can be used to define things like logging or applying non-essential operations to the model (i.e., weigh pruning after each epoch) that add new functions but are not required to perform training.
+On the other hand, plugins are meant to extend the `Trainer` with new functionalities like adding support for new accelerators or computational backends. So by their scope, they are meant to be used by experienced users who need to extend the Trainer.
+However, since their API is still in beta and subject to changes in the future, it should be used with caution.
 
+The `Trainer` exposes four high-level methods to the user. Each of them triggers either the training, the validation, the prediction of unseen instances, and the hyperparameter-tuning.
+Like the `LightningModule`, an instance of the `Trainer` is initialized with all hyperparameters relevant to the training, like the batch size or a number of epochs.
 
-## Additional features
+Also, it contains a handful of tweaks to improve the results. For example, it supports gradient accumulation or gradient clipping. Also, it comes with more sophisticated functions like an built-in learning rate tuner, that tries to find the most suitable learning prior to the actual training.
 
-### CLI Interface
+#### Logging
+
+While the model defines what measures are logged, the `Trainer` is responsible for writing out these logs. By default, it logs the standard output. But it can be extended with additional loggers that log the progress to Tensorboard or other services like Weights and Biases.
+#### CLI Interface
 
 Most notably, it has built-in support for creating command-line interfaces that control all hyperparameters of an experiment.
 It provides the `LightninArgumentParser`, which can be used to parse possible arguments from the constructors of `Lightning'classes.
@@ -138,11 +135,6 @@ parser.add_class_arguments(TensorBoardLogger, nested_key="tensorboard")
 parser.add_lightning_class_args(Trainer, "trainer")
 parser = PlLanguageModelForSequenceOrdering.add_model_specific_args(parser)
 ```
-
-### Tuning
-
-In addition to the basic features and classes to structure the training, `PyTorchLightning` ships with a set of functions to improve usability or experimental results.
-
 
 ## Implementation
 
