@@ -40,8 +40,7 @@ These classes implement the model, the logic for storing and processing the trai
 
 A subclass of a `LightningModule` implements the model.
 A `LightningModule` is an extended version of PyTorch's `nn.Module` class.
-`nn.Modules` are the basic building blocks of neural networks in PyTorch. In essence, they store a set of parameters, for example, weights of a single layer alongside with `.forward`-method that defines the computational logic when data flows through the module.
-`nn. Modules` are designed to work recursively. One module can be composed of several submodules so that each building block of a neural network, starting from single layers up to a network, can be implemented in this one class.
+`nn.Modules` are the basic building blocks of neural networks in PyTorch. In essence, they store a set of parameters, for example, weights of a single layer alongside with `.forward`-method that defines the computational logic when data flows through the module. They are designed to work recursively. One module can be composed of several submodules so that each building block of a neural network, starting from single layers up to a network, can be implemented in this one class.
 [Listing](markdown-fig) shows an exemplary implementation of a densely-connected, feed-forward layer as `nn.Module`.
 
 ```{code-cell} ipython3 markdown-fig
@@ -58,14 +57,22 @@ class DenseLayer(nn.Module):
     def forward(self, inputs):
         return torch.matmul(inputs, self.weights)
 
-network = nn.Sequential(DenseLayer(512, 16), nn.ReLU(), DenseLayer(16, 8), nn.ReLU(), DenseLayer(8, 2))
+network = nn.Sequential(
+    DenseLayer(512, 16),
+    nn.ReLU(),
+    DenseLayer(16, 8),
+    nn.ReLU(),
+    DenseLayer(8, 2)
+)
+
 inputs = torch.randn(8, 512)  # Batchsize 8
 outputs = network(inputs)
 print(outputs.size())
 print(issubclass(nn.Sequential, nn.Module))
 ```
 
-By chaining multiple instances of the dense layer in a `nn. Sequential` class, it is possible to create a simple feed-forward network, which is again a subclass of the `nn.Module` class.
+By chaining multiple instances of the dense layer in a `nn. Sequential` class, it is possible to create a simple feed-forward network. This network is again a subclass of the `nn.Module` class.
+
 A `LightningModule` is intended to replace the outmost `nn.Module` instance of a model, meaning the one that holds a complete network.
 It extends the `nn.Module` class with new methods, designed to structure not only the logic of a single forward pass but also other steps like a complete train-, test- or validation-steps.
 With this extension, it becomes possible to define a single forward step through the network and how the models should be trained and tested as well.
@@ -167,10 +174,11 @@ parser = PlLanguageModelForSequenceOrdering.add_model_specific_args(parser)
 ## Model
 
 ## Transformers
+
 Since we do not build our own model, we need to load the pretrained transformer in the constructor of the model.
 To be able to load different models, we introduce the name of the model as hyperparameters.
-There are only two more model specfic hyperparameters, namely the the learning rate and the id of the target sentence tokens.
-Because Huggingface models are also subclasses of torch `nn.Module` class loading the transformers works flawlessly and its parameters are registered as parameters of the `PlLanguagemodelForSequenceOrdering` class.
+Since the model is pretrained, we only have to specify two other hyperparameters, namely the learning rate and the id of the target token.
+Because Huggingface models are also subclasses of the  `nn.Module` class, loading the transformer model works flawlessly, and the language model is recognized as a submodule of the `PlLanguageModelForSequenceOrdering` class.
 
 ```python bla
 class PlLanguageModelForSequenceOrdering(LightningModule):
@@ -198,9 +206,9 @@ Next, we define a single forward step. This is fairly simple since the only thin
         return outputs
 ```
 
-Since we not only want to compute the loss at the training, but also at validation create a custom method to that implements the loss function.
-Implementation-wise the loss function is only slightly variated from the plain function to retrieve the target token ids from the the model's hyperparamters.
-Also we take inspiration from the `transformers` API and add a custom version of the forward method, that computes the loss and attaches it to the output of the model.
+Since we want to compute the loss while training and while validating the model, we factor out the loss function into a separate method.
+Implementation-wise, the loss function is only slightly variated from the original implementation. The only changes are that we retrieve the target token id from the hyperparameters of the model.
+Also, we draw inspiration from the `transformers` API and add a custom version of the forward method. This method computes both the forward step and the loss. The loss is then attached to the output of the model.
 
 ``` python
     def _compute_loss(self, batch_labels, batch_logits, batch_input_ids) -> float:
@@ -261,7 +269,8 @@ Also we take inspiration from the `transformers` API and add a custom version of
         return outputs
 ```
 
-Using the `_foward_with_loss`-method implementing the `training_step`-method is fairly simple. The only thing left to do inside this method is to log the train-loss, in order to be able to monitor the progress during training.
+Using the `_foward_with_loss`-method implementing the `training_step`-method becomes relatively simple.
+The only thing left to do inside this method is to log the training loss in order to be able to monitor the progress during training.
 
 ```python
     def training_step(self, inputs: Dict[Any, Any], batch_idx: int) -> float:
@@ -270,7 +279,8 @@ Using the `_foward_with_loss`-method implementing the `training_step`-method is 
         self.log("loss", loss, logger=True)
         return loss
 ```
-Like the `_compute_loss`-method, we only need to adopt the computation of the validation metrics slightly.
+
+Like the `_compute_loss`-method, we only need to slightly adapt the validation metrics' computation to use the model's hyperparameters.
 Since we want to compute the identical scores for testing and validation, we can also use the `validation_step`-method for testing.
 
 ```python
@@ -350,7 +360,15 @@ Lastly, we need to implement the `configure_optimizers`-method and add the model
 
 ## Data
 
-In contrast to the model class, we can design our version of the `LightningDataModule` to work with any Huggingface `Dataset` since we can apply all custom preparation steps directly to the `Dataset`.
+In contrast to the model class, we design our version of the `LightningDataModule` to work with any Huggingface `Dataset`.
+Most of the work is done by the `.prepare_data`-method, which implements the processing pipeline for the contained dataset
+Firstly, it applies all functions to prepare the data via the `.map`-method of the `Dataset` class.
+Afterward, the text data will be tokenized using the passed instance of the tokenizer.
+Lastly, it is ensured that the dataset's column containing the target is named `labels` to be compliant with standard `transformers` models.
+Additionally, we implement a method to use the map functionalities of the contained dataset directly.
+This method allows the manipulation of the data manually since the `.prepare_data`-method is automatically executed by the `Trainer`.
+The datasets wrapped in this class should already contain train-/ test- and validation-splits.
+To create batches of the data, we use the default collation function of the transformers library but allow passing a custom collation function.
 
 ```python
 class HuggingfaceDatasetWrapper(LightningDataModule):
@@ -380,12 +398,7 @@ class HuggingfaceDatasetWrapper(LightningDataModule):
         self.train_split_name = train_split_name
         self.eval_split_name = eval_split_name
         self.test_split_name = test_split_name
-```
 
-The actual preparation of the data is done in the `prepare_data`-method.
-The steps defined here are straightforward
-
-```python
     def prepare_data(self, tokenizer_kwargs: Dict[str, str] = None):
         # 1. Apply user defined preparation functions
         if self.mapping_funcs:
@@ -443,6 +456,12 @@ The steps defined here are straightforward
 ## Complete code
 
 Once again, after factoring out the custom modules, the actual experiment can be implemented in relatively few lines of code.
+To control the experiment via the command line, we use the `LightningArgumentParser`.
+We initialize the parser with all arguments from the `Trainer,` `PlLanguageModelForSequenceOrdering`, and `HuggingfaceDatasetWrapper`.
+Additionally, we add more parameters to give each run a name and control the batch sizes for training and testing.
+Similar to implementing the experiment with the Huggingface `Trainer`, we need to make sure that the sentences contain the correct special tokens.
+Replacing these tokens if necessary can be done using the `.map`-method of the `HuggingfaceDatasetWrapper`
+
 
 ```python
 from os.path import basename
@@ -551,3 +570,13 @@ if __name__ == "__main__":
     main(model_args, trainer_args, checkpoint_args, tensorboard_args, run_args)
 
 ```
+
+## Conclusion
+
+Pytorch Lightning goal is not to hide complexity from the user. Instead, it provides an API that helps to structure the complexity into a sequence of single steps.
+This approach is constructive when designing custom models from scratch or implementing new training regimes that differ from the standard training loop.
+This flexibility comes at the cost of friendliness to beginners. People who have little experience with PyTorch itself will quickly be overwhelmed by PyTorch Lightning API with vast possibilities to customize steps manually.
+Even though the documentation is extensive and covers nearly all aspects of the library in great detail, it can be frustrating sometimes that there are multiple ways to achieve the same behavior, and there is little to no guidance in choosing between the different parts.
+Like most modern deep learning frameworks, PyTorch Lightning is rapidly evolving, and thus many parts of it are either in beta and subject to significant changes in the future or deprecated. Unfortunately, this is also noticeable when searching the web for further advice since many tips or tutorials quickly become outdated.
+But despite these limitation for beginners, experienced user can really benefit from using PyTorch Lightning. Not only because of the additional features like built-in logging, tuning or other tweaks, but mainly because the well thought API enforces them to write self-contained models that contain all the logic for experimenting with them.
+This enables sharing of model in an effortless way and also alleviates maintainability.
