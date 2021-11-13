@@ -55,3 +55,6 @@ __Write as tutorial?__
 * Start with Huggingface Trainer
 * May Poutyne after that
 * PyTorch-Lightning will take quite a while?
+
+```{nb-exec-table}
+```

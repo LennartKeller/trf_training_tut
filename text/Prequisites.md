@@ -17,9 +17,9 @@ kernelspec:
 from datasets import set_caching_enabled
 set_caching_enabled(False)
 
-# import pprint
-# pp = pprint.PrettyPrinter(depth=6, compact=True)
-# print = pp.pprint
+import pprint
+pp = pprint.PrettyPrinter(depth=6, compact=True)
+print = pp.pprint
 ```
 
 # Prequisites
@@ -211,7 +211,7 @@ tokenization = make_tokenization_func(
 )
 
 dataset = dataset.map(tokenization, batched=True)
-print(dataset['train'][0])
+print(dataset['train'][0].keys())
 ```
 
 To feed the data to the neural network, we have to split it up into batches of a fixed size.

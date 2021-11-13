@@ -26,7 +26,7 @@ class ModelArgs:
     model_name_or_path: str = field(
         default="bert-base-cased",
         metadata={
-            "help": "Path to pretrained model or model or id in huggingface hub."
+            "help": "Path to pretrained model or model or its name to load it from Huggingface Hub."
         },
     )
 
@@ -117,7 +117,7 @@ class SentenceOrderingTrainer(Trainer):
         # Since we have varying number of labels per instance, we need to compute the loss manually for each one.
         loss_fn = nn.MSELoss(reduction="sum")
         batch_loss = torch.tensor(0.0, dtype=torch.float64, requires_grad=True)
-        # batch_losses = []
+
         for labels, logits, input_ids in zip(
             batch_labels, batch_logits, batch_input_ids
         ):
@@ -126,12 +126,10 @@ class SentenceOrderingTrainer(Trainer):
             # To avoid exploding gradients, we norm them to be in range 0 <-> 1
             # Also we need to remove the padding entries (-100)
             true_labels = labels[labels != -100].reshape(-1)
-            # targets = true_labels / true_labels.max()
             targets = true_labels.float()
 
             # Secondly, we need to get the logits from each target token in the input sequence
             target_logits = logits[input_ids == self.target_token_id].reshape(-1)
-            # target_logits = torch.nn.functional.sigmoid(target_logits)
 
             # Sometimes we will have less target_logits than targets due to trunction of the input
             # In this case, we just consider as many targets as we have logits
@@ -140,14 +138,9 @@ class SentenceOrderingTrainer(Trainer):
 
             # Finally we compute the loss for the current instance and add it to the batch loss
             batch_loss = batch_loss + loss_fn(targets, target_logits)
-            # batch_losses.append(loss_fn(targets, target_logits))
-            # print('Begin')
-            # print('Out: ', target_logits)
-            # print('Target: ', targets)
 
         # The final loss is obtained by averaging over the number of instances per batch
         loss = batch_loss / batch_logits.size(0)
-        # loss = pad_sequence(batch_losses, batch_first=True, padding_value=0.0).sum(axis=0).mean()
 
         outputs["loss"] = loss
         return (loss, outputs) if return_outputs else loss
