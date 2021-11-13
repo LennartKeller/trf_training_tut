@@ -2,10 +2,17 @@
 export CUDA_VISIBLE_DEVICES="0"
 
 printf "\n\nRunning Huggingface Trainer\n\n"
-(cd huggingface-trainer && python rocstories.py)
-
-printf "\n\nRunning Poutyne\n\n"
-(cd poutyne && python rocstories.py)
+printf "\nnBert\nn"
+(cd huggingface-trainer && b bash run_rocstories_bert.sh)
+printf "\Roberta\nn"
+(cd huggingface-trainer && b bash run_rocstories_roberta.sh)
+printf "\Distilbert\nn"
+(cd huggingface-trainer && b bash run_rocstories_distilbert.sh)
 
 printf "\n\nRunning Pytorch Lightning\n\n"
-(cd pytorch-lightning && python rocstories.py)
+printf "\nnBert\nn"
+(cd pytorch-lightning && b bash run_rocstories_bert.sh)
+printf "\Roberta\nn"
+(cd pytorch-lightning && b bash run_rocstories_roberta.sh)
+printf "\Distilbert\nn"
+(cd pytorch-lightning && b bash run_rocstories_distilbert.sh)
