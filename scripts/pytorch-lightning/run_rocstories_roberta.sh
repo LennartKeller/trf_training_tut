@@ -17,6 +17,7 @@ python rocstories.py \
     --trainer.log_every_n_steps 50 \
     --trainer.gpus 1 \
     --trainer.max_epochs 3 \
+    --trainer.accumulate_grad_batches 8 \
     --trainer.default_root_dir lightning_runs/rocstories \
     --trainer.deterministic true \
     --trainer.accelerator ddp_spawn \

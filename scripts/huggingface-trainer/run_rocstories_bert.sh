@@ -6,10 +6,10 @@ python rocstories.py \
     --final_checkpoint_path "final_models/rocstories/bert" \
     --overwrite_output_dir true \
     --learning_rate 3e-5 \
-    --per_device_train_batch_size 2 \
-    --per_device_eval_batch_size 4 \
+    --per_device_train_batch_size 4 \
+    --per_device_eval_batch_size 8 \
     --evaluation_strategy "steps" \
-    --gradient_accumulation_steps 1 \
+    --gradient_accumulation_steps 4 \
     --eval_steps 200 \
     --num_train_epochs 3 \
     --logging_dir "logs/rocstories/bert" \
