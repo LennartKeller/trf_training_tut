@@ -273,7 +273,7 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
             f"val_{metric}": np.mean(scores).item()
             for metric, scores in metrics.items()
         }
-        self.log_dict(metrics, prog_bar=True, logger=True, on_epoch=True)
+        self.log_dict(metrics, prog_bar=True, logger=True, on_epoch=True, on_step=True)
         return metrics
 
     def test_step(self, inputs, batch_idx):
