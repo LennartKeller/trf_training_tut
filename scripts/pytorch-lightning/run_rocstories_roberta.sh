@@ -15,7 +15,7 @@ python rocstories.py \
     --trainer.num_processes 10 \
     --trainer.val_check_interval 200 \
     --trainer.log_every_n_steps 50 \
-    --trainer.gpus 1 \
+    --trainer.gpus 2 \
     --trainer.max_epochs 3 \
     --trainer.accumulate_grad_batches 8 \
     --trainer.default_root_dir lightning_runs/rocstories \
