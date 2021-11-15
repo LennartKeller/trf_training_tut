@@ -15,7 +15,7 @@ python rocstories.py \
     --logging_dir "logs/rocstories/roberta" \
     --logging_steps 50 \
     --save_strategy "steps" \
-    --save_steps 1000 \
+    --save_steps 10000 \
     --remove_unused_columns true \
     --logging_first_step true \
     --prediction_loss_only false \

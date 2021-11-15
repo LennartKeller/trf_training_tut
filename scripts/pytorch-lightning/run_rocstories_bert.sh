@@ -9,7 +9,7 @@ python rocstories.py \
     --run.val_batch_size 4 \
     --run.seed 42 \
     --checkpoint.save_last true \
-    --checkpoint.every_n_train_steps 1000 \
+    --checkpoint.every_n_train_steps 10000 \
     --tensorboard.name "rocstories_bert" \
     --tensorboard.save_dir "lightning_runs/logs" \
     --trainer.num_processes 10 \
