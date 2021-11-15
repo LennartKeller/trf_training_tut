@@ -1,3 +1,4 @@
+import json
 from transformers import TrainingArguments, HfArgumentParser
 from transformers import AutoModelForTokenClassification, AutoConfig, AutoTokenizer
 from transformers import set_seed
@@ -69,12 +70,21 @@ if __name__ == "__main__":
         model=model,
         args=training_args,
         train_dataset=dataset["train"],
-        eval_dataset=dataset["val"],  # .select(list(range(300))),
+        eval_dataset=dataset["val"],
         target_token_id=tokenizer.cls_token_id,
         data_collator=so_data_collator,
         compute_metrics=metrics_func,
     )
 
     trainer.train()
-
+    
     trainer.save_model(model_args.final_checkpoint_path)
+
+    test_results = trainer.evaluate(eval_dataset=dataset["test"])
+
+    with open(model_args.final_checkpoint_path + "/final_results.json", "w") as f:
+        json.dump(test_results, f)
+
+
+
+    
