@@ -330,13 +330,3 @@ def sentence_ordering_loss(batch_logits, batch_targets, batch_input_ids) -> torc
 
     return loss
 ```
-
-
-
-
-
-
-
-
-
-
