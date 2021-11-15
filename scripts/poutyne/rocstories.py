@@ -117,6 +117,6 @@ if __name__ == "__main__":
     experiment.train(
         train_generator=train_dataloader,
         valid_generator=val_dataloader,
-        epochs=3,
+        epochs=N_EPOCHS,
         save_every_epoch=True,
     )
