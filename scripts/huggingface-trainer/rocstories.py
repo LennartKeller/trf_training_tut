@@ -82,8 +82,7 @@ if __name__ == "__main__":
 
     test_results = trainer.evaluate(eval_dataset=dataset["test"])
 
-    with open(model_args.final_checkpoint_path + "/final_results.json", "w") as f:
-        json.dump(test_results, f)
+    print(test_results)
 
 
 
