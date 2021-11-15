@@ -77,7 +77,9 @@ def main(model_args, trainer_args, checkpoint_args, tensorboard_args, run_args):
     trainer.fit(model=model, datamodule=dataset)
 
     print("Start testing.")
-    trainer.test()
+    test_results = trainer.test()
+    print(test_results)
+
 
 
 if __name__ == "__main__":
