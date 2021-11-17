@@ -1,3 +1,4 @@
+import json
 from os.path import basename
 from datasets import load_from_disk
 from pytorch_lightning import Trainer, seed_everything
@@ -24,7 +25,7 @@ def main(model_args, trainer_args, checkpoint_args, tensorboard_args, run_args):
     data = load_from_disk("../data/rocstories")
 
     # Downsampling for debugging...
-    # data = data.filter(lambda _, index: index < 5000, with_indices=True)
+    #data = data.filter(lambda _, index: index < 10000, with_indices=True)
 
     dataset = HuggingfaceDatasetWrapper(
         data,
@@ -70,15 +71,14 @@ def main(model_args, trainer_args, checkpoint_args, tensorboard_args, run_args):
     trainer_args.pop("callbacks")
     trainer = Trainer(logger=tensorboard_logger, callbacks=callbacks, **trainer_args)
 
-    print("Start tuning.")
-    trainer.tune(model=model, datamodule=dataset)
-
     print("Start training.")
     trainer.fit(model=model, datamodule=dataset)
 
     print("Start testing.")
-    test_results = trainer.test(ckpt_path=None)
-    print(test_results)
+    test_results = trainer.test(model=model, datamodule=dataset, ckpt_path=None)
+    with open("../lightning_test_results.json", "w") as f:
+        json.dump(test_results, f)
+    
 
 
 
