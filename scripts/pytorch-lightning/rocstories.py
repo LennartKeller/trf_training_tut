@@ -76,7 +76,7 @@ def main(model_args, trainer_args, checkpoint_args, tensorboard_args, run_args):
 
     print("Start testing.")
     test_results = trainer.test(model=model, datamodule=dataset, ckpt_path=None)
-    with open("../lightning_test_results.json", "w") as f:
+    with open(f"test_results_{model_args['model_name_or_path']}.json", "w") as f:
         json.dump(test_results, f)
     
 
