@@ -20,5 +20,5 @@ python rocstories.py \
     --trainer.accumulate_grad_batches 8 \
     --trainer.default_root_dir lightning_runs/rocstories \
     --trainer.deterministic true \
-    --trainer.accelerator ddp_spawn \
+    --trainer.accelerator dp \
     "$@"
