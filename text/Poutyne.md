@@ -24,8 +24,7 @@ print = pp.pprint
 
 # Poutyne
 
-Compared to the other two frameworks, Poutyne has a different scope.
-
+Compared to the other two frameworks, Poutyne has a more narrow scope.
 Instead of trying to make the training of a fixed set of models as easy as possible like Huggingface `Trainer`, or facilitating the creation and training of custom models like PyTorch Lightning, it tries to bring the ease of the Keras API from the realms of Tensorflow to the world of PyTorch.
 The benefits of the Keras API are its simplicity and orientation at well-established machine learning frameworks like Scikit-Learn.
 This simplicity lowers the barrier of entry for beginners because it lowers the amount of time needed to get hands-on training for their first model.
@@ -60,7 +59,7 @@ model.fit(
 results = model.evaluate(X_test, y_test, batch_size=128)
 ```
 
-Like Keras, Poutyne automates many steps for standard cases like the configuration of the optimizer or the loss function.
+Like Keras, Poutyne automates many steps for standard cases like the optimizer configuration or the loss function.
 However, Poutyne does not mimic the whole Keras API but only the training part.
 The model’s creation still has to be done in plain PyTorch, which is generally a bit trickier than Keras because the dimensions of all layers have to be chosen manually.
 In addition to the training functions, Poutyne also provides utilities to conduct and save whole experiments and utilities for creating checkpoints, logging, scheduling of the learning rate, and multi-device training.
@@ -69,37 +68,29 @@ In addition to the training functions, Poutyne also provides utilities to conduc
 
 ### Model
 
-The `Model` class is intended to handle the training of any neural network
-Technically, it wraps a neural network alongside an optimizer, loss function, and validation metrics.
-To train the model, it exposes different variants of the `fit`-method, each of which can process the training data in another format.
-The standard `.fit`-methods expects the data as a list of batches, while the `fit_dataset` method can directly work on PyTorch `Datasets`.
-The `fit_generator` can operate on generators that yield the data batch by batch as a third option.
-In addition to that, the `fit`-methods also receive other hyperparameters to control the training.
-
-The `evaluate`-method computes the loss and all other metrics on unseen data without doing backpropagation.
-If only the predictions of the network are needed, the `predict`-method can be used.
-Similar to the variations of the `fit`-methods, these methods are offered in different versions too.
+The `Model` class wraps a neural network alongside an optimizer, loss function, and validation metrics.
+It exposes `.fit`-, `.evaluate`-, and `.predict`-methods for training, evaluation, and inference.
+Each of these methods exits in different variations that consume the data either as a list of batches, PyTorch `Dataset`, or as a generator yielding batches.
+Additional hyperparameters, like the batch size, or the number of epochs to train, can be passed the methods directly.
 
 ### Experiment
 
 The `Experiment` class is an extended version of the `Model` class that comes with helpful additions for conducting deep learning experiments.
 Like the `Model` class, an `Experiment` is equipped with the neural network, optimizer, loss function, and metrics into a single object and has methods to start the training, evaluation, or prediction.
-In contrast to the `Model` class, which is solely designed to train a model, the `Experiment` class provides additional features to organize and track the training
+In contrast to the `Model` class, which only intends to do basic training, the `Experiment` class provides additional features to organize and track the progress.
 For example, it supports logging the progress to various formats, like a CSV table or Tensorboard.
-Monitoring allows the `Experiment` class to save checkpoints of the model that perform best with respect to one of the validation metrics.
-Also, it saves all the intermediate results and tracked values to the disk.
-
-For the two primary task types, classification and regression, the experiment automatically configures all metrics and the loss function if these tasks are specified in the `task` parameter when initializing the `Experiment`.
+Monitoring allows the `Experiment` class to save checkpoints of the model that perform best concerning one of the validation metrics.
+Also, it saves all the intermediate results and tracked values to the disk by default.
+For the two primary task types, classification and regression, the `Experiment` class can automatically configure all metrics and the loss function.
 
 ### Data
 
 Poutyne is data agnostic meaning, that it does not provide any tooling to load, process, and store the training data.
 The only requirements are that the data comes in one of the supported formats and that each batch consists of two objects: one that holds the training data and one that contains the label.
-To compare the model’s output with the labels, it has to be in the same format.
 
 ## Additional Features
 
-#### Metrics
+### Metrics
 
 Poutyne has a custom API for implementing metrics.
 It distinguishes between two types of metrics, batch metric and epoch metrics.
@@ -109,7 +100,7 @@ Poutyne provides predefined metrics for both types. But, unfortunately, they onl
 There are two options to add other metrics. Either they have to be implemented manually or taken from Scikit-Learn and made compatible using a built-in wrapper class.
 Metrics are passed to `Model` or `Experiment` while their initialization.
 
-#### Callbacks
+### Callbacks
 
 Callbacks are intended to extend the functions of the `Model` or `Experiment` class. Like the callbacks from the other frameworks, they have access to the model’s current state and can perform actions at various steps while training.
 There are many predefined callbacks available that perform all kinds of tasks, ranging from logging, keeping track of gradients, scheduling the learning, creating checkpoints, to sending notifications to inform clients about the progress of the training.
@@ -476,11 +467,12 @@ Poutyne provides a well thought and, most of all easy to understand framework to
 Like its conceptual role model Keras, this simplicity is achieved by strict design decisions, like the `X, y` format for data.
 While this strictness is helpful for beginners because they only have to learn one way of doing things, it comes at the cost of being hard to adapt to other frameworks or unintended tasks.
 Luckily, the necessary steps to adapt it to `transformers` and our task are simple and can be reused for most other cases.
-Since Poutynes mimics the Keras-API, its additional features are much more limited than the other frameworks.
+Since Poutynes mimics the Keras-API, its additional features are much more limited than the other frameworks. Even basics techniques like gradient accumulation are not supported.
 Depending on the use-case this limited scope might be a deal-breaker for experienced users or complex tasks, but on the other hand, it makes getting started with the framework much more manageable.
 This accessibility is underlined by the documentation's quality, which covers all aspects of the framework in concise and easily understandable manners without losing itself in the depths of technical details.
 Yet, there is also potential for further improvements.
 The lack of any support for creating-command line interfaces could force users to migrate to another framework as soon as they need to retrain a model regularly.
 Currently, the scope of the framework is heavily skewed towards sequence classification tasks. For example, all built-in metrics measure the quality of a classification model.
 Widening the range of tasks that could be implemented without further extensions would help beginners get into deep learning.
-A possible improvement that falls more into the category of wishful thinking would be that Poutyne would mimic not only the training parts of the Keras API. If Poutyne would also introduce the ease of building neural networks without manually adjusting each layer's dimensionality manually, this would be a major contribution to the whole PyTorch community.
+A possible improvement that falls more into the category of wishful thinking would be that Poutyne would mimic not only the training parts of the Keras API.
+If Poutyne would also introduce the ease of building neural networks without manually adjusting each layer's dimensionality, it would be a significant contribution to the community.
