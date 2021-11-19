@@ -2,7 +2,6 @@ import json
 from poutyne.framework import experiment
 from torch.optim import AdamW
 from poutyne import (
-    Model,
     set_seeds,
     TensorBoardLogger,
     TensorBoardGradientTracker,
