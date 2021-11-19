@@ -27,7 +27,7 @@ if __name__ == "__main__":
     LEARNING_RATE = 3e-5
     TRAIN_BATCH_SIZE = 8
     VAL_BATCH_SIZE = 16
-    DEVICE = "cuda:1"
+    DEVICE = 0
     N_EPOCHS = 3
     SAVE_DIR = "experiments/rocstories/bert"
 
