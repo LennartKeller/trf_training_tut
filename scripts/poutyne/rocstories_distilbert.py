@@ -29,7 +29,7 @@ if __name__ == "__main__":
     VAL_BATCH_SIZE = 16
     DEVICE = 0
     N_EPOCHS = 3
-    SAVE_DIR = "experiments/rocstories/bert"
+    SAVE_DIR = "experiments/rocstories/distilbert"
 
     print("Loading model & tokenizer.")
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME_OR_PATH)
@@ -97,7 +97,7 @@ if __name__ == "__main__":
         for func in make_compute_metrics_functions(tokenizer.cls_token_id)
     ]
 
-    writer = SummaryWriter("runs")
+    writer = SummaryWriter("runs/distilbert/1")
     tensorboard_logger = TensorBoardLogger(writer)
     gradient_logger = TensorBoardGradientTracker(writer)
 
@@ -109,9 +109,6 @@ if __name__ == "__main__":
         optimizer=optimizer,
         loss_function=loss_fn,
         batch_metrics=metrics,
-        monitoring=True,
-        monitor_metric="val_loss",
-        monitor_mode="min",
     )
 
     experiment.train(
