@@ -1,4 +1,4 @@
-export CUDA_VISIBLE_DEVICES="0,1"
+export CUDA_VISIBLE_DEVICES="0,2"
 
 python rocstories.py \
     --model_name_or_path "distilbert-base-cased" \

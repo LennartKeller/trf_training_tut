@@ -1,7 +1,7 @@
+import json
 from poutyne.framework import experiment
 from torch.optim import AdamW
 from poutyne import (
-    Model,
     set_seeds,
     TensorBoardLogger,
     TensorBoardGradientTracker,
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     LEARNING_RATE = 3e-5
     TRAIN_BATCH_SIZE = 8
     VAL_BATCH_SIZE = 16
-    DEVICE = "cuda:1"
+    DEVICE = 0
     N_EPOCHS = 3
     SAVE_DIR = "experiments/rocstories/bert"
 
@@ -97,7 +97,7 @@ if __name__ == "__main__":
         for func in make_compute_metrics_functions(tokenizer.cls_token_id)
     ]
 
-    writer = SummaryWriter("runs")
+    writer = SummaryWriter("runs/roberta/1")
     tensorboard_logger = TensorBoardLogger(writer)
     gradient_logger = TensorBoardGradientTracker(writer)
 
@@ -109,9 +109,6 @@ if __name__ == "__main__":
         optimizer=optimizer,
         loss_function=loss_fn,
         batch_metrics=metrics,
-        monitoring=True,
-        monitor_metric="val_loss",
-        monitor_mode="min",
     )
 
     experiment.train(

@@ -140,6 +140,7 @@ class HuggingfaceDatasetWrapper(LightningDataModule):
 
     def map(self, *args, **kwargs):
         self.dataset = self.dataset.map(*args, **kwargs)
+        return self
 
 
 class PlLanguageModelForSequenceOrdering(LightningModule):
