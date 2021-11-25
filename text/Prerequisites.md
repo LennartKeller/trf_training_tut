@@ -22,7 +22,7 @@ pp = pprint.PrettyPrinter(depth=6, compact=True)
 print = pp.pprint
 ```
 
-# Prequisites
+# Prerequisites
 
 The following experiments share the same general logic, but the concrete implementation will differ in minor details since each framework has another structural approach.
 So before we start, we will take a short look at the general logic for the data loading parts of the experiment, as well as the computation of the loss function and evaluation metrics
