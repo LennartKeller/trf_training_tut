@@ -77,7 +77,7 @@ if __name__ == "__main__":
     )
 
     trainer.train()
-    
+
     trainer.save_model(model_args.final_checkpoint_path)
 
     test_results = trainer.evaluate(eval_dataset=dataset["test"])
@@ -85,7 +85,3 @@ if __name__ == "__main__":
         json.dump(test_results, f)
 
     print(test_results)
-
-
-
-    

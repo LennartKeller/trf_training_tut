@@ -125,4 +125,3 @@ if __name__ == "__main__":
     test_results = experiment.test(test_generator=test_dataloader)
     with open(f"test_results_{MODEL_NAME_OR_PATH}.json", "w") as f:
         json.dump(test_results, f)
-
