@@ -17,7 +17,7 @@ Our goal is to train a model to predict the correct order of a sequence of shuff
 This task seemed right for two reasons.
 Firstly, it can be implemented with a standard Huggingface model but requires a custom loss function.
 Secondly, the task falls into the category of self-supervised learning. So it is possible to generate training and test data from unstructured text data in an effortless manner.
-Besides these practical implications, the objective is interesting in itself because it can be used to measure the causal coherence of texts. For example, it could be used to measure whether the coherence of actions varies between different text types or genres.
+Besides these practical implications, the objective is interesting in itself because it can measure the causal coherence of texts. For example, to assess whether the coherence of actions varies between different text types or genres.
 
 But how do we achieve this task?
 There are various methods proposed ranging from relatively simple approaches like applying ranking-loss functions ({cite:t}`bert4so`) to rather complex ones that learn a graph representation of the sentences and then use topological sorting to extract the correct order of the sentences ({cite:t}`bert-top-sort`).
@@ -69,6 +69,6 @@ Even though the ROCStories dataset is freely available to the public, anyone who
 ```
 
 ```{note}
-In addition, we tested the same experimental setup on a dataset of sentences sampled from german short novels (Novellen) without much success. Insufficient sampling of subparts of the texts is the most likely reason for this failure.
+In addition, we tested the same experimental setup on a dataset of sentences sampled from german short novels (Novellen) without much success. An insufficient sampling of subparts of the texts is the most likely reason for this failure.
 Applying this task to all kinds of different textual domains can be a fruitful question itself but lies outside the scope of this work.
 ```
