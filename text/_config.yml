@@ -8,7 +8,7 @@ author: Lennart Keller
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
 execute:
-  execute_notebooks: cache
+  execute_notebooks: auto
   timeout: 60
   stderr_output: remove-warn
 

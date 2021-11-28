@@ -27,33 +27,31 @@ set_caching_enabled(False)
 
 ## `tranformers`
 
-In 2018 on the same day that Google published its research implementation of BERT, developed in Tensorflow, Thomas Wolf, a researcher at the NLP startup Huggingface, created a Github repository called "PyTorch-transformers." The goal of this project was to load the weights of the pretrained BERT model in a PyTorch model.
-
+In 2018 on the same day that Google published its research implementation of BERT, developed in Tensorflow, Thomas Wolf, a researcher at the NLP startup Huggingface, created a Github repository called "PyTorch-transformers."
+The initial goal of this project was to load the weights of the BERT model, published alongside the paper in Tensorflow, with PyTorch.
 
 From here on, this repository quickly evolved into the Transformers library, which sits at the core of the Huggingface NLP infrastructure. The goal of the transformers library is to provide the majority of transformer-based neural language models alongside all of the extra tooling required to use them.
 
-Originating as a pure PyTorch library, Hugginface widened its scope over the last two years and began integrating other deep learning frameworks such as Tensorflow or the newly created Flax library.
-<!--On this path the Huggingface team also started to add support for other deep learning frameworks than PyTorch, such as Tensorflow or the newly created JAX library.-->
-But these additions are relatively unstable and subject to frequent significant changes, so that this work will only focus on the much more stable PyTorch branch of the Transformers library.
+Originating as a pure PyTorch library, Huggingface widened its scope over the last two years and integrated other deep learning frameworks such as Tensorflow or the newly created Flax library.
+But these additions are relatively unstable and subject to frequent significant changes so that this work will only focus on the much more stable PyTorch branch of the Transformers library.
 
 ## `tokenizers`
 
-A notable characteristic of these models is that they all ship with a custom, fitted tokenizer. 
-Most of them operate on a subword level and were trained to represent the vocabulary of the pretraining data of the models with a fixed size vocabulary.
-Huggingface provides the `tokenizers` library that offers implementations of the most common tokenizer models. These tokenizers come in two versions, a fast one written in Rust and a slower python implementation. For the sake of speed, the fast version should be preferred most of the time
-
-```{Note}
-As of the time of writing, Huggingface does not provide precompiled packages of the `tokenizers` library for the new Apple-Silicon architecture. So a working Rust stack has to be installed on the machine to compile the package locally during installation.
-```
+A notable characteristic of modern language models is that nearly all ship with a custom, fitted tokenizer.
+These tokenizers operate on a subword level and are trained to represent the vocabulary of the pretraining data for the models with a fixed size vocabulary.
+Huggingface provides the `tokenizers` library that offers implementations of the most common tokenizer models. These tokenizers come in two versions, a fast one written in Rust and a slower python implementation.
+For the sake of efficiency, the Rust version is the best choice most of the time.
 
 ## `datasets`
 
-Lastly, to complete the toolset of a transformers-NLP pipeline, Huggingface also develops a library for Dataset management, called Datasets.
+Lastly, to complete the toolset of a transformers-NLP pipeline, Huggingface also develops a library for Dataset management, called `datasets`.
+The goal of these libraries is to streamline the process of data preparation and to provide a consistent interface to create, store and process large datasets too large to fit into the memory.
 
 With these three libraries, it is possible to cover the overwhelming majority of possible tasks.
 
 ## Interoperability
-To make all these libraries as interoperable as possible, the standard data exchange format is a dictionary that contains all the argument names of the function or method that is supposedly called next as keys and the data as values.
+
+To make all libraries as interoperable as possible, they use dictionaries as a standard data exchange format. These dictionaries contain all argument names of the function or method that is supposedly called next as keys and the data as values.
 
 ```{code-cell} ipython3
 from transformers import AutoTokenizer, AutoModel
@@ -71,7 +69,6 @@ inputs = tokenizer(data["text"], return_tensors="pt")
 outputs = model(**inputs)
 print(outputs)
 ```
-
 
 ## `PyTorch`-Backend
 
@@ -121,8 +118,7 @@ for train_step, batch in enumerate(train_data):
 ...
 ```
 
-But not only can it become quite tedious to write this loop (or variations of it) for various projects, but more gravely, it sets a barrier of entry for beginners or non-experts because it adds another layer of complexity when tinkering around with deep learning.
+But not only can it become quite tedious to write this loop (or variations of it) repeatedly, but more gravely, it sets a barrier of entry for beginners or non-experts because it adds another layer of complexity when tinkering around with deep learning.
 
 Another implication of outsourcing this process to the users hits when the models grow in size. Modern language models require a massive amount of memory even when trained with tiny batch sizes. There are strategies to overcome these limitations, like gradient accumulation. But all these tricks again have to be implemented by the user.
 While one can argue that most of these tweaks are pretty easy to implement, and there is a vast number of educational material available, the downside comes very clear when working with models that do not even fit on a single GPU. These models have to be trained in a distributed manner across multiple devices. When doing so, the training loop itself gets much more complex and challenging to implement.
-Various frameworks aim at streamlining the training of neural networks for the user. 

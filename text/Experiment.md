@@ -9,6 +9,8 @@ name: fig-task-desc
 Visualization of the sentence ordering task.
 ```
 
+Various frameworks aim at streamlining the training of neural networks for the user.
+We chose th
 To compare the frameworks, we will implement the same experiment with each of them.
 The task of the experiment is a critical choice since training a model on a standard task like text- or token classification would not require much customization. Also, it would put the Huggingface Trainer into an advantageous position because it supports such tasks out of the box.
 To ensure a fair comparison, we chose another quite exotic objective: Sentence Ordering.

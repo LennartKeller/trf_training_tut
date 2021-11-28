@@ -164,10 +164,6 @@ From a high-level view, a Huggingface `Dataset` can be seen as a table with colu
 In a more concrete technical perspective, the `Dataset`-instance provides an iterable that yields a dictionary for each entry in the Dataset. Each dictionary contains attribute-value pairs.
 
 ```{code-cell} ipython3
-print("Test")
-```
-
-```{code-cell} ipython3
 from datasets import load_from_disk
 
 dataset = load_from_disk('../scripts/data/rocstories')
