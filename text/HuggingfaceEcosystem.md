@@ -30,7 +30,7 @@ set_caching_enabled(False)
 In 2018 on the same day that Google published its research implementation of BERT, developed in Tensorflow, Thomas Wolf, a researcher at the NLP startup Huggingface, created a Github repository called "PyTorch-transformers."
 The initial goal of this project was to load the weights of the BERT model, published alongside the paper in Tensorflow, with PyTorch.
 
-From here on, this repository quickly evolved into the Transformers library, which sits at the core of the Huggingface NLP infrastructure. The goal of the transformers library is to provide the majority of transformer-based neural language models alongside all of the extra tooling required to use them.
+From here on, this repository quickly evolved into the Transformers library, which sits at the heart of the Huggingface NLP infrastructure. The goal of the transformers library is to provide the majority of transformer-based neural language models alongside all of the extra tooling required to use them.
 
 Originating as a pure PyTorch library, Huggingface widened its scope over the last two years and integrated other deep learning frameworks such as Tensorflow or the newly created Flax library.
 But these additions are relatively unstable and subject to frequent significant changes so that this work will only focus on the much more stable PyTorch branch of the Transformers library.
@@ -45,13 +45,13 @@ For the sake of efficiency, the Rust version is the best choice most of the time
 ## `datasets`
 
 Lastly, to complete the toolset of a transformers-NLP pipeline, Huggingface also develops a library for Dataset management, called `datasets`.
-The goal of these libraries is to streamline the process of data preparation and to provide a consistent interface to create, store and process large datasets too large to fit into the memory.
+This library aims to streamline the process of data preparation and provide a consistent interface to create, store, and process large datasets too large to fit into the memory.
 
 With these three libraries, it is possible to cover the overwhelming majority of possible tasks.
 
 ## Interoperability
 
-To make all libraries as interoperable as possible, they use dictionaries as a standard data exchange format. These dictionaries contain all argument names of the function or method that is supposedly called next as keys and the data as values.
+To make all libraries as interoperable as possible, they use dictionaries or dictionary-like objects as a standard data exchange format. These dictionaries contain all argument names of the function or method that is supposedly called next as keys and the data as values.
 
 ```{code-cell} ipython3
 from transformers import AutoTokenizer, AutoModel
@@ -73,12 +73,13 @@ print(outputs)
 ## `PyTorch`-Backend
 
 Relying on PyTorch as the underlying deep learning framework comes with one caveat: Unlike Tensorflow, which has integrated Keras as a high-level API for training neural networks, PyTorch does not provide any tools to facilitate the training process.
-Due to PyTorch's research-orientated nature, it is entirely up to the users to implement the training process. While this is no problem when researching and experimenting with new techniques, it is time-consuming in the practitioner's case.
+Instead, PyTorch's research-orientated nature makes it entirely up to the users to implement the training loop. While this is no problem when researching and experimenting with new techniques, it is time-consuming in the practitioner's case.
 When applying standard models to tasks like text classification, implementing the training loop is an obstacle that only increases development time. Also, it introduces a new space for making errors.
 
 In most application-oriented scenarios, the training loop roughly looks like this:
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
 ...
 model = create_model()
 model.to(DEVICE)

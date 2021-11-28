@@ -8,18 +8,23 @@ author: Lennart Keller
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
 execute:
-  execute_notebooks: auto
-  timeout: 60
+  execute_notebooks: cache
+  timeout: -1
   stderr_output: remove-warn
 
 # Define the name of the latex output file for PDF builds
 latex:
+  latex_engine: xelatex
   latex_documents:
     targetname: book.tex
 
 # Add a bibtex file so that we can create citations
 bibtex_bibfiles:
-  - references.bib
+  - _bibliography/references.bib
+
+sphinx:
+  config:
+    bibtex_reference_style: author_year
 
 # Information about where the book exists on the web
 repository:

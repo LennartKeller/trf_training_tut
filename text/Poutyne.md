@@ -24,7 +24,7 @@ print = pp.pprint
 
 # Poutyne
 
-Compared to the other two frameworks, Poutyne has a more narrow scope.
+Compared to the other two frameworks, Poutyne ({cite:t}`poutyne`) has a more narrow scope.
 Instead of trying to make the training of a fixed set of models as easy as possible like Huggingface `Trainer`, or facilitating the creation and training of custom models like PyTorch Lightning, it tries to bring the ease of the Keras API from the realms of Tensorflow to the world of PyTorch.
 The benefits of the Keras API are its simplicity and orientation at well-established machine learning frameworks like Scikit-Learn.
 This simplicity lowers the barrier of entry for beginners because it lowers the amount of time needed to get hands-on training for their first model.

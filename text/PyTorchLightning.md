@@ -13,7 +13,7 @@ kernelspec:
 
 # PyTorch Lightning
 
-In contrast to the Huggingface `Trainer`, which handles the complete training itself, PyTorch Lightning takes a different approach.
+In contrast to the Huggingface `Trainer`, which handles the complete training itself, PyTorch Lightning ({cite:t}`falcon2019pytorchlightning`) takes a different approach.
 It not only aims at handling the training but also at structuring the creation of a model too.
 Its main goal is not to hide complexity from the user but to provide a well structured API to building a deep learning models.
 The most striking aspect of this is that in PyTorch Lightning's philosophy, a model and its inference-, training and prediction logic are not separate things that can be exchanged independently.

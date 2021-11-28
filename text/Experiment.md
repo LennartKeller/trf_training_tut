@@ -10,7 +10,6 @@ Visualization of the sentence ordering task.
 ```
 
 Various frameworks aim at streamlining the training of neural networks for the user.
-We chose th
 To compare the frameworks, we will implement the same experiment with each of them.
 The task of the experiment is a critical choice since training a model on a standard task like text- or token classification would not require much customization. Also, it would put the Huggingface Trainer into an advantageous position because it supports such tasks out of the box.
 To ensure a fair comparison, we chose another quite exotic objective: Sentence Ordering.
@@ -46,20 +45,20 @@ __Kendalls Tau__
 
 In contrast to accuracy, Kendall Tau is a ranking correlation coefficient that accounts for partially correct parts of a ranking.
 It measures the difference between pairs of sentences correctly predicted as following and all other mispredicted pairs. 
-To correct for the chance of randomly predicting correct pairs of sentences, the value is divided by the total number of unique ways to pick two sentences from the sequence.
+To correct the score for the chance of randomly predicting correct pairs of sentences, this value is divided by the total number of unique ways to pick two sentences from the sequence.
 
 $$
-\tau_{\textrm{Kendall}} = \frac{\#\textrm{Correctly predicted pairs of sentences} - \#\textrm{Misredicted pairs of sentences}}{\binom{N}{2}}
+\tau_{\textrm{Kendall}} = \frac{\#\textrm{Correctly predicted pairs of sentences} - \#\textrm{Wrongly predicted pairs of sentences}}{\binom{N}{2}}
 $$
 
 
 
 ## Dataset
 
-We use the ROCStories dataset (version 2017). It contains 52.665 short stories with a fixed length of five sentences. This dataset is commonly used in the literature because its stories mainly depict concrete actions, making them relatively simple to understand without leaving much space for ambiguities. This property makes it a good fit for testing the general capabilities of language models on this task.
+We use the 2017 version of the ROCStories dataset by {cite:t}`RocStories2016`. It contains 52.665 short stories with a fixed length of five sentences. This dataset is commonly used in the literature because its stories mainly depict concrete actions with a clear causal order, making them relatively simple to understand without leaving much space for ambiguities. This property makes it a good fit for testing the general capabilities of language models on this task.
 
 ```{warning}
-Even though the ROCStories dataset is freely available to the public, anyone who wants to use it has to submit contact data. So the dataset itself is not included in the Github-Repository and must be downloaded independently from https://cs.rochester.edu/nlp/rocstories/
+Even though the ROCStories dataset is freely available to the public, anyone who wants to use it must submit contact data. So the dataset itself is not included in the Github-Repository and must be downloaded independently from https://cs.rochester.edu/nlp/rocstories/
 ```
 
 ```{note}
