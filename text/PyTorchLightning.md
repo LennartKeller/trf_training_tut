@@ -161,7 +161,8 @@ This feature enables adding parameters of different modules to the parser effort
 
 If more flexibility is needed, for example, when only some parameters of an object should be added to the parser, the best practice is to add a method to the object, which adds these arguments to the parser.
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
 :name: lightning-parser-listing
 parser.add_lightning_class_args(ModelCheckpoint, "checkpoint")
 parser.add_class_arguments(TensorBoardLogger, nested_key="tensorboard")
@@ -180,7 +181,8 @@ To be able to load different models, we introduce the name of the model as hyper
 Since the model is pretrained, we only have to specify two other hyperparameters, namely the learning rate and the id of the target token.
 Because Huggingface models are also subclasses of the  `nn.Module` class, loading the transformer model works flawlessly, and the language model is recognized as a submodule of the `PlLanguageModelForSequenceOrdering` class.
 
-```python bla
+```{code-cell} ipython3
+:tags: [skip-execution]
 class PlLanguageModelForSequenceOrdering(LightningModule):
     def __init__(self, hparams):
         super().__init__()
@@ -195,7 +197,8 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
 
 Next, we define a single forward step. This is fairly simple since the only thing we need to do is exclude the labels from the inputs for the language model and pass the rest of the input data to the language model to obtain the ouputs.
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
     def forward(self, inputs: Dict[Any, Any]) -> Dict[Any, Any]:
         # We do not want to compute token classification loss, so we remove the labels temporarily
         labels = inputs.pop("labels")
@@ -210,7 +213,8 @@ Since we want to compute the loss while training and while validating the model,
 Implementation-wise, the loss function is only slightly variated from the original implementation. The only changes are that we retrieve the target token id from the hyperparameters of the model.
 Also, we draw inspiration from the `transformers` API and add a custom version of the forward method. This method computes both the forward step and the loss. The loss is then attached to the output of the model.
 
-``` python
+```{code-cell} ipython3
+:tags: [skip-execution]
     def _compute_loss(self, batch_labels, batch_logits, batch_input_ids) -> float:
         # Since we have varying number of labels per instance, 
         # we need to compute the loss manually for each one.
@@ -272,7 +276,8 @@ Also, we draw inspiration from the `transformers` API and add a custom version o
 Using the `_foward_with_loss`-method implementing the `training_step`-method becomes relatively simple.
 The only thing left to do inside this method is to log the training loss in order to be able to monitor the progress during training.
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
     def training_step(self, inputs: Dict[Any, Any], batch_idx: int) -> float:
         outputs = self._forward_with_loss(inputs)
         loss = outputs["loss"]
@@ -283,7 +288,8 @@ The only thing left to do inside this method is to log the training loss in orde
 Like the `_compute_loss`-method, we only need to slightly adapt the validation metrics' computation to use the model's hyperparameters.
 Since we want to compute the identical scores for testing and validation, we can also use the `validation_step`-method for testing.
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
     def validation_step(self, inputs, batch_idx):
         outputs = self._forward_with_loss(inputs)
 
@@ -341,7 +347,8 @@ Since we want to compute the identical scores for testing and validation, we can
 
 Lastly, we need to implement the `configure_optimizers`-method and add the model's hyperparameter to the parser via the `add_model_specific_args`-method.
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
     def configure_optimizers(self):
         return torch.optim.Adam(params=self.parameters(), lr=self.hparams["lr"])
 
@@ -370,7 +377,8 @@ This method allows the manipulation of the data manually since the `.prepare_dat
 The datasets wrapped in this class should already contain train-/ test- and validation-splits.
 To create batches of the data, we use the default collation function of the transformers library but allow passing a custom collation function.
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
 class HuggingfaceDatasetWrapper(LightningDataModule):
     def __init__(
         self,
@@ -450,6 +458,7 @@ class HuggingfaceDatasetWrapper(LightningDataModule):
 
     def map(self, *args, **kwargs):
         self.dataset = self.dataset.map(*args, **kwargs)
+        return self
 
 ```
 
@@ -463,7 +472,8 @@ Similar to implementing the experiment with the Huggingface `Trainer`, we need t
 Replacing these tokens if necessary can be done using the `.map`-method of the `HuggingfaceDatasetWrapper`
 
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
 from os.path import basename
 from datasets import load_from_disk
 from pytorch_lightning import Trainer, seed_everything

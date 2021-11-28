@@ -109,7 +109,8 @@ In addition, to our custom loss function, we also add another attribute to the `
 We leave the rest of the `Trainer` untouched.
 
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
 class SentenceOrderingTrainer(Trainer):
     def __init__(self, *args, **kwargs):
         self.target_token_id = kwargs.pop("target_token_id")
@@ -166,7 +167,8 @@ This way, we can incorporate the labels and the `input_ids` of tokens in the `Ev
 A minor but valuable trait of the `EvalPrediction` objects is that their content gets converted from `torch.tensors` to `np.arrays`.
 Because most validation metrics from other libraries use Numpy, we do not need to convert the data manually.
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
 training_args = TrainingArguments(
     ...,
     label_names=["labels", "input_ids"],
@@ -174,7 +176,8 @@ training_args = TrainingArguments(
 )
 ```
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
 def make_compute_metrics_func(target_token_id) -> Callable:
     def compute_ranking_func(eval_prediction: EvalPrediction) -> Dict[str, float]:
         batch_sent_idx, batch_input_ids = eval_prediction.label_ids
@@ -211,7 +214,8 @@ In addition to the arguments for training, we also want to control the type of t
 Custom parameters can easily be added by creating a custom `dataclass`. 
 We create a  class `ModelArgs` that has two fields. One to specify the name or path to the model and a second parameter to specify the path where the final model is saved after training.
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
 from dataclasses import dataclass, field
 
 @dataclass
@@ -238,7 +242,8 @@ Since we prepared the data beforehand by adding BERTs special `[SEP]`-token as a
 Lastly, we want to control the randomness in our experiment to make it consistently reproducible.
 The `transformers` library comes with a helpful function called `set_seed`, which controls the state of all random number generators of Python itself, Numpy and PyTorch at once.
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
 from transformers import TrainingArguments, HfArgumentParser
 from transformers import AutoModelForTokenClassification, AutoConfig, AutoTokenizer
 from transformers import set_seed

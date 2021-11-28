@@ -28,7 +28,7 @@ set_caching_enabled(False)
 ## `tranformers`
 
 In 2018 on the same day that Google published its research implementation of BERT, developed in Tensorflow, Thomas Wolf, a researcher at the NLP startup Huggingface, created a Github repository called "PyTorch-transformers."
-The initial goal of this project was to load the weights of the BERT model, published alongside the paper in Tensorflow, with PyTorch.
+The initial goal of this project was to load the weights of the Bert model, published alongside the paper in Tensorflow, with PyTorch.
 
 From here on, this repository quickly evolved into the Transformers library, which sits at the heart of the Huggingface NLP infrastructure. The goal of the transformers library is to provide the majority of transformer-based neural language models alongside all of the extra tooling required to use them.
 
@@ -66,6 +66,7 @@ data = dataset[0]
 print(data)
 
 inputs = tokenizer(data["text"], return_tensors="pt")
+print(inputs)
 outputs = model(**inputs)
 print(outputs)
 ```

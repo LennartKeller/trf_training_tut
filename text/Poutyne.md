@@ -30,7 +30,9 @@ The benefits of the Keras API are its simplicity and orientation at well-establi
 This simplicity lowers the barrier of entry for beginners because it lowers the amount of time needed to get hands-on training for their first model.
 The following exemplary listing shows the typical workflow in Poutyne.
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
+
 from poutyne import Model
 
 ...
@@ -120,7 +122,8 @@ The main task is of the collator is to convert each batch of dictionaries into b
 To so the `TransformersCollator` can is initialized with one or multiple names of the target `y_keys` in the input dictionaries. These fields then get copied into the target object. This object is either a tensor, if only a single key was specified or into a dictionary of keys. Additionally, the `remove_labels` parameter can be used to either remove the labels after copying them into the target obejct. By default, they are retained in the input data. This enables to use the internal computation of the loss of standard models, while also being able to use the built-in metrics of Poutyne for monitoring the training.
 Other collation operations are handled by the default collator from `transformers` or by a custom function.
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
 from typing import Any, Callable, Dict, List, Tuple, Union
 
 import torch
@@ -174,7 +177,8 @@ print(model(**inputs).keys())
 Poutyne instead passes the data to the model in the same format it receives it.
 To make sure that the data is unpacked and passed to the model correctly, we create wrapper class.
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
 from typing import Any, Dict
 from torch import nn
 from transformers import PreTrainedModel
@@ -206,7 +210,8 @@ When using default models, neither of both has to be used to obtain the loss, si
 In our case we have to implement a function that computes the loss on our own.
 Since we do not have access to the model or the tokenizer, we have to create a loss function that stores the id of the current target token. For that, we opt for creating a class that holds this id as an attribute and computes the loss via its `__call__` method.
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
 class PoutyneSequenceOrderingLoss:
     def __init__(self, target_token_id):
         self.target_token_id = target_token_id
@@ -336,7 +341,8 @@ Once again, we factor out our adaptions into an external module and implement th
 Due to Poutyne's lack of tooling for creating a command-line interface, this experiment is only configurable via hard-coding the parameters into the source.
 The rest of the code is mainly similar to the other two frameworks.
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
 from poutyne.framework import experiment
 from torch.optim import AdamW
 from poutyne import (

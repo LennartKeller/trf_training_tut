@@ -155,13 +155,11 @@ dataset.save_to_disk('rocstories')
 ---
 name: fig-dataflow
 ---
-High level visualization of dataflow while training a neural network.
+High-level visualization of data-flow from the original dataset to the model.
 ```
 
-As stated before, we will use the same Dataset in the Huggingface format for each run
-
 From a high-level view, a Huggingface `Dataset` can be seen as a table with columns that correspond to attributes (called features) and rows representing one dataset entry.
-In a more concrete technical perspective, the `Dataset`-instance provides an iterable that yields a dictionary for each entry in the Dataset. Each dictionary contains attribute-value pairs.
+From a more concrete technical perspective, the `Dataset`-instance provides an iterable that yields a dictionary for each entry in the dataset. Each dictionary contains attribute-value pairs.
 
 ```{code-cell} ipython3
 from datasets import load_from_disk
@@ -174,9 +172,9 @@ print(dataset['train'].features)
 print(dataset['train'][0])
 ```
 
-We can't feed the model with raw texts, so we have to tokenize them before hand.
+We can't feed the model with raw texts, so we have to tokenize them beforehand.
 
-As stated before each models comes with a custom tokenizer, so we have to load it, just like the model itself.
+As stated before, each model comes with a custom tokenizer, so we have to load it, just like the model itself.
 
 ```{code-cell} ipython3
 from transformers import AutoTokenizer
@@ -186,7 +184,7 @@ tokenized_text = tokenizer("Jimmy went down the road.")
 print(tokenized_text)
 ```
 
-The tokenizer takes a text or a collection of texts and converts it to a tokenized sequence. Also it creates additional inputs for the model such as the attention mask.
+The tokenizer takes a text or a collection of texts and converts it to a tokenized sequence. Also, it creates additional inputs for the model, such as the attention mask.
 
 To tokenize the whole dataset, we can once again use the map function.
 
@@ -211,12 +209,12 @@ print(dataset['train'][0].keys())
 ```
 
 To feed the data to the neural network, we have to split it up into batches of a fixed size.
-To do so, PyTorch provides a general class, called `torch.utils.data.DataLoader`, that takes in iterable and returns batches just in time while training. 
+To do so, PyTorch provides a general class, called `torch.utils.data.DataLoader`, that takes in iterable and returns batches just in time while training.
 
 The `DataLoader` class is agnostic towards the data it receives. To create batches that are compatible with the Huggingface model, we have to pass it a function that takes in multiple entries from our dataset and converts them into the correct format.
 
 This function is called `collate_fn` and can be specified while initiating the `DataLoader` object.
-Using a simple identity function, we see that the `collate_fn` receives a tuple with $B$ entries where $B$ is the batch size.
+Using a simple identity function, we see that the `collate_fn` receives a list with $B$ entries where $B$ is the batch size.
 
 ```{code-cell} ipython3
 from torch.utils.data import DataLoader
@@ -232,7 +230,7 @@ print(batch[0].keys())
 ```
 
 Huggingface provides a collate function that can convert tokenized data into batches in a suitable format.
-The Huggingface collation function only works with numeric data such as scalars or arrays. So we have to drop all texts before we pass the dataset into the dataloader object.
+The Huggingface collation function only works with numeric data such as scalars or arrays. So we have to drop all texts before we pass the dataset into the `Dataloader` object.
 
 ```{code-cell} ipython3
 dataset = dataset.remove_columns(
@@ -243,7 +241,7 @@ print(dataset["train"].features)
 ```
 
 After only numeric data is left, we have to face the last problem in the collation problem.
-The Huggingface collation function only handles arrays of the same shape when collating them into one batch. In theory (e.g. with other datasets), we could have a varying number of labels, if we wanted to work shuffled texts with a variable number of sentences. We tackle this problem by introducing a custom collation function to make our preparation pipeline as flexible as possible.
+The Huggingface collation function only handles arrays of the same shape when collating them into one batch. In theory (e.g., with other datasets), we could have a varying number of labels if we wanted to work shuffled texts with a variable number of sentences. We tackle this problem by introducing a custom collation function to make our preparation pipeline as flexible as possible.
 
 ```{code-cell} ipython3
 from transformers import default_data_collator
@@ -284,21 +282,24 @@ data_loader = DataLoader(dataset['train'], batch_size=2, collate_fn=so_data_coll
 batch = next(iter(data_loader))
 print(batch)
 ```
+
 Now the data is in the correct format for training.
 
 ## Loss function
 
-As stated in the experimental design, we use a plain Mean-Squared-Error regression loss. Still, we only want to consider the special tokens, so we must select them before the actual computation. Therefore, we need the `input_ids` to figure out their position in the sequence.
+As stated in the experimental design, we use a plain Mean-Squared-Error regression loss. Since we only want to consider the special tokens, we must select them before the actual computation. Therefore, we need the `input_ids` to figure out their position in the sequence.
+
 To compute the loss for one single batch, we add the loss scores of all sentences of one text and take the average of all batch entries.
 Due to computational constraints, transformer-based language models typically have a limit on the input size. So our inputs might have to be truncated to fit into the model. In this case, we discard the labels for the sentences left out and only consider the data that fits into the model.
 
 The following listing contains a general implementation of the loss function:
 
-```python
+```{code-cell} ipython3
+:tags: [skip-execution]
 import torch
 from torch import nn
 
-def sentence_ordering_loss(batch_logits, batch_targets, batch_input_ids) -> torch.Tensor:
+def sentence_ordering_loss(batch_logits, batch_targets, batch_input_ids, target_token_id) -> torch.Tensor:
     # Since we have varying number of labels per instance, we need to compute the loss manually for each one.
     loss_fn = nn.MSELoss(reduction="sum")
     batch_loss = torch.tensor(0.0, dtype=torch.float64, requires_grad=True)
@@ -311,7 +312,7 @@ def sentence_ordering_loss(batch_logits, batch_targets, batch_input_ids) -> torc
         targets = true_labels.float()
 
         # Secondly, we need to get the logits from each target token in the input sequence
-        target_logits = logits[input_ids == self.target_token_id].reshape(-1)
+        target_logits = logits[input_ids == target_token_id].reshape(-1)
 
         # Sometimes, we will have less target_logits than targets due to trunction of the input.
         # In this case, we just consider as many targets as we have logits
