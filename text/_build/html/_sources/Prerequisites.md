@@ -20,6 +20,7 @@ set_caching_enabled(False)
 import pprint
 pp = pprint.PrettyPrinter(depth=6, compact=True)
 print = pp.pprint
+! rm -r rocstories
 ```
 
 # Prerequisites
@@ -143,12 +144,6 @@ Finally, we save the dataset.
 dataset.save_to_disk('rocstories')
 ```
 
-
-```{code-cell} ipython3
-:tags: ["remove-cell"]
-! rm -r rocstories
-```
-
 ## Data loading
 
 ```{figure} ./figures/DataFlow.png
@@ -164,7 +159,7 @@ From a more concrete technical perspective, the `Dataset`-instance provides an i
 ```{code-cell} ipython3
 from datasets import load_from_disk
 
-dataset = load_from_disk('../scripts/data/rocstories')
+dataset = load_from_disk('rocstories')
 print(dataset['train'].features)
 ```
 
