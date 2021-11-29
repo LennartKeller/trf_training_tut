@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conclusion &#8212; A comparing guide to training language models with Python.</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet" />
+  <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="Bibliography.html" />
+    <link rel="prev" title="Experimental Results" href="ExperimentalResults.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+      
+      
+      <h1 class="site-logo" id="site-title">A comparing guide to training language models with Python.</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Home.html">
+   Preface
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Introduction.html">
+   Introduction
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="HuggingfaceEcosystem.html">
+   The Huggingface ecosystem
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Experiment.html">
+   Experimental Design
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Prerequisites.html">
+   Prerequisites
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="HuggingFaceTrainer.html">
+   Huggingface Trainer
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="PyTorchLightning.html">
+   PyTorch Lightning
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Poutyne.html">
+   Poutyne
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ExperimentalResults.html">
+   Experimental Results
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Conclusion
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/Conclusion.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/LennartKeller/trf_training_tut"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/LennartKeller/trf_training_tut/issues/new?title=Issue%20on%20page%20%2FConclusion.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="tex2jax_ignore mathjax_ignore section" id="conclusion">
+<h1>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h1>
+<p>Due to their different scopes labeling one of the presented frameworks as the “best one” would paint a misleading picture.
+Obviously, the built-in <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> of the <code class="docutils literal notranslate"><span class="pre">transformers</span></code> library is optimally aligned with the rest of the library, which facilitates the training of language models in many cases.
+This ease, combined with its optimized set of predefined parameters, makes it the best choice when training standard models.
+Even in cases like ours, where a standard model is combined with a custom loss, the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> requires few adaptions.
+However, the goal to allow those adaptions with as few lines of code as possible also has some drawbacks. Conceptually, the separation of concerns between integral parts of the model and additional logic is less strict.
+For example, by default, <code class="docutils literal notranslate"><span class="pre">transformers</span></code> models incorporate the loss function into their heads. But if this loss should be discarded, the custom loss function is bound to the custom subclass of the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>. This scattering leads to an implicit separation of the model and its loss.
+Without access to the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> subclass, continuing the model’s training is impossible. More gravely, this fact is hidden too, since loading the model looks like a standard token classification model and even returns a loss score when fed with the correct data.
+Of course, one could argue that it is possible to create proper custom models with an own head, which would be a cleaner way to implement such a model. But since making a custom model is a rather complex process, it would also render the advantage of the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> irrelevant.</p>
+<p>From a conceptual point of view, PyTorch Lightning’s approach is far more sustainable since its API forces to structure the code into mostly self-contained modules.
+While requiring more manual implementation upfront, this approach leads to better code quality and makes models and datasets easily interchangeable and thus more reusable.
+However, it also expects the user to have a profound knowledge of PyTorch itself, alongside a deep mental model of how a neural network is trained since there are no shortcuts.
+Users who fit these requirements can benefit from PyTorch Lightning’s strict specifications.
+While these specifications determine the whole process of building neural networks, users do not lose much freedom because the framework is highly flexible and can be modified to a great extend.
+Yet, there are drawbacks when working with <code class="docutils literal notranslate"><span class="pre">transformers</span></code> and PyTorch Lightning.
+Most notably, the differences in the serialization of models complicate the process of creating checkpoints that can be used interchangeably between PyTorch Lightning and the Huggingface ecosystem.
+Also, PyTorch Lightning, like most deep learning frameworks, evolves fast and is updated frequently.
+This speed can lead to issues that are hard to understand and fix.
+For example, on the machine used to run the experiments of this work, only one of the six available computational backends that govern Multi-GPU training worked reliably.
+Using the other ones either led to freezes while training, exceptions that aborted the training complete, or degraded results because the data was corrupted.
+These problems were exacerbated because PyTorch code is notoriously hard to debug since most of the computations are done outside the Python runtime and thus hard to access with standard debuggers.
+Nonetheless, all the available extension and hyperparameter tuning functions justify the usage of PyTorch Lightning because once the initial setup is running, improving the results is easy and does not require much work.</p>
+<p>To be fair, it has to be stated that including Poutyne in this work is unfair since its scope is much more narrow, and, by its intention, it does not try to offer the same set of functions as both other frameworks.
+Instead of focusing on its lacks, it becomes clear why Poutyne can be helpful by looking at its conceptual design.
+Its conceptual paragon Keras is the most beginner-friendly library to get started with deep learning.
+Since Keras dropped support for other backends like PyTorch, this easy is only available for Tensorflow.
+However, since most deep learning research is done in PyTorch nowadays, learning Tensorflow has become less attractive because beginners will have to switch from Tensorflow to PyTorch at some point as they progress.
+So because learning PyTorch is inevitable for most users, it would be beneficial to be able to start right away with it.
+Without being anywhere near as mature as Keras, Poutyne has the potential of offering a real alternative for it in PyTorch.
+Additionally, a high-level API that enables the quick training of models effortlessly is also attractive for experienced users who want to test a prototype.
+As our results showed, the results won’t be as best as possible, but they are sufficient enough to give a first impression.
+Like Keras, Poutyne is designed to work best with models built from scratch, but it is easy to adapt the framework to work with pretrained models of all sorts.
+The library <code class="docutils literal notranslate"><span class="pre">poutyne-transformers</span></code> might act as a proof-of-concept for further adjustments.</p>
+<p>In conclusion, this work showed that all three of the frameworks have a reason for existence. Choosing between PyTorch Lightning and the Hugginface <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> highly depends on the requirements of the project. PyTorch Lightning is a good choice for models that are intended to go into production. At the same time, the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> is a great choice when doing research where the speed of iteration outweighs the sustainability of the code.
+Poutyne is an excellent choice for beginners who want to get into deep learning and start to train models quickly without having to learn complex frameworks.</p>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        
+            
+
+
+
+<div class='prev-next-bottom'>
+    
+    <div id="prev">
+        <a class="left-prev" href="ExperimentalResults.html" title="previous page">
+            <i class="prevnext-label fas fa-angle-left"></i>
+            <div class="prevnext-info">
+                <p class="prevnext-label">previous</p>
+                <p class="prevnext-title">Experimental Results</p>
+            </div>
+        </a>
+    </div>
+     <div id="next">
+        <a class="right-next" href="Bibliography.html" title="next page">
+            <div class="prevnext-info">
+                <p class="prevnext-label">next</p>
+                <p class="prevnext-title">&lt;no title&gt;</p>
+            </div>
+            <i class="prevnext-label fas fa-angle-right"></i>
+        </a>
+     </div>
+
+</div>
+        
+        </div>
+    </div>
+    <footer class="footer">
+    <div class="container">
+      <p>
+        
+          By Lennart Keller<br/>
+        
+            &copy; Copyright 2021.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>

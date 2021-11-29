@@ -1,7 +1,7 @@
 # Book settings
 # Learn more at https://jupyterbook.org/customize/config.html
 
-title: Transformer Train Python
+title: A comparing guide to training language models with Python.
 author: Lennart Keller
 #logo: logo.png
 
@@ -9,17 +9,22 @@ author: Lennart Keller
 # See https://jupyterbook.org/content/execute.html
 execute:
   execute_notebooks: cache
-  timeout: 60
+  timeout: -1
   stderr_output: remove-warn
 
 # Define the name of the latex output file for PDF builds
 latex:
+  latex_engine: pdflatex
   latex_documents:
     targetname: book.tex
 
 # Add a bibtex file so that we can create citations
 bibtex_bibfiles:
-  - references.bib
+  - _bibliography/references.bib
+
+sphinx:
+  config:
+    bibtex_reference_style: author_year
 
 # Information about where the book exists on the web
 repository:
