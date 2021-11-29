@@ -249,6 +249,7 @@ The `transformers` library comes with a helpful function called `set_seed`, whic
 
 ```{code-cell} ipython3
 :tags: [skip-execution]
+import json
 from transformers import TrainingArguments, HfArgumentParser
 from transformers import AutoModelForTokenClassification, AutoConfig, AutoTokenizer
 from transformers import set_seed
@@ -330,6 +331,11 @@ if __name__ == "__main__":
 
     trainer.save_model(model_args.final_checkpoint_path)
 
+    test_results = trainer.evaluate(eval_dataset=dataset["test"])
+    with open(f"test_results_{model_args.model_name_or_path}.json", "w") as f:
+        json.dump(test_results, f)
+
+    print(test_results)
 ```
 
 ## Conclusion

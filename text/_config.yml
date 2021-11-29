@@ -1,7 +1,7 @@
 # Book settings
 # Learn more at https://jupyterbook.org/customize/config.html
 
-title: Transformer Train Python
+title: A comparing guide to training language models with Python.
 author: Lennart Keller
 #logo: logo.png
 
