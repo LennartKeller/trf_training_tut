@@ -83,7 +83,7 @@ In contrast to the `Model` class, which only intends to do basic training, the `
 For example, it supports logging the progress to various formats, like a CSV table or Tensorboard.
 Monitoring allows the `Experiment` class to save checkpoints of the model that perform best concerning one of the validation metrics.
 Also, it saves all the intermediate results and tracked values to the disk by default.
-For the two primary task types, classification and regression, the `Experiment` class can automatically configure all metrics and the loss function.
+The `Experiment` class can automatically configure all metrics and the loss function for the two primary task types, classification, and regression.
 
 ### Data
 
@@ -95,12 +95,12 @@ The only requirements are that the data comes in one of the supported formats an
 ### Metrics
 
 Poutyne has a custom API for implementing metrics.
-It distinguishes between two types of metrics, batch metric and epoch metrics.
+It distinguishes between two types of metrics, batch metric, and epoch metrics.
 Batch metrics are computed per batch and averaged to obtain the results for one single epoch.
 Epoch metrics are computed on the gathered results of one entire epoch. Thus, they are a good choice for measures that would suffer from averaging over the batch results, like the F-score.
 Poutyne provides predefined metrics for both types. But, unfortunately, they only cover classification tasks.
 There are two options to add other metrics. Either they have to be implemented manually or taken from Scikit-Learn and made compatible using a built-in wrapper class.
-Metrics are passed to `Model` or `Experiment` while their initialization.
+Metrics are passed to `Model` or `Experiment` during their initialization.
 
 ### Callbacks
 
@@ -109,7 +109,7 @@ There are many predefined callbacks available that perform all kinds of tasks, r
 
 ## Implementation
 
-Even though the `transformers` is not compatible with vanilla Poutyne, integrating it does not require complicated changes.
+Even though the `transformers` models are incompatible with vanilla Poutyne, integrating it does not require complicated changes.
 Most of the required adaptions change the data in order to convert betweeN the dictionary-based data model of the `transformers` library and Poutyne’s more classical `X, y` format for input data and targets.
 Since these changes are task agnostic, we factored most of these adaption tools out of the project into a small standalone library. [^gh-link]
 
@@ -117,9 +117,10 @@ Since these changes are task agnostic, we factored most of these adaption tools 
 
 ### Data
 
-To convert the data for an experiment from the Hugginface `Dataset` format into a Poutyne compliant representation, we create a custom data collator.
-The main task is of the collator is to convert each batch of dictionaries into batches of tuples of training data and targets.
-To so the `TransformersCollator` can is initialized with one or multiple names of the target `y_keys` in the input dictionaries. These fields then get copied into the target object. This object is either a tensor, if only a single key was specified or into a dictionary of keys. Additionally, the `remove_labels` parameter can be used to either remove the labels after copying them into the target obejct. By default, they are retained in the input data. This enables to use the internal computation of the loss of standard models, while also being able to use the built-in metrics of Poutyne for monitoring the training.
+We create a custom data collator to convert the data for an experiment from the Hugginface `Dataset` format into a Poutyne compliant representation.
+The main task of the collator is to convert each batch of dictionaries into batches containing tuples of training data and targets.
+To do so, the `TransformersCollator` copies one or multiple entries from the input dictionaries into the target objects. Depending on the number of keys, this object is either a single tensor or a dictionary.
+Additionally, with the `remove_labels`-parameter, the fields that get copied to the target object can be removed from the model's input. By default, they are retained in the input data. This functionality enables using the internal computation of the loss of standard models while also being able to use the built-in metrics of Poutyne for monitoring the training.
 Other collation operations are handled by the default collator from `transformers` or by a custom function.
 
 ```{code-cell} ipython3
@@ -162,7 +163,7 @@ class TransformerCollator:
 
 ### Model
 
-As stated in the Prerequisites chapter, a model’s tokenizer returns a dictionary of data that contains all data required to be fed into the language model unpacked as keyword arguments.
+As stated in the Prerequisites chapter, tokenizers return a dictionary of data that contains all data required to be fed into the language model unpacked as keyword arguments.
 
 ```{code-cell} ipython3
 from transformers import AutoModel, AutoTokenizer
@@ -175,7 +176,10 @@ print(model(**inputs).keys())
 ```
 
 Poutyne instead passes the data to the model in the same format it receives it.
-To make sure that the data is unpacked and passed to the model correctly, we create wrapper class.
+To make sure that the data is unpacked correctly, we create a wrapper class.
+It is also a subclass of the `nn. Module` to ensure that all parameters of the capsulated model can be accessed.
+Apart from the data handling, this class also exposes the custom `save_pretrained`-model of the underlying `transformers` model.
+This way, it is possible to create checkpoints of the trained model that can be loaded and used in the `transformers` ecosystem.
 
 ```{code-cell} ipython3
 :tags: [skip-execution]
@@ -198,10 +202,6 @@ class ModelWrapper(nn.Module):
     def save_pretrained(self, *args, **kwargs) -> None:
         self.transformer.save_pretrained(*args, **kwargs)
 ```
-
-It is also a subclass of the `nn. Module` to ensure that all parameters of the contained model can be accessed.
-Apart from the data handling, this class does not more than exposing the custom `save_pretrained`-model of the underlying `transformers` model.
-This way, it is possible to create checkpoints of the trained model that can be loaded and used in the `transformers` ecosystem.
 
 ### Loss
 
@@ -252,7 +252,7 @@ class PoutyneSequenceOrderingLoss:
 
 ### Metrics
 
-Unlike the Huggingface `Trainer`, which expects all external metrics a single function to compute them all at once, in Poutyne the `Model` or `Experiment`classes are equipped with a list of functions, each of which represents a different metric.
+Unlike the Huggingface `Trainer`, which expects all external metrics a single function to compute them all at once, in Poutyne, the `Model` or `Experiment` classes are equipped with multiple single functions for each metric.
 Like the loss, functions that compute other performance metrics receive the model's output alongside the targets (extracted by collation function).
 Because `transformer` models return not only the logits or predictions of a model but also other things, it is not possible to use Poutynes built-in metrics out of the box.
 They expect the output to be a single tensor containing the logits of the model, so we create a wrapper for metric functions that extracts them from the output and passes them to the metric.
@@ -279,8 +279,7 @@ class MetricWrapper:
 
 Since the logging components of Poutyne infer the name of the metric by assessing the class name of their functions, we need to set the `__name__`-attribute of our wrapper instance with the name of the contained metric.
 
-To implement our sentence ordering metrics, we implement a function that returns a function for each of them.
-These function can then be wrapped by t
+To implement our sentence ordering metrics, we adopt our existing code to return a function for each metric.
 
 ```{code-cell} ipython3
 import numpy as np
@@ -473,12 +472,12 @@ Poutyne provides a well thought and, most of all easy to understand framework to
 Like its conceptual role model Keras, this simplicity is achieved by strict design decisions, like the `X, y` format for data.
 While this strictness is helpful for beginners because they only have to learn one way of doing things, it comes at the cost of being hard to adapt to other frameworks or unintended tasks.
 Luckily, the necessary steps to adapt it to `transformers` and our task are simple and can be reused for most other cases.
-Since Poutynes mimics the Keras-API, its additional features are much more limited than the other frameworks. Even basics techniques like gradient accumulation are not supported.
-Depending on the use-case this limited scope might be a deal-breaker for experienced users or complex tasks, but on the other hand, it makes getting started with the framework much more manageable.
+Since Poutynes mimics the Keras-API, its additional features are much more limited than the other frameworks. Even basic techniques like gradient accumulation are not supported.
+Depending on the use case, this limited scope might be a deal-breaker for experienced users or complex tasks, but on the other hand, it makes getting started with the framework much more manageable.
 This accessibility is underlined by the documentation's quality, which covers all aspects of the framework in concise and easily understandable manners without losing itself in the depths of technical details.
 Yet, there is also potential for further improvements.
-The lack of any support for creating-command line interfaces could force users to migrate to another framework as soon as they need to retrain a model regularly.
+The lack of support for creating-command line interfaces could force users to migrate to another framework as soon as they need to retrain a model regularly.
 Currently, the scope of the framework is heavily skewed towards sequence classification tasks. For example, all built-in metrics measure the quality of a classification model.
 Widening the range of tasks that could be implemented without further extensions would help beginners get into deep learning.
 A possible improvement that falls more into the category of wishful thinking would be that Poutyne would mimic not only the training parts of the Keras API.
-If Poutyne would also introduce the ease of building neural networks without manually adjusting each layer's dimensionality, it would be a significant contribution to the community.
+If Poutyne would also introduce the ease of building neural networks without manually adjusting each layer's dimensionality, it would significantly contribute to the community.

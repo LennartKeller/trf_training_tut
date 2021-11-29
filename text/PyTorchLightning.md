@@ -15,20 +15,20 @@ kernelspec:
 
 In contrast to the Huggingface `Trainer`, which handles the complete training itself, PyTorch Lightning ({cite:t}`falcon2019pytorchlightning`) takes a different approach.
 It not only aims at handling the training but also at structuring the creation of a model too.
-Its main goal is not to hide complexity from the user but to provide a well structured API to building a deep learning models.
+Its main goal is not to hide complexity from the user but to provide a well-structured API for building neural networks of all kinds.
 The most striking aspect of this is that in PyTorch Lightning's philosophy, a model and its inference-, training and prediction logic are not separate things that can be exchanged independently.
-Instead, it binds them directly to the model itself.
+Instead, it binds all these parts directly to the model itself.
 In doing so, PyTorch-Lightning does not make any assumptions on the nature of the model or the training itself. Thus it allows covering many tasks and domains with maximum flexibility.
 
 However, this approach comes at the cost that the user again must implement many things manually.
-Naturaly, this approach is keener to researchers who implement and test custom models, while practitioners who only want to employ pre-built models must deal with some implementational overhead.
+Naturally, this approach is keener to researchers who implement and test custom models, while practitioners who only want to employ pre-built models must deal with some implementational overhead.
 PyTorch Lightning's steep learning curve compounds this issue.
 However, there is exhaustive documentation with many tutorials (as texts and videos), best practices, and user guides on building various models across different domains.
 Also, if an experiment is implemented in PyTorch Lightning, there are a lot of helpful tweaks and techniques to improve or speed up the training.
 So that it can be worthwhile even when using pre-built models.
 These facilitation features include tweaks like training with half-precision, automatic tuning of the learning rate, and integrations into hyperparameter tuning frameworks or creating command-line interfaces to control the parameters.
 In addition to that, there is support for different computational backends that help to dispatch the training on multiple accelerators like GPUs and TPUs.
-If these features are not enough, there is a growing ecosystem of third-party extensions, widening the scope and functionality of the framework
+If these features are not enough, there is a growing ecosystem of third-party extensions, widening the scope and functionality of the framework.
 
 
 
@@ -40,8 +40,10 @@ These classes implement the model, the logic for storing and processing the trai
 
 A subclass of a `LightningModule` implements the model.
 A `LightningModule` is an extended version of PyTorch's `nn.Module` class.
-`nn.Modules` are the basic building blocks of neural networks in PyTorch. In essence, they store a set of parameters, for example, weights of a single layer alongside with `.forward`-method that defines the computational logic when data flows through the module. They are designed to work recursively. One module can be composed of several submodules so that each building block of a neural network, starting from single layers up to a network, can be implemented in this one class.
-[Listing](markdown-fig) shows an exemplary implementation of a densely-connected, feed-forward layer as `nn.Module`.
+`nn.Modules` are the basic building blocks of neural networks in PyTorch. In essence, they store a set of parameters, for example, weights of a single layer alongside with `.forward`-method that defines the computational logic when data flows through the module. They are designed to work recursively. One module can be composed of several submodules so that each building block of a neural network, starting from single layers up to a complete network, can be implemented in this one class.
+The following listing shows an exemplary implementation of a simple linear layer as `nn.Module`.
+By chaining multiple instances of the dense layer in a `nn. Sequential` class, it is possible to create a simple feed-forward network. 
+This network is again a subclass of the `nn.Module` class.
 
 ```{code-cell} ipython3 markdown-fig
 import torch 
@@ -71,9 +73,7 @@ print(outputs.size())
 print(issubclass(nn.Sequential, nn.Module))
 ```
 
-By chaining multiple instances of the dense layer in a `nn. Sequential` class, it is possible to create a simple feed-forward network. This network is again a subclass of the `nn.Module` class.
-
-A `LightningModule` is intended to replace the outmost `nn.Module` instance of a model, meaning the one that holds a complete network.
+A `LightningModule` is intended to replace the outmost `nn.Module` instance of a model, which holds the complete network.
 It extends the `nn.Module` class with new methods, designed to structure not only the logic of a single forward pass but also other steps like a complete train-, test- or validation-steps.
 With this extension, it becomes possible to define a single forward step through the network and how the models should be trained and tested as well.
 In essence, it provides a way to incorporate the training loop into the model itself.
@@ -134,7 +134,7 @@ Like the `LightningModule`, an instance of the `Trainer` is initialized with all
 
 The different stages of the training (training and testing)
 
-### Extending the `Trainer`
+#### Extending the `Trainer`
 
 In contrast to the `LightningModule` and `LightningDataModule` the `Trainer` itself is not intended to be customized in any way. Since their respective objects contain all model or data-related code, the `Trainer` is better kept untouched.
 Instead, if necessary, the functions of the `Trainer` can be extended with callbacks and plugins. Both of them can add custom operations to different stages of the training.
@@ -142,21 +142,22 @@ Callbacks implement steps that are not strictly necessary for training. Instead,
 On the other hand, plugins are meant to extend the `Trainer` with new functionalities like adding support for new accelerators or computational backends. So by their scope, they are meant to be used by experienced users who need to extend the Trainer.
 However, since their API is still in beta and subject to changes in the future, it should be used with caution.
 
-Also, it contains a handful of tweaks to improve the results, like gradient accumulation or gradient clipping
-In addition to that, the `Trainer` supports tuning the learning rate and batch size out of the box. Both features have to be enabled while initializing the `Trainer` and can be invoked by calling the `.tune`-method.
-### Logging
+Also, it contains a handful of tweaks to improve the results, like gradient accumulation or gradient .
+In addition to that, the `Trainer` also supports tuning the learning rate and batch size out of the box. Both tuning features must be enabled while initializing the `Trainer` and can be invoked by calling the `.tune`-method.
+
+#### Logging
 
 While the model defines what measures are logged, the `Trainer` is responsible for writing out these logs.
 By default, it logs the standard output.
 In addition to that, it can be extended with additional loggers.
 PyTorch Lightning provides built-in loggers that log the progress to Tensorboard or other services like Weights and Biases.
-Further loggers, can be implemented using the Logger base class.
-Additional loggers are passed to the `Trainer` during initialization.
+Further loggers, can be implemented using the Logger base-class.
+Multiple loggers are passed to the `Trainer` during initialization as a list.
 
-## CLI Interface
+### CLI Interface
 
 PyTorch Lightning supports the creation of command-line interfaces through the `LightninArgumentParser` class.
-This class is an extended version of the `jsonargparse` and can parse the arguments of Lightning classes and other classes out-of-the-box.
+This class is an extended version of the parser from the `jsonargparse` module, and it can parse the arguments of Lightning classes and other classes out-of-the-box.
 This feature enables adding parameters of different modules to the parser effortlessly.
 
 If more flexibility is needed, for example, when only some parameters of an object should be added to the parser, the best practice is to add a method to the object, which adds these arguments to the parser.
@@ -172,11 +173,9 @@ parser = PlLanguageModelForSequenceOrdering.add_model_specific_args(parser)
 
 ## Implementation
 
-## Model
+### Model
 
-## Transformers
-
-Since we do not build our own model, we need to load the pretrained transformer in the constructor of the model.
+Since we do not build our model from scratch, we need to load the pretrained transformer in the LightningModules's constructor.
 To be able to load different models, we introduce the name of the model as hyperparameters.
 Since the model is pretrained, we only have to specify two other hyperparameters, namely the learning rate and the id of the target token.
 Because Huggingface models are also subclasses of the  `nn.Module` class, loading the transformer model works flawlessly, and the language model is recognized as a submodule of the `PlLanguageModelForSequenceOrdering` class.
@@ -195,7 +194,7 @@ class PlLanguageModelForSequenceOrdering(LightningModule):
         )
 ```
 
-Next, we define a single forward step. This is fairly simple since the only thing we need to do is exclude the labels from the inputs for the language model and pass the rest of the input data to the language model to obtain the ouputs.
+Next, we define a single forward step. Again, the logic is pretty simple since we only need to exclude the labels from the inputs for the language model and pass the rest of the input data to the language model to obtain the outputs.
 
 ```{code-cell} ipython3
 :tags: [skip-execution]
@@ -209,7 +208,7 @@ Next, we define a single forward step. This is fairly simple since the only thin
         return outputs
 ```
 
-Since we want to compute the loss while training and while validating the model, we factor out the loss function into a separate method.
+Because we want to compute the loss while training and validating the model, we factor out the loss function into a separate method.
 Implementation-wise, the loss function is only slightly variated from the original implementation. The only changes are that we retrieve the target token id from the hyperparameters of the model.
 Also, we draw inspiration from the `transformers` API and add a custom version of the forward method. This method computes both the forward step and the loss. The loss is then attached to the output of the model.
 
@@ -365,7 +364,7 @@ Lastly, we need to implement the `configure_optimizers`-method and add the model
         return parent_parser
 ```
 
-## Data
+### Data
 
 In contrast to the model class, we design our version of the `LightningDataModule` to work with any Huggingface `Dataset`.
 Most of the work is done by the `.prepare_data`-method, which implements the processing pipeline for the contained dataset
@@ -462,13 +461,13 @@ class HuggingfaceDatasetWrapper(LightningDataModule):
 
 ```
 
-## Complete code
+### Complete code
 
 Once again, after factoring out the custom modules, the actual experiment can be implemented in relatively few lines of code.
 To control the experiment via the command line, we use the `LightningArgumentParser`.
 We initialize the parser with all arguments from the `Trainer,` `PlLanguageModelForSequenceOrdering`, and `HuggingfaceDatasetWrapper`.
 Additionally, we add more parameters to give each run a name and control the batch sizes for training and testing.
-Similar to implementing the experiment with the Huggingface `Trainer`, we need to make sure that the sentences contain the correct special tokens.
+Similar to implementing the experiment with the Huggingface `Trainer`, we need to ensure that the sentences contain the correct special tokens.
 Replacing these tokens if necessary can be done using the `.map`-method of the `HuggingfaceDatasetWrapper`
 
 
@@ -583,10 +582,10 @@ if __name__ == "__main__":
 
 ## Conclusion
 
-Pytorch Lightning goal is not to hide complexity from the user. Instead, it provides an API that helps to structure the complexity into a sequence of single steps.
+Pytorch Lightning's goal is not to hide complexity from the user. Instead, it provides an API that helps to structure the complexity into a sequence of single steps.
 This approach is constructive when designing custom models from scratch or implementing new training regimes that differ from the standard training loop.
 This flexibility comes at the cost of friendliness to beginners. People who have little experience with PyTorch itself will quickly be overwhelmed by PyTorch Lightning API with vast possibilities to customize steps manually.
 Even though the documentation is extensive and covers nearly all aspects of the library in great detail, it can be frustrating sometimes that there are multiple ways to achieve the same behavior, and there is little to no guidance in choosing between the different parts.
 Like most modern deep learning frameworks, PyTorch Lightning is rapidly evolving, and thus many parts of it are either in beta and subject to significant changes in the future or deprecated. Unfortunately, this is also noticeable when searching the web for further advice since many tips or tutorials quickly become outdated.
-But despite these limitation for beginners, experienced user can really benefit from using PyTorch Lightning. Not only because of the additional features like built-in logging, tuning or other tweaks, but mainly because the well thought API enforces them to write self-contained models that contain all the logic for experimenting with them.
-This enables sharing of model in an effortless way and also alleviates maintainability.
+Nevertheless, despite these limitations for beginners, experienced users can benefit from using PyTorch Lightning. Not only because of the additional features like built-in logging, tuning, or other tweaks but mainly because the well-thought API enforces them to write self-contained models that contain all the logic for experimenting with them.
+This approach effortlessly enables sharing of models and also alleviates maintainability.

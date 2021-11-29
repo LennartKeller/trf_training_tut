@@ -25,7 +25,7 @@ print = pp.pprint
 # Prerequisites
 
 The following experiments share the same general logic, but the concrete implementation will differ in minor details since each framework has another structural approach.
-So before we start, we will take a short look at the general logic for the data loading parts of the experiment, as well as the computation of the loss function and evaluation metrics
+So before we start, we will take a brief look at the general logic for the data loading parts of the experiment and the computation of the loss function.
 
 ## Dataset-preparation
 
@@ -60,7 +60,7 @@ Next, we create the training data by shuffling the sentences and creating labels
 We implement the shuffling process using the `.map`-method of the `Dataset`-class.
 Following the library's out-of-place policy, the `.map`-method returns a new dataset containing the changes instead of changing the dataset it was called on.
 
-The `.map`-method has two modes: batch-mode or single entry mode. In either way it receives a dictionary as input where each key represents a column of the dataset.
+The `.map`-method has two modes: batch-mode or single entry mode. Either way, it receives a dictionary as input where each key represents a column of the dataset.
 In single entry mode, the values of the input dictionary hold one entry in the dataset.
 In batch mode, the values are lists containing more than one entry.
 The following function only works in both modes since it converts both input formats to the same intermediate form, but in general, the batch mode should be preferred to save time.
@@ -103,7 +103,7 @@ def make_shuffle_func(sep_token):
     return shuffle_stories
 ```
 
-`[CLS]` is one of the specials tokens of models directly descending from BERT. During the pretraining stage, it learns a representation of the whole input sequence and thus only occurs once in each input.
+`[CLS]` is one of the special tokens of models directly descending from BERT. During the pretraining stage, it learns a representation of the whole input sequence and thus only occurs once in each input.
 Since we do not need a representation of the input as a whole, we use it as the special sentence token.
 
 ```{code-cell} ipython3
@@ -275,6 +275,7 @@ def so_data_collator(batch_entries, label_key='so_targets'):
         batch[label] = labels
     return batch
 ```
+
 This function used the Huggingface default collation function to handle everything except the labels. The labels are padded with a batch-wise max length strategy and added to the batch.
 
 ```{code-cell} ipython3

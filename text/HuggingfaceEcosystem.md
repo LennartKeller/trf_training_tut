@@ -38,14 +38,14 @@ But these additions are relatively unstable and subject to frequent significant 
 ## `tokenizers`
 
 A notable characteristic of modern language models is that nearly all ship with a custom, fitted tokenizer.
-These tokenizers operate on a subword level and are trained to represent the vocabulary of the pretraining data for the models with a fixed size vocabulary.
+These tokenizers operate on a subword level and are trained to represent texts with a fixed-sized vocabulary.
 Huggingface provides the `tokenizers` library that offers implementations of the most common tokenizer models. These tokenizers come in two versions, a fast one written in Rust and a slower python implementation.
 For the sake of efficiency, the Rust version is the best choice most of the time.
 
 ## `datasets`
 
-Lastly, to complete the toolset of a transformers-NLP pipeline, Huggingface also develops a library for Dataset management, called `datasets`.
-This library aims to streamline the process of data preparation and provide a consistent interface to create, store, and process large datasets too large to fit into the memory.
+Lastly, to complete the NLP pipeline, Huggingface also develops a library for Dataset management, called `datasets`.
+This library aims to streamline the process of data preparation and provide a consistent interface to create, store, and process large datasets too large to fit into the memory in a whole.
 
 With these three libraries, it is possible to cover the overwhelming majority of possible tasks.
 
@@ -69,12 +69,13 @@ inputs = tokenizer(data["text"], return_tensors="pt")
 print(inputs)
 outputs = model(**inputs)
 print(outputs)
+print(outputs["last_hidden_state"])
 ```
 
 ## `PyTorch`-Backend
 
 Relying on PyTorch as the underlying deep learning framework comes with one caveat: Unlike Tensorflow, which has integrated Keras as a high-level API for training neural networks, PyTorch does not provide any tools to facilitate the training process.
-Instead, PyTorch's research-orientated nature makes it entirely up to the users to implement the training loop. While this is no problem when researching and experimenting with new techniques, it is time-consuming in the practitioner's case.
+Instead, PyTorch's research-orientated nature makes it entirely up to the users to implement the training loop. While this is no problem when researching and experimenting with new techniques, it is often time-consuming in the practitioner's case.
 When applying standard models to tasks like text classification, implementing the training loop is an obstacle that only increases development time. Also, it introduces a new space for making errors.
 
 In most application-oriented scenarios, the training loop roughly looks like this:
@@ -122,5 +123,5 @@ for train_step, batch in enumerate(train_data):
 
 But not only can it become quite tedious to write this loop (or variations of it) repeatedly, but more gravely, it sets a barrier of entry for beginners or non-experts because it adds another layer of complexity when tinkering around with deep learning.
 
-Another implication of outsourcing this process to the users hits when the models grow in size. Modern language models require a massive amount of memory even when trained with tiny batch sizes. There are strategies to overcome these limitations, like gradient accumulation. But all these tricks again have to be implemented by the user.
+Another implication of outsourcing this process to the users hits when the models grow in size. Modern language models may require a massive amount of memory even when trained with tiny batch sizes. There are strategies to overcome these limitations, like gradient accumulation. But all these tricks again have to be implemented by the user.
 While one can argue that most of these tweaks are pretty easy to implement, and there is a vast number of educational material available, the downside comes very clear when working with models that do not even fit on a single GPU. These models have to be trained in a distributed manner across multiple devices. When doing so, the training loop itself gets much more complex and challenging to implement.
