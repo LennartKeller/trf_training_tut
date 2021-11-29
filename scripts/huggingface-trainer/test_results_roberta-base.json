@@ -1,0 +1,1 @@
+{"eval_loss": 1.6194052991101264, "eval_kendalls_tau": 0.8612233826122337, "eval_acc": 0.7863556218635561, "eval_mean_logits": 1.766301155090332, "eval_std_logits": 0.5626010894775391, "eval_runtime": 141.3357, "eval_samples_per_second": 52.167, "eval_steps_per_second": 6.523, "epoch": 3.0}
