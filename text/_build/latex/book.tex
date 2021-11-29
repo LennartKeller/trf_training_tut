@@ -138,7 +138,7 @@ Status
 HuggingFaceTrainer
 &
 \sphinxAtStartPar
-2021\sphinxhyphen{}11\sphinxhyphen{}29 16:41
+2021\sphinxhyphen{}11\sphinxhyphen{}29 17:06
 &
 \sphinxAtStartPar
 cache
@@ -154,13 +154,13 @@ cache
 HuggingfaceEcosystem
 &
 \sphinxAtStartPar
-2021\sphinxhyphen{}11\sphinxhyphen{}29 16:41
+2021\sphinxhyphen{}11\sphinxhyphen{}29 17:06
 &
 \sphinxAtStartPar
 cache
 &
 \sphinxAtStartPar
-12.22
+12.06
 &
 \sphinxAtStartPar
 ✅
@@ -170,13 +170,13 @@ cache
 Poutyne
 &
 \sphinxAtStartPar
-2021\sphinxhyphen{}11\sphinxhyphen{}29 16:41
+2021\sphinxhyphen{}11\sphinxhyphen{}29 17:06
 &
 \sphinxAtStartPar
 cache
 &
 \sphinxAtStartPar
-12.08
+11.06
 &
 \sphinxAtStartPar
 ✅
@@ -186,29 +186,29 @@ cache
 Prerequisites
 &
 \sphinxAtStartPar
-2021\sphinxhyphen{}11\sphinxhyphen{}29 16:41
+2021\sphinxhyphen{}11\sphinxhyphen{}29 17:06
 &
 \sphinxAtStartPar
 cache
 &
 \sphinxAtStartPar
-17.1
+\sphinxhyphen{}
 &
 \sphinxAtStartPar
-✅
+❌
 \\
 \hline
 \sphinxAtStartPar
 PyTorchLightning
 &
 \sphinxAtStartPar
-2021\sphinxhyphen{}11\sphinxhyphen{}29 16:41
+2021\sphinxhyphen{}11\sphinxhyphen{}29 17:06
 &
 \sphinxAtStartPar
 cache
 &
 \sphinxAtStartPar
-1.29
+1.13
 &
 \sphinxAtStartPar
 ✅
@@ -518,15 +518,6 @@ At first, we load the dataset in its original format.
 \PYG{n}{dataset}
 \end{sphinxVerbatim}
 \end{sphinxVerbatimInput}
-\begin{sphinxVerbatimOutput}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-Dataset(\PYGZob{}
-    features: [\PYGZsq{}storyid\PYGZsq{}, \PYGZsq{}storytitle\PYGZsq{}, \PYGZsq{}sentence1\PYGZsq{}, \PYGZsq{}sentence2\PYGZsq{}, \PYGZsq{}sentence3\PYGZsq{}, \PYGZsq{}sentence4\PYGZsq{}, \PYGZsq{}sentence5\PYGZsq{}],
-    num\PYGZus{}rows: 52665
-\PYGZcb{})
-\end{sphinxVerbatim}
-\end{sphinxVerbatimOutput}
 
 \sphinxAtStartPar
 We got 52.665 stories. Each one has a length of five sentences. Additionally, each text has a short title, but we discard them.
@@ -536,31 +527,12 @@ We got 52.665 stories. Each one has a length of five sentences. Additionally, ea
 \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{dataset}\PYG{p}{)}
 \end{sphinxVerbatim}
 \end{sphinxVerbatimInput}
-\begin{sphinxVerbatimOutput}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-52665
-\end{sphinxVerbatim}
-\end{sphinxVerbatimOutput}
 \begin{sphinxVerbatimInput}
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{dataset}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{)}
 \end{sphinxVerbatim}
 \end{sphinxVerbatimInput}
-\begin{sphinxVerbatimOutput}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYGZob{}\PYGZsq{}sentence1\PYGZsq{}: \PYGZsq{}David noticed he had put on a lot of weight recently.\PYGZsq{},
- \PYGZsq{}sentence2\PYGZsq{}: \PYGZsq{}He examined his habits to try and figure out the reason.\PYGZsq{},
- \PYGZsq{}sentence3\PYGZsq{}: \PYGZdq{}He realized he\PYGZsq{}d been eating too much fast food lately.\PYGZdq{},
- \PYGZsq{}sentence4\PYGZsq{}: \PYGZsq{}He stopped going to burger places and started a vegetarian \PYGZsq{}
-              \PYGZsq{}diet.\PYGZsq{},
- \PYGZsq{}sentence5\PYGZsq{}: \PYGZsq{}After a few weeks, he started to feel much better.\PYGZsq{},
- \PYGZsq{}storyid\PYGZsq{}: \PYGZsq{}8bbe6d11\PYGZhy{}1e2e\PYGZhy{}413c\PYGZhy{}bf81\PYGZhy{}eaea05f4f1bd\PYGZsq{},
- \PYGZsq{}storytitle\PYGZsq{}: \PYGZsq{}David Drops the Weight\PYGZsq{}\PYGZcb{}
-\end{sphinxVerbatim}
-\end{sphinxVerbatimOutput}
 
 \sphinxAtStartPar
 Next, we create the training data by shuffling the sentences and creating labels indicating the original order. Also, we add special tokens to each sentence.
@@ -630,12 +602,6 @@ Since we do not need a representation of the input as a whole, we use it as the 
 \PYG{n}{dataset} \PYG{o}{=} \PYG{n}{dataset}\PYG{o}{.}\PYG{n}{map}\PYG{p}{(}\PYG{n}{map\PYGZus{}func}\PYG{p}{,} \PYG{n}{batched}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
 \end{sphinxVerbatim}
 \end{sphinxVerbatimInput}
-\begin{sphinxVerbatimOutput}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-  0\PYGZpc{}|          | 0/53 [00:00\PYGZlt{}?, ?ba/s]
-\end{sphinxVerbatim}
-\end{sphinxVerbatimOutput}
 
 \sphinxAtStartPar
 After applying the shuffle function, the dataset has two additional columns. The \sphinxcode{\sphinxupquote{text}} column contains the shuffled and concatenated sentences, and the \sphinxcode{\sphinxupquote{so\_targets}} column contains the indices of the sentences in the original order. For example, in the first text in the dataset, the first sentence in the shuffled text is 4th place in the original order.
@@ -645,25 +611,6 @@ After applying the shuffle function, the dataset has two additional columns. The
 \PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{dataset}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{)}
 \end{sphinxVerbatim}
 \end{sphinxVerbatimInput}
-\begin{sphinxVerbatimOutput}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYGZob{}\PYGZsq{}sentence1\PYGZsq{}: \PYGZsq{}David noticed he had put on a lot of weight recently.\PYGZsq{},
- \PYGZsq{}sentence2\PYGZsq{}: \PYGZsq{}He examined his habits to try and figure out the reason.\PYGZsq{},
- \PYGZsq{}sentence3\PYGZsq{}: \PYGZdq{}He realized he\PYGZsq{}d been eating too much fast food lately.\PYGZdq{},
- \PYGZsq{}sentence4\PYGZsq{}: \PYGZsq{}He stopped going to burger places and started a vegetarian \PYGZsq{}
-              \PYGZsq{}diet.\PYGZsq{},
- \PYGZsq{}sentence5\PYGZsq{}: \PYGZsq{}After a few weeks, he started to feel much better.\PYGZsq{},
- \PYGZsq{}so\PYGZus{}targets\PYGZsq{}: [3, 1, 2, 4, 0],
- \PYGZsq{}storyid\PYGZsq{}: \PYGZsq{}8bbe6d11\PYGZhy{}1e2e\PYGZhy{}413c\PYGZhy{}bf81\PYGZhy{}eaea05f4f1bd\PYGZsq{},
- \PYGZsq{}storytitle\PYGZsq{}: \PYGZsq{}David Drops the Weight\PYGZsq{},
- \PYGZsq{}text\PYGZsq{}: \PYGZsq{}[CLS] He stopped going to burger places and started a vegetarian \PYGZsq{}
-         \PYGZsq{}diet. [CLS] He examined his habits to try and figure out the reason. \PYGZsq{}
-         \PYGZdq{}[CLS] He realized he\PYGZsq{}d been eating too much fast food lately. [CLS] \PYGZdq{}
-         \PYGZsq{}After a few weeks, he started to feel much better. [CLS] David \PYGZsq{}
-         \PYGZsq{}noticed he had put on a lot of weight recently.\PYGZsq{}\PYGZcb{}
-\end{sphinxVerbatim}
-\end{sphinxVerbatimOutput}
 
 \sphinxAtStartPar
 Lastly, we want to split our dataset into three subsets.
@@ -684,25 +631,6 @@ The test set will be used for the final evaluation of the final model.
 \PYG{n}{dataset}
 \end{sphinxVerbatim}
 \end{sphinxVerbatimInput}
-\begin{sphinxVerbatimOutput}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-DatasetDict(\PYGZob{}
-    train: Dataset(\PYGZob{}
-        features: [\PYGZsq{}sentence1\PYGZsq{}, \PYGZsq{}sentence2\PYGZsq{}, \PYGZsq{}sentence3\PYGZsq{}, \PYGZsq{}sentence4\PYGZsq{}, \PYGZsq{}sentence5\PYGZsq{}, \PYGZsq{}so\PYGZus{}targets\PYGZsq{}, \PYGZsq{}storyid\PYGZsq{}, \PYGZsq{}storytitle\PYGZsq{}, \PYGZsq{}text\PYGZsq{}],
-        num\PYGZus{}rows: 42132
-    \PYGZcb{})
-    test: Dataset(\PYGZob{}
-        features: [\PYGZsq{}sentence1\PYGZsq{}, \PYGZsq{}sentence2\PYGZsq{}, \PYGZsq{}sentence3\PYGZsq{}, \PYGZsq{}sentence4\PYGZsq{}, \PYGZsq{}sentence5\PYGZsq{}, \PYGZsq{}so\PYGZus{}targets\PYGZsq{}, \PYGZsq{}storyid\PYGZsq{}, \PYGZsq{}storytitle\PYGZsq{}, \PYGZsq{}text\PYGZsq{}],
-        num\PYGZus{}rows: 7373
-    \PYGZcb{})
-    val: Dataset(\PYGZob{}
-        features: [\PYGZsq{}sentence1\PYGZsq{}, \PYGZsq{}sentence2\PYGZsq{}, \PYGZsq{}sentence3\PYGZsq{}, \PYGZsq{}sentence4\PYGZsq{}, \PYGZsq{}sentence5\PYGZsq{}, \PYGZsq{}so\PYGZus{}targets\PYGZsq{}, \PYGZsq{}storyid\PYGZsq{}, \PYGZsq{}storytitle\PYGZsq{}, \PYGZsq{}text\PYGZsq{}],
-        num\PYGZus{}rows: 3160
-    \PYGZcb{})
-\PYGZcb{})
-\end{sphinxVerbatim}
-\end{sphinxVerbatimOutput}
 
 \sphinxAtStartPar
 Finally, we save the dataset.
@@ -735,43 +663,12 @@ From a more concrete technical perspective, the \sphinxcode{\sphinxupquote{Datas
 \PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{dataset}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{train}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{]}\PYG{o}{.}\PYG{n}{features}\PYG{p}{)}
 \end{sphinxVerbatim}
 \end{sphinxVerbatimInput}
-\begin{sphinxVerbatimOutput}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYGZob{}\PYGZsq{}sentence1\PYGZsq{}: Value(dtype=\PYGZsq{}string\PYGZsq{}, id=None),
- \PYGZsq{}sentence2\PYGZsq{}: Value(dtype=\PYGZsq{}string\PYGZsq{}, id=None),
- \PYGZsq{}sentence3\PYGZsq{}: Value(dtype=\PYGZsq{}string\PYGZsq{}, id=None),
- \PYGZsq{}sentence4\PYGZsq{}: Value(dtype=\PYGZsq{}string\PYGZsq{}, id=None),
- \PYGZsq{}sentence5\PYGZsq{}: Value(dtype=\PYGZsq{}string\PYGZsq{}, id=None),
- \PYGZsq{}so\PYGZus{}targets\PYGZsq{}: Sequence(feature=Value(dtype=\PYGZsq{}int64\PYGZsq{}, id=None), length=\PYGZhy{}1, id=None),
- \PYGZsq{}storyid\PYGZsq{}: Value(dtype=\PYGZsq{}string\PYGZsq{}, id=None),
- \PYGZsq{}storytitle\PYGZsq{}: Value(dtype=\PYGZsq{}string\PYGZsq{}, id=None),
- \PYGZsq{}text\PYGZsq{}: Value(dtype=\PYGZsq{}string\PYGZsq{}, id=None)\PYGZcb{}
-\end{sphinxVerbatim}
-\end{sphinxVerbatimOutput}
 \begin{sphinxVerbatimInput}
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{dataset}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{train}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{]}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{)}
 \end{sphinxVerbatim}
 \end{sphinxVerbatimInput}
-\begin{sphinxVerbatimOutput}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYGZob{}\PYGZsq{}sentence1\PYGZsq{}: \PYGZsq{}Bob took his daughter canoeing on the river.\PYGZsq{},
- \PYGZsq{}sentence2\PYGZsq{}: \PYGZsq{}The entire trip was about three miles.\PYGZsq{},
- \PYGZsq{}sentence3\PYGZsq{}: \PYGZsq{}The current was very fast through the shoals.\PYGZsq{},
- \PYGZsq{}sentence4\PYGZsq{}: \PYGZsq{}They got hung up on a rock near the end.\PYGZsq{},
- \PYGZsq{}sentence5\PYGZsq{}: \PYGZsq{}They had a good time and pledged to go again.\PYGZsq{},
- \PYGZsq{}so\PYGZus{}targets\PYGZsq{}: [3, 4, 2, 0, 1],
- \PYGZsq{}storyid\PYGZsq{}: \PYGZsq{}2696704e\PYGZhy{}60a8\PYGZhy{}44de\PYGZhy{}99ea\PYGZhy{}bed2dada2a68\PYGZsq{},
- \PYGZsq{}storytitle\PYGZsq{}: \PYGZsq{}Canoeing\PYGZsq{},
- \PYGZsq{}text\PYGZsq{}: \PYGZsq{}[CLS] They got hung up on a rock near the end. [CLS] They had a good \PYGZsq{}
-         \PYGZsq{}time and pledged to go again. [CLS] The current was very fast \PYGZsq{}
-         \PYGZsq{}through the shoals. [CLS] Bob took his daughter canoeing on the \PYGZsq{}
-         \PYGZsq{}river. [CLS] The entire trip was about three miles.\PYGZsq{}\PYGZcb{}
-\end{sphinxVerbatim}
-\end{sphinxVerbatimOutput}
 
 \sphinxAtStartPar
 We can’t feed the model with raw texts, so we have to tokenize them beforehand.
@@ -788,14 +685,6 @@ As stated before, each model comes with a custom tokenizer, so we have to load i
 \PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{tokenized\PYGZus{}text}\PYG{p}{)}
 \end{sphinxVerbatim}
 \end{sphinxVerbatimInput}
-\begin{sphinxVerbatimOutput}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYGZob{}\PYGZsq{}attention\PYGZus{}mask\PYGZsq{}: [1, 1, 1, 1, 1, 1, 1, 1],
- \PYGZsq{}input\PYGZus{}ids\PYGZsq{}: [101, 4479, 1355, 1205, 1103, 1812, 119, 102],
- \PYGZsq{}token\PYGZus{}type\PYGZus{}ids\PYGZsq{}: [0, 0, 0, 0, 0, 0, 0, 0]\PYGZcb{}
-\end{sphinxVerbatim}
-\end{sphinxVerbatimOutput}
 
 \sphinxAtStartPar
 The tokenizer takes a text or a collection of texts and converts it to a tokenized sequence. Also, it creates additional inputs for the model, such as the attention mask.
@@ -823,24 +712,6 @@ To tokenize the whole dataset, we can once again use the map function.
 \PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{dataset}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{train}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{]}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{.}\PYG{n}{keys}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
 \end{sphinxVerbatim}
 \end{sphinxVerbatimInput}
-\begin{sphinxVerbatimOutput}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-  0\PYGZpc{}|          | 0/43 [00:00\PYGZlt{}?, ?ba/s]
-\end{sphinxVerbatim}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-  0\PYGZpc{}|          | 0/8 [00:00\PYGZlt{}?, ?ba/s]
-\end{sphinxVerbatim}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-  0\PYGZpc{}|          | 0/4 [00:00\PYGZlt{}?, ?ba/s]
-\end{sphinxVerbatim}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-dict\PYGZus{}keys([\PYGZsq{}attention\PYGZus{}mask\PYGZsq{}, \PYGZsq{}input\PYGZus{}ids\PYGZsq{}, \PYGZsq{}sentence1\PYGZsq{}, \PYGZsq{}sentence2\PYGZsq{}, \PYGZsq{}sentence3\PYGZsq{}, \PYGZsq{}sentence4\PYGZsq{}, \PYGZsq{}sentence5\PYGZsq{}, \PYGZsq{}so\PYGZus{}targets\PYGZsq{}, \PYGZsq{}storyid\PYGZsq{}, \PYGZsq{}storytitle\PYGZsq{}, \PYGZsq{}text\PYGZsq{}, \PYGZsq{}token\PYGZus{}type\PYGZus{}ids\PYGZsq{}])
-\end{sphinxVerbatim}
-\end{sphinxVerbatimOutput}
 
 \sphinxAtStartPar
 To feed the data to the neural network, we have to split it up into batches of a fixed size.
@@ -867,14 +738,6 @@ Using a simple identity function, we see that the \sphinxcode{\sphinxupquote{col
 \PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{batch}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{.}\PYG{n}{keys}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
 \end{sphinxVerbatim}
 \end{sphinxVerbatimInput}
-\begin{sphinxVerbatimOutput}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-2
-\PYGZlt{}class \PYGZsq{}list\PYGZsq{}\PYGZgt{}
-dict\PYGZus{}keys([\PYGZsq{}attention\PYGZus{}mask\PYGZsq{}, \PYGZsq{}input\PYGZus{}ids\PYGZsq{}, \PYGZsq{}sentence1\PYGZsq{}, \PYGZsq{}sentence2\PYGZsq{}, \PYGZsq{}sentence3\PYGZsq{}, \PYGZsq{}sentence4\PYGZsq{}, \PYGZsq{}sentence5\PYGZsq{}, \PYGZsq{}so\PYGZus{}targets\PYGZsq{}, \PYGZsq{}storyid\PYGZsq{}, \PYGZsq{}storytitle\PYGZsq{}, \PYGZsq{}text\PYGZsq{}, \PYGZsq{}token\PYGZus{}type\PYGZus{}ids\PYGZsq{}])
-\end{sphinxVerbatim}
-\end{sphinxVerbatimOutput}
 
 \sphinxAtStartPar
 Huggingface provides a collate function that can convert tokenized data into batches in a suitable format.
@@ -889,15 +752,6 @@ The Huggingface collation function only works with numeric data such as scalars 
 \PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{dataset}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{train}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{o}{.}\PYG{n}{features}\PYG{p}{)}
 \end{sphinxVerbatim}
 \end{sphinxVerbatimInput}
-\begin{sphinxVerbatimOutput}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYGZob{}\PYGZsq{}attention\PYGZus{}mask\PYGZsq{}: Sequence(feature=Value(dtype=\PYGZsq{}int8\PYGZsq{}, id=None), length=\PYGZhy{}1, id=None),
- \PYGZsq{}input\PYGZus{}ids\PYGZsq{}: Sequence(feature=Value(dtype=\PYGZsq{}int32\PYGZsq{}, id=None), length=\PYGZhy{}1, id=None),
- \PYGZsq{}so\PYGZus{}targets\PYGZsq{}: Sequence(feature=Value(dtype=\PYGZsq{}int64\PYGZsq{}, id=None), length=\PYGZhy{}1, id=None),
- \PYGZsq{}token\PYGZus{}type\PYGZus{}ids\PYGZsq{}: Sequence(feature=Value(dtype=\PYGZsq{}int8\PYGZsq{}, id=None), length=\PYGZhy{}1, id=None)\PYGZcb{}
-\end{sphinxVerbatim}
-\end{sphinxVerbatimOutput}
 
 \sphinxAtStartPar
 After only numeric data is left, we have to face the last problem in the collation problem.
@@ -948,19 +802,6 @@ This function used the Huggingface default collation function to handle everythi
 \PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{batch}\PYG{p}{)}
 \end{sphinxVerbatim}
 \end{sphinxVerbatimInput}
-\begin{sphinxVerbatimOutput}
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYGZob{}\PYGZsq{}attention\PYGZus{}mask\PYGZsq{}: tensor([[1, 1, 1,  ..., 0, 0, 0],
-        [1, 1, 1,  ..., 0, 0, 0]]),
- \PYGZsq{}input\PYGZus{}ids\PYGZsq{}: tensor([[ 101, 1220, 1400,  ...,    0,    0,    0],
-        [ 101, 1109, 3336,  ...,    0,    0,    0]]),
- \PYGZsq{}so\PYGZus{}targets\PYGZsq{}: tensor([[3, 4, 2, 0, 1],
-        [1, 0, 2, 3, 4]]),
- \PYGZsq{}token\PYGZus{}type\PYGZus{}ids\PYGZsq{}: tensor([[0, 0, 0,  ..., 0, 0, 0],
-        [0, 0, 0,  ..., 0, 0, 0]])\PYGZcb{}
-\end{sphinxVerbatim}
-\end{sphinxVerbatimOutput}
 
 \sphinxAtStartPar
 Now the data is in the correct format for training.
@@ -2834,6 +2675,9 @@ The library \sphinxcode{\sphinxupquote{poutyne\sphinxhyphen{}transformers}} migh
 In conclusion, this work showed that all three of the frameworks have a reason for existence. Choosing between PyTorch Lightning and the Hugginface \sphinxcode{\sphinxupquote{Trainer}} highly depends on the requirements of the project. PyTorch Lightning is a good choice for models that are intended to go into production. At the same time, the \sphinxcode{\sphinxupquote{Trainer}} is a great choice when doing research where the speed of iteration outweighs the sustainability of the code.
 Poutyne is an excellent choice for beginners who want to get into deep learning and start to train models quickly without having to learn complex frameworks.
 
+
+\chapter{Bibliography}
+\label{\detokenize{Bibliography:bibliography}}\label{\detokenize{Bibliography::doc}}
 \sphinxAtStartPar
 
 
