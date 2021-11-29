@@ -1,0 +1,897 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Poutyne &#8212; A comparing guide to training language models with Python.</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet" />
+  <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Experimental Results" href="ExperimentalResults.html" />
+    <link rel="prev" title="PyTorch Lightning" href="PyTorchLightning.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+      
+      
+      <h1 class="site-logo" id="site-title">A comparing guide to training language models with Python.</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Home.html">
+   Preface
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Introduction.html">
+   Introduction
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="HuggingfaceEcosystem.html">
+   The Huggingface ecosystem
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Experiment.html">
+   Experimental Design
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Prerequisites.html">
+   Prerequisites
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="HuggingFaceTrainer.html">
+   Huggingface Trainer
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="PyTorchLightning.html">
+   PyTorch Lightning
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Poutyne
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ExperimentalResults.html">
+   Experimental Results
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Conclusion.html">
+   Conclusion
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        <a class="dropdown-buttons"
+            href="_sources/Poutyne.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download notebook file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/Poutyne.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/LennartKeller/trf_training_tut"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/LennartKeller/trf_training_tut/issues/new?title=Issue%20on%20page%20%2FPoutyne.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/LennartKeller/trf_training_tut/master?urlpath=tree/Poutyne.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#classes">
+   Classes
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#model">
+     Model
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#experiment">
+     Experiment
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#data">
+     Data
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#additional-features">
+   Additional Features
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#metrics">
+     Metrics
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#callbacks">
+     Callbacks
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#implementation">
+   Implementation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id3">
+     Data
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id4">
+     Model
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#loss">
+     Loss
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id5">
+     Metrics
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#complete-code">
+     Complete code
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conclusion">
+   Conclusion
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="tex2jax_ignore mathjax_ignore section" id="poutyne">
+<h1>Poutyne<a class="headerlink" href="#poutyne" title="Permalink to this headline">¶</a></h1>
+<p>Compared to the other two frameworks, Poutyne (<span id="id1">Paradis <em>et al.</em> [<a class="reference internal" href="Bibliography.html#id5">2020</a>]</span>) has a more narrow scope.
+Instead of trying to make the training of a fixed set of models as easy as possible like Huggingface <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>, or facilitating the creation and training of custom models like PyTorch Lightning, it tries to bring the ease of the Keras API from the realms of Tensorflow to the world of PyTorch.
+The benefits of the Keras API are its simplicity and orientation at well-established machine learning frameworks like Scikit-Learn.
+This simplicity lowers the barrier of entry for beginners because it lowers the amount of time needed to get hands-on training for their first model.
+The following exemplary listing shows the typical workflow in Poutyne.</p>
+<div class="cell tag_skip-execution docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">poutyne</span> <span class="kn">import</span> <span class="n">Model</span>
+
+<span class="o">...</span>
+
+<span class="n">network</span> <span class="o">=</span> <span class="n">make_network</span><span class="p">()</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+<span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;validation&quot;</span><span class="p">)</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="s2">&quot;sgd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cross_entropy&quot;</span><span class="p">,</span>
+    <span class="n">batch_metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">],</span>
+    <span class="n">epoch_metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;f1&quot;</span><span class="p">],</span>
+    <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda:0&quot;</span>
+<span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">),</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span>
+<span class="p">)</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Like Keras, Poutyne automates many steps for standard cases like the optimizer configuration or the loss function.
+However, Poutyne does not mimic the whole Keras API but only the training part.
+The model’s creation still has to be done in plain PyTorch, which is generally a bit trickier than Keras because the dimensions of all layers have to be chosen manually.
+In addition to the training functions, Poutyne also provides utilities to conduct and save whole experiments and utilities for creating checkpoints, logging, scheduling of the learning rate, and multi-device training.</p>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="model">
+<h3>Model<a class="headerlink" href="#model" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">Model</span></code> class wraps a neural network alongside an optimizer, loss function, and validation metrics.
+It exposes <code class="docutils literal notranslate"><span class="pre">.fit</span></code>-, <code class="docutils literal notranslate"><span class="pre">.evaluate</span></code>-, and <code class="docutils literal notranslate"><span class="pre">.predict</span></code>-methods for training, evaluation, and inference.
+Each of these methods exits in different variations that consume the data either as a list of batches, PyTorch <code class="docutils literal notranslate"><span class="pre">Dataset</span></code>, or as a generator yielding batches.
+Additional hyperparameters, like the batch size, or the number of epochs to train, can be passed the methods directly.</p>
+</div>
+<div class="section" id="experiment">
+<h3>Experiment<a class="headerlink" href="#experiment" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> class is an extended version of the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class that comes with helpful additions for conducting deep learning experiments.
+Like the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class, an <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> is equipped with the neural network, optimizer, loss function, and metrics into a single object and has methods to start the training, evaluation, or prediction.
+In contrast to the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class, which only intends to do basic training, the <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> class provides additional features to organize and track the progress.
+For example, it supports logging the progress to various formats, like a CSV table or Tensorboard.
+Monitoring allows the <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> class to save checkpoints of the model that perform best concerning one of the validation metrics.
+Also, it saves all the intermediate results and tracked values to the disk by default.
+The <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> class can automatically configure all metrics and the loss function for the two primary task types, classification, and regression.</p>
+</div>
+<div class="section" id="data">
+<h3>Data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h3>
+<p>Poutyne is data agnostic meaning, that it does not provide any tooling to load, process, and store the training data.
+The only requirements are that the data comes in one of the supported formats and that each batch consists of two objects: one that holds the training data and one that contains the label.</p>
+</div>
+</div>
+<div class="section" id="additional-features">
+<h2>Additional Features<a class="headerlink" href="#additional-features" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="metrics">
+<h3>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">¶</a></h3>
+<p>Poutyne has a custom API for implementing metrics.
+It distinguishes between two types of metrics, batch metric, and epoch metrics.
+Batch metrics are computed per batch and averaged to obtain the results for one single epoch.
+Epoch metrics are computed on the gathered results of one entire epoch. Thus, they are a good choice for measures that would suffer from averaging over the batch results, like the F-score.
+Poutyne provides predefined metrics for both types. But, unfortunately, they only cover classification tasks.
+There are two options to add other metrics. Either they have to be implemented manually or taken from Scikit-Learn and made compatible using a built-in wrapper class.
+Metrics are passed to <code class="docutils literal notranslate"><span class="pre">Model</span></code> or <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> during their initialization.</p>
+</div>
+<div class="section" id="callbacks">
+<h3>Callbacks<a class="headerlink" href="#callbacks" title="Permalink to this headline">¶</a></h3>
+<p>Callbacks are intended to extend the functions of the <code class="docutils literal notranslate"><span class="pre">Model</span></code> or <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> class. Like the callbacks from the other frameworks, they have access to the model’s current state and can perform actions at various steps while training.
+There are many predefined callbacks available that perform all kinds of tasks, ranging from logging, keeping track of gradients, scheduling the learning, creating checkpoints, to sending notifications to inform clients about the progress of the training.</p>
+</div>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>Even though the <code class="docutils literal notranslate"><span class="pre">transformers</span></code> models are incompatible with vanilla Poutyne, integrating it does not require complicated changes.
+Most of the required adaptions change the data in order to convert betweeN the dictionary-based data model of the <code class="docutils literal notranslate"><span class="pre">transformers</span></code> library and Poutyne’s more classical <code class="docutils literal notranslate"><span class="pre">X,</span> <span class="pre">y</span></code> format for input data and targets.
+Since these changes are task agnostic, we factored most of these adaption tools out of the project into a small standalone library. <a class="footnote-reference brackets" href="#gh-link" id="id2">1</a></p>
+<div class="section" id="id3">
+<h3>Data<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>We create a custom data collator to convert the data for an experiment from the Hugginface <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> format into a Poutyne compliant representation.
+The main task of the collator is to convert each batch of dictionaries into batches containing tuples of training data and targets.
+To do so, the <code class="docutils literal notranslate"><span class="pre">TransformersCollator</span></code> copies one or multiple entries from the input dictionaries into the target objects. Depending on the number of keys, this object is either a single tensor or a dictionary.
+Additionally, with the <code class="docutils literal notranslate"><span class="pre">remove_labels</span></code>-parameter, the fields that get copied to the target object can be removed from the model’s input. By default, they are retained in the input data. This functionality enables using the internal computation of the loss of standard models while also being able to use the built-in metrics of Poutyne for monitoring the training.
+Other collation operations are handled by the default collator from <code class="docutils literal notranslate"><span class="pre">transformers</span></code> or by a custom function.</p>
+<div class="cell tag_skip-execution docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">default_data_collator</span>
+
+
+<span class="k">class</span> <span class="nc">TransformerCollator</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">y_keys</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">custom_collator</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">remove_labels</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_keys</span> <span class="o">=</span> <span class="n">y_keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom_collator</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">custom_collator</span> <span class="k">if</span> <span class="n">custom_collator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">default_data_collator</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_labels</span> <span class="o">=</span> <span class="n">remove_labels</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_collator</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_keys</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">batch</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;labels&quot;</span> <span class="ow">in</span> <span class="n">key</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_labels</span>
+                <span class="k">else</span> <span class="n">batch</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_keys</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_keys</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_labels</span> <span class="k">else</span> <span class="n">batch</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_keys</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">batch</span><span class="p">,</span> <span class="n">y</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="id4">
+<h3>Model<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>As stated in the Prerequisites chapter, tokenizers return a dictionary of data that contains all data required to be fed into the language model unpacked as keyword arguments.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoModel</span><span class="p">,</span> <span class="n">AutoTokenizer</span>
+
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;bert-base-cased&quot;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">AutoModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;bert-base-cased&quot;</span><span class="p">)</span>
+
+<span class="n">inputs</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;Poutyne is inspired by Keras&quot;</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>odict_keys([&#39;last_hidden_state&#39;, &#39;pooler_output&#39;])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Poutyne instead passes the data to the model in the same format it receives it.
+To make sure that the data is unpacked correctly, we create a wrapper class.
+It is also a subclass of the <code class="docutils literal notranslate"><span class="pre">nn.</span> <span class="pre">Module</span></code> to ensure that all parameters of the capsulated model can be accessed.
+Apart from the data handling, this class also exposes the custom <code class="docutils literal notranslate"><span class="pre">save_pretrained</span></code>-model of the underlying <code class="docutils literal notranslate"><span class="pre">transformers</span></code> model.
+This way, it is possible to create checkpoints of the trained model that can be loaded and used in the <code class="docutils literal notranslate"><span class="pre">transformers</span></code> ecosystem.</p>
+<div class="cell tag_skip-execution docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">PreTrainedModel</span>
+
+
+<span class="k">class</span> <span class="nc">ModelWrapper</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformer</span><span class="p">:</span> <span class="n">PreTrainedModel</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span> <span class="o">=</span> <span class="n">transformer</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transformer</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save_pretrained</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span><span class="o">.</span><span class="n">save_pretrained</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="loss">
+<h3>Loss<a class="headerlink" href="#loss" title="Permalink to this headline">¶</a></h3>
+<p>In Poutyne the loss function receives the output of the model and the targets.
+When using default models, neither of both has to be used to obtain the loss, since we can extract the internal loss from the model’s output.
+In our case we have to implement a function that computes the loss on our own.
+Since we do not have access to the model or the tokenizer, we have to create a loss function that stores the id of the current target token. For that, we opt for creating a class that holds this id as an attribute and computes the loss via its <code class="docutils literal notranslate"><span class="pre">__call__</span></code> method.</p>
+<div class="cell tag_skip-execution docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PoutyneSequenceOrderingLoss</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_token_id</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_token_id</span> <span class="o">=</span> <span class="n">target_token_id</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">batch_labels</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
+        <span class="n">batch_logits</span> <span class="o">=</span> <span class="n">outputs</span><span class="p">[</span><span class="s2">&quot;logits&quot;</span><span class="p">]</span>
+        <span class="n">batch_input_ids</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Since we have varying number of labels per instance, we need to compute the loss manually for each one.</span>
+        <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+        <span class="n">batch_loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">labels</span><span class="p">,</span> <span class="n">logits</span><span class="p">,</span> <span class="n">input_ids</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">batch_labels</span><span class="p">,</span> <span class="n">batch_logits</span><span class="p">,</span> <span class="n">batch_input_ids</span>
+        <span class="p">):</span>
+            <span class="c1"># Firstly, we need to convert the sentence indices to regression targets.</span>
+            <span class="c1"># To avoid exploding gradients, we norm them to be in range 0 &lt;-&gt; 1</span>
+            <span class="c1"># Also we need to remove the padding entries (-100)</span>
+            <span class="n">true_labels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">labels</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">100</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">targets</span> <span class="o">=</span> <span class="n">true_labels</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+
+            <span class="c1"># Secondly, we need to get the logits from each target token in the input sequence</span>
+            <span class="n">target_logits</span> <span class="o">=</span> <span class="n">logits</span><span class="p">[</span><span class="n">input_ids</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_token_id</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># Sometimes we will have less target_logits than targets due to trunction of the input</span>
+            <span class="c1"># In this case, we just consider as many targets as we have logits</span>
+            <span class="k">if</span> <span class="n">target_logits</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">targets</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
+                <span class="n">targets</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[:</span> <span class="n">target_logits</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)]</span>
+
+            <span class="c1"># Finally we compute the loss for the current instance and add it to the batch loss</span>
+            <span class="n">batch_loss</span> <span class="o">=</span> <span class="n">batch_loss</span> <span class="o">+</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">targets</span><span class="p">,</span> <span class="n">target_logits</span><span class="p">)</span>
+
+        <span class="c1"># The final loss is obtained by averaging over the number of instances per batch</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">batch_loss</span> <span class="o">/</span> <span class="n">batch_logits</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">loss</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="id5">
+<h3>Metrics<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>Unlike the Huggingface <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>, which expects all external metrics a single function to compute them all at once, in Poutyne, the <code class="docutils literal notranslate"><span class="pre">Model</span></code> or <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> classes are equipped with multiple single functions for each metric.
+Like the loss, functions that compute other performance metrics receive the model’s output alongside the targets (extracted by collation function).
+Because <code class="docutils literal notranslate"><span class="pre">transformer</span></code> models return not only the logits or predictions of a model but also other things, it is not possible to use Poutynes built-in metrics out of the box.
+They expect the output to be a single tensor containing the logits of the model, so we create a wrapper for metric functions that extracts them from the output and passes them to the metric.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="k">class</span> <span class="nc">MetricWrapper</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">pred_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;logits&quot;</span><span class="p">,</span> <span class="n">y_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pred_key</span> <span class="o">=</span> <span class="n">pred_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_key</span> <span class="o">=</span> <span class="n">y_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_metric_name</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_metric_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metric</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">metric</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">y_true</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">outputs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pred_key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">y_true</span> <span class="o">=</span> <span class="n">outputs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_key</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Since the logging components of Poutyne infer the name of the metric by assessing the class name of their functions, we need to set the <code class="docutils literal notranslate"><span class="pre">__name__</span></code>-attribute of our wrapper instance with the name of the contained metric.</p>
+<p>To implement our sentence ordering metrics, we adopt our existing code to return a function for each metric.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">kendalltau</span>
+
+<span class="k">def</span> <span class="nf">make_compute_metrics_functions</span><span class="p">(</span><span class="n">target_token_id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">compute_ranking_func</span><span class="p">(</span>
+        <span class="n">outputs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">targets</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">metric_key</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="n">batch_sent_idx</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">batch_input_ids</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">batch_logits</span> <span class="o">=</span> <span class="n">outputs</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+        <span class="n">metrics</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">input_ids</span><span class="p">,</span> <span class="n">logits</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">batch_sent_idx</span><span class="p">,</span> <span class="n">batch_input_ids</span><span class="p">,</span> <span class="n">batch_logits</span>
+        <span class="p">):</span>
+            <span class="n">sent_idx</span> <span class="o">=</span> <span class="n">sent_idx</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">input_ids</span> <span class="o">=</span> <span class="n">input_ids</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">logits</span> <span class="o">=</span> <span class="n">logits</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">sent_idx</span> <span class="o">=</span> <span class="n">sent_idx</span><span class="p">[</span><span class="n">sent_idx</span> <span class="o">!=</span> <span class="mi">100</span><span class="p">]</span>
+            <span class="n">target_logits</span> <span class="o">=</span> <span class="n">logits</span><span class="p">[</span><span class="n">input_ids</span> <span class="o">==</span> <span class="n">target_token_id</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">sent_idx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">target_logits</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">sent_idx</span> <span class="o">=</span> <span class="n">sent_idx</span><span class="p">[:</span> <span class="n">target_logits</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="c1"># Calling argsort twice on the logits gives us their ranking in ascending order</span>
+            <span class="n">predicted_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">target_logits</span><span class="p">))</span>
+            <span class="n">tau</span><span class="p">,</span> <span class="n">pvalue</span> <span class="o">=</span> <span class="n">kendalltau</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">,</span> <span class="n">predicted_idx</span><span class="p">)</span>
+            <span class="n">acc</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">,</span> <span class="n">predicted_idx</span><span class="p">)</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;kendalls_tau&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;acc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;mean_logits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logits</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;std_logits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logits</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span><span class="n">metric</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="k">for</span> <span class="n">metric</span><span class="p">,</span> <span class="n">scores</span> <span class="ow">in</span> <span class="n">metrics</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="n">metrics</span><span class="p">[</span><span class="n">metric_key</span><span class="p">]</span>
+
+    <span class="n">metrics</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;acc&quot;</span><span class="p">,</span> <span class="s2">&quot;kendalls_tau&quot;</span><span class="p">,</span> <span class="s2">&quot;mean_logits&quot;</span><span class="p">,</span> <span class="s2">&quot;std_logits&quot;</span><span class="p">):</span>
+        <span class="n">metric_func</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">compute_ranking_func</span><span class="p">,</span> <span class="n">metric_key</span><span class="o">=</span><span class="n">metric</span><span class="p">)</span>
+        <span class="n">metric_func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">metric</span>
+        <span class="n">metrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metric_func</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">metrics</span>
+
+<span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">MetricWrapper</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">make_compute_metrics_functions</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="nb">print</span><span class="p">([</span><span class="n">metric</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;acc&#39;, &#39;kendalls_tau&#39;, &#39;mean_logits&#39;, &#39;std_logits&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Additionally, we add two functions to track the mean and standard deviation of the logits to monitor whether the regression can fit the desired indices or only learns their average, which lies around <code class="docutils literal notranslate"><span class="pre">2.5</span></code>.</p>
+</div>
+<div class="section" id="complete-code">
+<h3>Complete code<a class="headerlink" href="#complete-code" title="Permalink to this headline">¶</a></h3>
+<p>Once again, we factor out our adaptions into an external module and implement the rest of the experiment.
+Due to Poutyne’s lack of tooling for creating a command-line interface, this experiment is only configurable via hard-coding the parameters into the source.
+The rest of the code is mainly similar to the other two frameworks.</p>
+<div class="cell tag_skip-execution docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">poutyne.framework</span> <span class="kn">import</span> <span class="n">experiment</span>
+<span class="kn">from</span> <span class="nn">torch.optim</span> <span class="kn">import</span> <span class="n">AdamW</span>
+<span class="kn">from</span> <span class="nn">poutyne</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">set_seeds</span><span class="p">,</span>
+    <span class="n">TensorBoardLogger</span><span class="p">,</span>
+    <span class="n">TensorBoardGradientTracker</span><span class="p">,</span>
+    <span class="n">Experiment</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">poutyne_transformers</span> <span class="kn">import</span> <span class="n">ModelWrapper</span><span class="p">,</span> <span class="n">MetricWrapper</span><span class="p">,</span> <span class="n">TransformerCollator</span>
+<span class="kn">from</span> <span class="nn">torch.utils.tensorboard</span> <span class="kn">import</span> <span class="n">SummaryWriter</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span><span class="p">,</span> <span class="n">AutoModelForTokenClassification</span>
+<span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">load_from_disk</span>
+<span class="kn">from</span> <span class="nn">poutyne_modules</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">make_tokenization_func</span><span class="p">,</span>
+    <span class="n">PoutyneSequenceOrderingLoss</span><span class="p">,</span>
+    <span class="n">make_compute_metrics_functions</span><span class="p">,</span>
+    <span class="n">so_data_collator</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">set_seeds</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+    <span class="n">MODEL_NAME_OR_PATH</span> <span class="o">=</span> <span class="s2">&quot;bert-base-cased&quot;</span>
+    <span class="n">LEARNING_RATE</span> <span class="o">=</span> <span class="mf">3e-5</span>
+    <span class="n">TRAIN_BATCH_SIZE</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">VAL_BATCH_SIZE</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="n">DEVICE</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">N_EPOCHS</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">SAVE_DIR</span> <span class="o">=</span> <span class="s2">&quot;experiments/rocstories/bert&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading model &amp; tokenizer.&quot;</span><span class="p">)</span>
+    <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">MODEL_NAME_OR_PATH</span><span class="p">)</span>
+    <span class="n">transformer</span> <span class="o">=</span> <span class="n">AutoModelForTokenClassification</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="n">MODEL_NAME_OR_PATH</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_labels</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading &amp; preparing data.&quot;</span><span class="p">)</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">load_from_disk</span><span class="p">(</span><span class="s2">&quot;../data/rocstories/&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">cls_token</span> <span class="o">!=</span> <span class="s2">&quot;[CLS]&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Model does not a have a [CLS] token. Updating the data with token </span><span class="si">{</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">cls_token</span><span class="si">}</span><span class="s2"> ...&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">replace_cls_token</span><span class="p">(</span><span class="n">entry</span><span class="p">):</span>
+            <span class="n">texts</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+            <span class="n">replaced_texts</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">:</span>
+                <span class="n">replaced_texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[CLS]&quot;</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">cls_token</span><span class="p">))</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">replaced_texts</span>
+            <span class="k">return</span> <span class="n">entry</span>
+
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">replace_cls_token</span><span class="p">,</span> <span class="n">batched</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">tokenization_func</span> <span class="o">=</span> <span class="n">make_tokenization_func</span><span class="p">(</span>
+        <span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span>
+        <span class="n">text_column</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">,</span>
+        <span class="n">add_special_tokens</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;max_length&quot;</span><span class="p">,</span>
+        <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">tokenization_func</span><span class="p">,</span> <span class="n">batched</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">rename_column</span><span class="p">(</span><span class="s2">&quot;so_targets&quot;</span><span class="p">,</span> <span class="s2">&quot;labels&quot;</span><span class="p">)</span>
+
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">remove_columns</span><span class="p">(</span>
+        <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;storyid&quot;</span><span class="p">,</span> <span class="s2">&quot;storytitle&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;sentence</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)]</span>
+    <span class="p">)</span>
+    <span class="n">dataset</span><span class="o">.</span><span class="n">set_format</span><span class="p">(</span><span class="s2">&quot;torch&quot;</span><span class="p">)</span>
+
+    <span class="n">collate_fn</span> <span class="o">=</span> <span class="n">TransformerCollator</span><span class="p">(</span>
+        <span class="n">y_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">,</span> <span class="s2">&quot;input_ids&quot;</span><span class="p">],</span>
+        <span class="n">custom_collator</span><span class="o">=</span><span class="n">so_data_collator</span><span class="p">,</span>
+        <span class="n">remove_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
+        <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">],</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">TRAIN_BATCH_SIZE</span><span class="p">,</span> <span class="n">collate_fn</span><span class="o">=</span><span class="n">collate_fn</span>
+    <span class="p">)</span>
+    <span class="n">val_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
+        <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">],</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">VAL_BATCH_SIZE</span><span class="p">,</span> <span class="n">collate_fn</span><span class="o">=</span><span class="n">collate_fn</span>
+    <span class="p">)</span>
+    <span class="n">test_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
+        <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">],</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">VAL_BATCH_SIZE</span><span class="p">,</span> <span class="n">collate_fn</span><span class="o">=</span><span class="n">collate_fn</span>
+    <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Preparing training.&quot;</span><span class="p">)</span>
+    <span class="n">wrapped_transformer</span> <span class="o">=</span> <span class="n">ModelWrapper</span><span class="p">(</span><span class="n">transformer</span><span class="p">)</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">AdamW</span><span class="p">(</span><span class="n">wrapped_transformer</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">LEARNING_RATE</span><span class="p">)</span>
+    <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">PoutyneSequenceOrderingLoss</span><span class="p">(</span><span class="n">target_token_id</span><span class="o">=</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">cls_token_id</span><span class="p">)</span>
+
+    <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">MetricWrapper</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">make_compute_metrics_functions</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">cls_token_id</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">SummaryWriter</span><span class="p">(</span><span class="s2">&quot;runs/roberta/1&quot;</span><span class="p">)</span>
+    <span class="n">tensorboard_logger</span> <span class="o">=</span> <span class="n">TensorBoardLogger</span><span class="p">(</span><span class="n">writer</span><span class="p">)</span>
+    <span class="n">gradient_logger</span> <span class="o">=</span> <span class="n">TensorBoardGradientTracker</span><span class="p">(</span><span class="n">writer</span><span class="p">)</span>
+
+    <span class="n">experiment</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span>
+        <span class="n">directory</span><span class="o">=</span><span class="n">SAVE_DIR</span><span class="p">,</span>
+        <span class="n">network</span><span class="o">=</span><span class="n">wrapped_transformer</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">DEVICE</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
+        <span class="n">loss_function</span><span class="o">=</span><span class="n">loss_fn</span><span class="p">,</span>
+        <span class="n">batch_metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">experiment</span><span class="o">.</span><span class="n">train</span><span class="p">(</span>
+        <span class="n">train_generator</span><span class="o">=</span><span class="n">train_dataloader</span><span class="p">,</span>
+        <span class="n">valid_generator</span><span class="o">=</span><span class="n">val_dataloader</span><span class="p">,</span>
+        <span class="n">epochs</span><span class="o">=</span><span class="n">N_EPOCHS</span><span class="p">,</span>
+        <span class="n">save_every_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">test_results</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">test_generator</span><span class="o">=</span><span class="n">test_dataloader</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;test_results_</span><span class="si">{</span><span class="n">MODEL_NAME_OR_PATH</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">test_results</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>Poutyne provides a well thought and, most of all easy to understand framework to train neural networks.
+Like its conceptual role model Keras, this simplicity is achieved by strict design decisions, like the <code class="docutils literal notranslate"><span class="pre">X,</span> <span class="pre">y</span></code> format for data.
+While this strictness is helpful for beginners because they only have to learn one way of doing things, it comes at the cost of being hard to adapt to other frameworks or unintended tasks.
+Luckily, the necessary steps to adapt it to <code class="docutils literal notranslate"><span class="pre">transformers</span></code> and our task are simple and can be reused for most other cases.
+Since Poutynes mimics the Keras-API, its additional features are much more limited than the other frameworks. Even basic techniques like gradient accumulation are not supported.
+Depending on the use case, this limited scope might be a deal-breaker for experienced users or complex tasks, but on the other hand, it makes getting started with the framework much more manageable.
+This accessibility is underlined by the documentation’s quality, which covers all aspects of the framework in concise and easily understandable manners without losing itself in the depths of technical details.
+Yet, there is also potential for further improvements.
+The lack of support for creating-command line interfaces could force users to migrate to another framework as soon as they need to retrain a model regularly.
+Currently, the scope of the framework is heavily skewed towards sequence classification tasks. For example, all built-in metrics measure the quality of a classification model.
+Widening the range of tasks that could be implemented without further extensions would help beginners get into deep learning.
+A possible improvement that falls more into the category of wishful thinking would be that Poutyne would mimic not only the training parts of the Keras API.
+If Poutyne would also introduce the ease of building neural networks without manually adjusting each layer’s dimensionality, it would significantly contribute to the community.</p>
+<hr class="footnotes docutils" />
+<dl class="footnote brackets">
+<dt class="label" id="gh-link"><span class="brackets"><a class="fn-backref" href="#id2">1</a></span></dt>
+<dd><p><a class="reference external" href="https://github.com/LennartKeller/poutyne-transformers">poutyne-transformers</a></p>
+</dd>
+</dl>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        
+            
+
+
+
+<div class='prev-next-bottom'>
+    
+    <div id="prev">
+        <a class="left-prev" href="PyTorchLightning.html" title="previous page">
+            <i class="prevnext-label fas fa-angle-left"></i>
+            <div class="prevnext-info">
+                <p class="prevnext-label">previous</p>
+                <p class="prevnext-title">PyTorch Lightning</p>
+            </div>
+        </a>
+    </div>
+     <div id="next">
+        <a class="right-next" href="ExperimentalResults.html" title="next page">
+            <div class="prevnext-info">
+                <p class="prevnext-label">next</p>
+                <p class="prevnext-title">Experimental Results</p>
+            </div>
+            <i class="prevnext-label fas fa-angle-right"></i>
+        </a>
+     </div>
+
+</div>
+        
+        </div>
+    </div>
+    <footer class="footer">
+    <div class="container">
+      <p>
+        
+          By Lennart Keller<br/>
+        
+            &copy; Copyright 2021.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>
