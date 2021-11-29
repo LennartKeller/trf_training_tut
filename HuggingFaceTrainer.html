@@ -1,0 +1,772 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Huggingface Trainer &#8212; A comparing guide to train language models with Python.</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet" />
+  <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="PyTorch Lightning" href="PyTorchLightning.html" />
+    <link rel="prev" title="Prerequisites" href="Prerequisites.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+      
+      
+      <h1 class="site-logo" id="site-title">A comparing guide to train language models with Python.</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Home.html">
+   Preface
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Introduction.html">
+   Introduction
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="HuggingfaceEcosystem.html">
+   The Huggingface ecosystem
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Experiment.html">
+   Experimental Design
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Prerequisites.html">
+   Prerequisites
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Huggingface Trainer
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="PyTorchLightning.html">
+   PyTorch Lightning
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Poutyne.html">
+   Poutyne
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ExperimentalResults.html">
+   Experimental Results
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Conclusion.html">
+   Conclusion
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        <a class="dropdown-buttons"
+            href="_sources/HuggingFaceTrainer.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download notebook file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/HuggingFaceTrainer.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/LennartKeller/trf_training_tut"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/LennartKeller/trf_training_tut/issues/new?title=Issue%20on%20page%20%2FHuggingFaceTrainer.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/LennartKeller/trf_training_tut/master?urlpath=tree/HuggingFaceTrainer.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#classes">
+   Classes
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#trainer">
+     Trainer
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#extending-the-trainer">
+       Extending the
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Trainer
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#logging">
+       Logging
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#custom-metrics">
+       Custom metrics
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#training-arguments">
+     Training Arguments
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#hfargumentparser">
+     HfArgumentParser
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#implementation">
+   Implementation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#loss-function">
+     Loss function
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#metrics">
+     Metrics
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#custom-cli-arguments">
+     Custom CLI arguments
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#complete-code">
+   Complete code
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conclusion">
+   Conclusion
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="tex2jax_ignore mathjax_ignore section" id="huggingface-trainer">
+<h1>Huggingface Trainer<a class="headerlink" href="#huggingface-trainer" title="Permalink to this headline">¶</a></h1>
+<p>Since Huggingface proclaimed goal is to provide an environment to develop and train all sorts of language models, they also ship a solution for training models.
+It is called the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>, and is integrated into the <code class="docutils literal notranslate"><span class="pre">transformers</span></code> library itself.
+Of course, it is profoundly integrated into the Huggingface-ecosystem and can train most <code class="docutils literal notranslate"><span class="pre">transformers</span></code> models out of the box.</p>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="trainer">
+<h3>Trainer<a class="headerlink" href="#trainer" title="Permalink to this headline">¶</a></h3>
+<p>Design-wise, the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> is one single class that handles the training end-to-end.
+Its configuration is outsourced to a <code class="docutils literal notranslate"><span class="pre">TrainingArguments</span></code> class that stores all relevant parameters for training.
+These arguments are passed to the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>  alongside a model and a dataset during initialization.
+Since Huggingface models compute the loss internally, the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> passes the input data to the model, extracts the loss from the output, and does the backward step.
+It also handles additional steps to monitor the training process, like saving checkpoints of the model or logging the loss and other validation metrics.
+A significant advantage of using the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> is its ability to do multi-device training without requiring the user to care about dispatching the models and data to multiple accelerators.
+Also, it comes with an extension that allows more sophisticated tweaks, like training with 16bit-precision.</p>
+<div class="section" id="extending-the-trainer">
+<h4>Extending the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code><a class="headerlink" href="#extending-the-trainer" title="Permalink to this headline">¶</a></h4>
+<p>There are two different options to customize certain aspects of the behavior of the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>.
+Additional read-only operations can be implemented with the callback API.
+Callbacks are executed at specific events during the training (e.g., at the end of an epoch).
+They have access to many different things like the model or the current state of the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>.
+However, since they can not manipulate their environment, their scope is limited to logging, saving certain parts of a model, or stopping the training if a specific condition is met.</p>
+<p>If further changes to the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> are required, the recommended way is to subclass it and create a custom via inheritance.
+Internally, the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> structures the training into different sub-steps and exposes them via a method for each of them.
+By overwriting these methods, it is possible to change certain parts of the logic without rewriting the rest of the code that would not be changed anyway.
+The most important methods to modify the <code class="docutils literal notranslate"><span class="pre">train-test-val</span></code>-loop itself are the <code class="docutils literal notranslate"><span class="pre">&lt;train/test/val&gt;-step</span></code> methods and the <code class="docutils literal notranslate"><span class="pre">compute_loss</span></code> method.
+These methods implement the essential individual training steps and are called within methods that implement higher-order operations like the <code class="docutils literal notranslate"><span class="pre">.train</span></code>-method, which handles the complete training loop.</p>
+</div>
+<div class="section" id="logging">
+<h4>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h4>
+<p>If a <code class="docutils literal notranslate"><span class="pre">logdir</span></code>-argument is specified in the <code class="docutils literal notranslate"><span class="pre">TrainingArguments</span></code>-object, logging is enabled automatically.
+By default, the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> outputs the logs in two formats: Stdout and disk, using a Tensorboard-compliant format.
+Additional logging can be implemented by either overwriting the <code class="docutils literal notranslate"><span class="pre">.log</span></code>-method of Trainer or by using callbacks.
+There are already some pre-built callbacks available. For example, to log the progress to Weights and Biases or a CSV table.</p>
+</div>
+<div class="section" id="custom-metrics">
+<h4>Custom metrics<a class="headerlink" href="#custom-metrics" title="Permalink to this headline">¶</a></h4>
+<p>Since the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> is agnostic towards the task it is used with; it only logs the loss by default.
+Additionally, metrics can be added by equipping the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> with a function that computes them during initialization.
+This function receives an <code class="docutils literal notranslate"><span class="pre">EvalPrediction</span></code> object.
+This object holds all predictions of the model and the valid labels.
+The output of the custom metric function ought to be a dictionary containing the name of the metric as key and the score as value.</p>
+</div>
+</div>
+<div class="section" id="training-arguments">
+<h3>Training Arguments<a class="headerlink" href="#training-arguments" title="Permalink to this headline">¶</a></h3>
+<p>As stated above, a <code class="docutils literal notranslate"><span class="pre">TrainingArguments</span></code> object stores all hyperparameters of the training.
+Storing all parameters in a single object is helpful to ensuring reproducibility since this object can easily be serialized and saved to disk as JSON using its <code class="docutils literal notranslate"><span class="pre">.to_json_string</span></code>-method.
+Also, the <code class="docutils literal notranslate"><span class="pre">TrainingArguments</span></code> class works seamlessly with the built-in CLI-parser class of <code class="docutils literal notranslate"><span class="pre">transformers</span></code>, which helps make the configuration of an experiment available through a command-line interface.</p>
+</div>
+<div class="section" id="hfargumentparser">
+<h3>HfArgumentParser<a class="headerlink" href="#hfargumentparser" title="Permalink to this headline">¶</a></h3>
+<p>Most experiments are repeated several times with different parameters. These parameters have to be changed directly in the source code by default, which is not ideal for several reasons.
+Most importantly, it can harm reproducibility since tracking changes in the source code requires either version control and a strict commit regime or keeping several versions of the same file with different parameters. Also, it can be tedious the search for the location of all parameters across the code manually.
+Making the hyperparameters adjustable via a command-line interface decouples their configuration from the rest of the code, alleviating this issue.
+While there are arguably a lot of different solutions to this problem with many strategies that are more sophisticated than a command-line interface, it is an excellent first step.
+Moreover, it has the advantage of being platform-independent without depending on additional dependencies.</p>
+<p>Huggingface provides a built-in solution for building these interfaces called <code class="docutils literal notranslate"><span class="pre">HfArgumentParser</span></code>.
+It is an extended version of Pythons <code class="docutils literal notranslate"><span class="pre">argsparse</span></code> parser and creates command-line interfaces by parsing the fields of <code class="docutils literal notranslate"><span class="pre">dataclasses</span></code> and exposing them as command-line arguments.
+Since most configuration classes of the <code class="docutils literal notranslate"><span class="pre">transformers</span></code> library are <code class="docutils literal notranslate"><span class="pre">dataclasses,</span></code> the <code class="docutils literal notranslate"><span class="pre">HfArgumentParser</span></code> can flexibly control nearly every aspect of the training.
+Further extending the arguments can be easily done by creating custom <code class="docutils literal notranslate"><span class="pre">dataclasses</span></code> that hold additional parameters.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">HfArgumentParser</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">TrainArgs</span><span class="p">:</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of batched for training.&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">HfArgumentParser</span><span class="p">(</span><span class="n">TrainArgs</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+<span class="n">train_args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args_into_dataclasses</span><span class="p">([</span><span class="s2">&quot;--batch_size&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">train_args</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>usage: ipykernel_launcher.py [-h] [--batch_size BATCH_SIZE]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --batch_size BATCH_SIZE
+                        Number of batched for training. (default: 8)
+(TrainArgs(batch_size=4),)
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="loss-function">
+<h3>Loss function<a class="headerlink" href="#loss-function" title="Permalink to this headline">¶</a></h3>
+<p>For the sentence ordering task, we employ a language model with a standard token-classification head.
+However, since the task requires a custom loss function, we have to discard the loss of the model and use our custom loss function.
+To do so, we follow the guidelines and create our custom version of the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> with a custom <code class="docutils literal notranslate"><span class="pre">.compute_loss</span></code> function.
+The implementation <!--of the `.compute_loss` method --> is straightforward.
+The <code class="docutils literal notranslate"><span class="pre">.compute_loss</span></code> method receives a reference to the model and the input data as inputs, which is especially helpful in cases like ours where we need to check the <code class="docutils literal notranslate"><span class="pre">input_ids</span></code> to compute the loss.
+In addition, to our custom loss function, we also add another attribute to the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>, which holds the id of the target sentence token in order to find the correct tokens in the input sequence.
+We leave the rest of the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> untouched.</p>
+<div class="cell tag_skip-execution docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SentenceOrderingTrainer</span><span class="p">(</span><span class="n">Trainer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_token_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;target_token_id&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">compute_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">return_outputs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="c1"># Get sentence indices</span>
+        <span class="n">batch_labels</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;labels&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get logits from model</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)</span>
+        <span class="n">batch_logits</span> <span class="o">=</span> <span class="n">outputs</span><span class="p">[</span><span class="s2">&quot;logits&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Get logits for all cls tokens</span>
+        <span class="n">batch_input_ids</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span>
+
+        <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+        <span class="n">batch_loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">labels</span><span class="p">,</span> <span class="n">logits</span><span class="p">,</span> <span class="n">input_ids</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">batch_labels</span><span class="p">,</span> <span class="n">batch_logits</span><span class="p">,</span> <span class="n">batch_input_ids</span>
+        <span class="p">):</span>
+
+            <span class="n">true_labels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">labels</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">100</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">targets</span> <span class="o">=</span> <span class="n">true_labels</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+
+            <span class="n">target_logits</span> <span class="o">=</span> <span class="n">logits</span><span class="p">[</span><span class="n">input_ids</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_token_id</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">target_logits</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">targets</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
+                <span class="n">targets</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[:</span> <span class="n">target_logits</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)]</span>
+
+            <span class="n">batch_loss</span> <span class="o">=</span> <span class="n">batch_loss</span> <span class="o">+</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">targets</span><span class="p">,</span> <span class="n">target_logits</span><span class="p">)</span>
+
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">batch_loss</span> <span class="o">/</span> <span class="n">batch_logits</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">outputs</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loss</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_outputs</span> <span class="k">else</span> <span class="n">loss</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="metrics">
+<h3>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">¶</a></h3>
+<p>To compute custom metrics during validation, we need to create a function.
+The function computes all metrics at once.
+In contrast to the <code class="docutils literal notranslate"><span class="pre">.compute_loss</span></code>-method, which receives the input and the model, it receives an <code class="docutils literal notranslate"><span class="pre">EvalPrediction</span></code> object as input.
+An <code class="docutils literal notranslate"><span class="pre">EvalPrediction</span></code> contains the model’s outputs and the labels from the dataset.
+However, similar to the loss function, computing the metrics requires access to the input data to retrieve the indices of the target tokens.
+To control the content of an <code class="docutils literal notranslate"><span class="pre">EvalPrediction</span></code> object, we can use the <code class="docutils literal notranslate"><span class="pre">label_names</span></code> parameter of the <code class="docutils literal notranslate"><span class="pre">TrainingArguments</span></code>.
+With this argument, we can specify additional fields that are copied from the input batches to the <code class="docutils literal notranslate"><span class="pre">EvalPrediction</span></code> objects.
+This way, we can incorporate the labels and the <code class="docutils literal notranslate"><span class="pre">input_ids</span></code> of tokens in the <code class="docutils literal notranslate"><span class="pre">EvalPrediction</span></code> object.</p>
+<p>A minor but valuable trait of the <code class="docutils literal notranslate"><span class="pre">EvalPrediction</span></code> objects is that their content gets converted from <code class="docutils literal notranslate"><span class="pre">torch.tensors</span></code> to <code class="docutils literal notranslate"><span class="pre">np.arrays</span></code>.
+Because most validation metrics from other libraries use NumPy, we do not need to convert the data manually.</p>
+<div class="cell tag_skip-execution docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">training_args</span> <span class="o">=</span> <span class="n">TrainingArguments</span><span class="p">(</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">label_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">,</span> <span class="s2">&quot;input_ids&quot;</span><span class="p">],</span>
+    <span class="o">...</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_skip-execution docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_compute_metrics_func</span><span class="p">(</span><span class="n">target_token_id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">compute_ranking_func</span><span class="p">(</span><span class="n">eval_prediction</span><span class="p">:</span> <span class="n">EvalPrediction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="n">batch_sent_idx</span><span class="p">,</span> <span class="n">batch_input_ids</span> <span class="o">=</span> <span class="n">eval_prediction</span><span class="o">.</span><span class="n">label_ids</span>
+        <span class="n">batch_logits</span> <span class="o">=</span> <span class="n">eval_prediction</span><span class="o">.</span><span class="n">predictions</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">metrics</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">input_ids</span><span class="p">,</span> <span class="n">logits</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">batch_sent_idx</span><span class="p">,</span> <span class="n">batch_input_ids</span><span class="p">,</span> <span class="n">batch_logits</span>
+        <span class="p">):</span>
+            <span class="n">sent_idx</span> <span class="o">=</span> <span class="n">sent_idx</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">input_ids</span> <span class="o">=</span> <span class="n">input_ids</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">logits</span> <span class="o">=</span> <span class="n">logits</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">sent_idx</span> <span class="o">=</span> <span class="n">sent_idx</span><span class="p">[</span><span class="n">sent_idx</span> <span class="o">!=</span> <span class="mi">100</span><span class="p">]</span>
+            <span class="n">target_logits</span> <span class="o">=</span> <span class="n">logits</span><span class="p">[</span><span class="n">input_ids</span> <span class="o">==</span> <span class="n">target_token_id</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">sent_idx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">target_logits</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">sent_idx</span> <span class="o">=</span> <span class="n">sent_idx</span><span class="p">[:</span> <span class="n">target_logits</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">predicted_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">target_logits</span><span class="p">))</span>
+            <span class="n">tau</span><span class="p">,</span> <span class="n">pvalue</span> <span class="o">=</span> <span class="n">kendalltau</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">,</span> <span class="n">predicted_idx</span><span class="p">)</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;kendalls_tau&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;acc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">,</span> <span class="n">predicted_idx</span><span class="p">))</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;mean_logits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logits</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;std_logits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logits</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span><span class="n">metric</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="k">for</span> <span class="n">metric</span><span class="p">,</span> <span class="n">scores</span> <span class="ow">in</span> <span class="n">metrics</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="n">metrics</span>
+
+    <span class="k">return</span> <span class="n">compute_ranking_func</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="custom-cli-arguments">
+<h3>Custom CLI arguments<a class="headerlink" href="#custom-cli-arguments" title="Permalink to this headline">¶</a></h3>
+<p>We use the <code class="docutils literal notranslate"><span class="pre">HfArgumentParser</span></code> to make the parameters of our experiment adjustable via the command line.
+In addition to the <code class="docutils literal notranslate"><span class="pre">TrainingsArguments</span></code>, we also want to control the type of the model.
+Custom parameters can easily be added by creating a custom <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>.
+We create a <code class="docutils literal notranslate"><span class="pre">ModelArgs</span></code> class that has two fields. One to specify the name or path to the model and a second parameter to specify the path where the final model is saved after training.</p>
+<div class="cell tag_skip-execution docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">TrainingArguments</span><span class="p">,</span> <span class="n">HfArgumentParser</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ModelArgs</span><span class="p">:</span>
+    <span class="n">model_name_or_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;bert-base-cased&quot;</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Path to pretrained model or model or its name to load it from Huggingface Hub.&quot;</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="n">final_checkpoint_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Path to save the final model.&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+<span class="o">...</span>
+
+<span class="n">args_parser</span> <span class="o">=</span> <span class="n">HfArgumentParser</span><span class="p">((</span><span class="n">ModelArgs</span><span class="p">,</span> <span class="n">TrainingArguments</span><span class="p">))</span>
+<span class="n">model_args</span><span class="p">,</span> <span class="n">training_args</span> <span class="o">=</span> <span class="n">args_parser</span><span class="o">.</span><span class="n">parse_args_into_dataclasses</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="complete-code">
+<h2>Complete code<a class="headerlink" href="#complete-code" title="Permalink to this headline">¶</a></h2>
+<p>After moving our custom code for the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> and the metric function to an external module, the rest of the code to implement the experiment looks like Listing (TODO).
+There are only two steps left to complete the script.
+Firstly, we must ensure that our data always contains the correct special tokens for ordering the sentences.
+Since we prepared the data beforehand by adding BERTs special <code class="docutils literal notranslate"><span class="pre">[SEP]</span></code>-token as a prefix to each sentence, we have to ensure that these tokens are replaced if necessary using the  <code class="docutils literal notranslate"><span class="pre">replace_cls_token</span></code> function.</p>
+<p>Lastly, we want to control the randomness in our experiment to make it consistently reproducible.
+The <code class="docutils literal notranslate"><span class="pre">transformers</span></code> library comes with a helpful function called <code class="docutils literal notranslate"><span class="pre">set_seed</span></code>, which controls the state of all random number generators of Python itself, NumPy, and PyTorch at once.</p>
+<div class="cell tag_skip-execution docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">TrainingArguments</span><span class="p">,</span> <span class="n">HfArgumentParser</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoModelForTokenClassification</span><span class="p">,</span> <span class="n">AutoConfig</span><span class="p">,</span> <span class="n">AutoTokenizer</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">set_seed</span>
+<span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">load_from_disk</span>
+
+<span class="kn">from</span> <span class="nn">model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SentenceOrderingTrainer</span><span class="p">,</span>
+    <span class="n">so_data_collator</span><span class="p">,</span>
+    <span class="n">make_compute_metrics_func</span><span class="p">,</span>
+    <span class="n">ModelArgs</span><span class="p">,</span>
+    <span class="n">make_tokenization_func</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">args_parser</span> <span class="o">=</span> <span class="n">HfArgumentParser</span><span class="p">((</span><span class="n">ModelArgs</span><span class="p">,</span> <span class="n">TrainingArguments</span><span class="p">))</span>
+    <span class="n">model_args</span><span class="p">,</span> <span class="n">training_args</span> <span class="o">=</span> <span class="n">args_parser</span><span class="o">.</span><span class="n">parse_args_into_dataclasses</span><span class="p">()</span>
+
+    <span class="c1"># Add fixed args</span>
+    <span class="n">training_args</span><span class="o">.</span><span class="n">label_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">,</span> <span class="s2">&quot;input_ids&quot;</span><span class="p">]</span>
+
+    <span class="n">set_seed</span><span class="p">(</span><span class="n">training_args</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">load_from_disk</span><span class="p">(</span>
+        <span class="s2">&quot;/home/keller/Uni/trf_training_tut/scripts/data/rocstories&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_args</span><span class="o">.</span><span class="n">model_name_or_path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">cls_token</span> <span class="o">!=</span> <span class="s2">&quot;[CLS]&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Model does not a have a [CLS] token. Updating the data with token </span><span class="si">{</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">cls_token</span><span class="si">}</span><span class="s2"> ...&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">replace_cls_token</span><span class="p">(</span><span class="n">entry</span><span class="p">):</span>
+            <span class="n">texts</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+            <span class="n">replaced_texts</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">:</span>
+                <span class="n">replaced_texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[CLS]&quot;</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">cls_token</span><span class="p">))</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">replaced_texts</span>
+            <span class="k">return</span> <span class="n">entry</span>
+
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">replace_cls_token</span><span class="p">,</span> <span class="n">batched</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">AutoConfig</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="n">model_args</span><span class="o">.</span><span class="n">model_name_or_path</span><span class="p">,</span> <span class="n">num_labels</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">AutoModelForTokenClassification</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="n">model_args</span><span class="o">.</span><span class="n">model_name_or_path</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">model_config</span>
+    <span class="p">)</span>
+
+    <span class="n">tokenization</span> <span class="o">=</span> <span class="n">make_tokenization_func</span><span class="p">(</span>
+        <span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span>
+        <span class="n">text_column</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">,</span>
+        <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;max_length&quot;</span><span class="p">,</span>
+        <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">add_special_tokens</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">tokenization</span><span class="p">,</span> <span class="n">batched</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">rename_column</span><span class="p">(</span><span class="s2">&quot;so_targets&quot;</span><span class="p">,</span> <span class="s2">&quot;labels&quot;</span><span class="p">)</span>
+
+    <span class="n">dataset</span><span class="o">.</span><span class="n">set_format</span><span class="p">(</span><span class="s2">&quot;torch&quot;</span><span class="p">)</span>
+
+    <span class="n">metrics_func</span> <span class="o">=</span> <span class="n">make_compute_metrics_func</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">cls_token_id</span><span class="p">)</span>
+
+    <span class="n">trainer</span> <span class="o">=</span> <span class="n">SentenceOrderingTrainer</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="n">training_args</span><span class="p">,</span>
+        <span class="n">train_dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">],</span>
+        <span class="n">eval_dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">],</span>
+        <span class="n">target_token_id</span><span class="o">=</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">cls_token_id</span><span class="p">,</span>
+        <span class="n">data_collator</span><span class="o">=</span><span class="n">so_data_collator</span><span class="p">,</span>
+        <span class="n">compute_metrics</span><span class="o">=</span><span class="n">metrics_func</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+    <span class="n">trainer</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><span class="n">model_args</span><span class="o">.</span><span class="n">final_checkpoint_path</span><span class="p">)</span>
+
+    <span class="n">test_results</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">eval_dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">])</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;test_results_</span><span class="si">{</span><span class="n">model_args</span><span class="o">.</span><span class="n">model_name_or_path</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">test_results</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">test_results</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>The Huggingface <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> is a perfect choice when training models on standard tasks that are well supported.
+In these cases, it enables to train models effortlessly without requiring to write much code.
+In the best case, when the dataset is already available as Huggingface <code class="docutils literal notranslate"><span class="pre">Dataset</span></code>, it comes down to a few lines of code to train the model without having to dive deep into any internals along the way.</p>
+<p>Also, it has many useful out-of-the-box features, like gradient clipping, half-precision training, support of distributed training, or logging to Tensorboard, which make it feasible for training large models on large datasets.</p>
+<p>Nonetheless, there are a few issues if one wants to leave the carved-out paths.
+Like the rest of Huggingface’s software, the <code class="docutils literal notranslate"><span class="pre">transformers</span></code> library is relatively new and evolves at great speed.
+Huggingface’s self-proclaimed goal is to provide an easy-to-use all-in-one infrastructure for NLP with language models and incorporate new models, architectures, and developments as quickly as possible.
+On this path, sacrifices have to be made.</p>
+<p>One area that seems to suffer from the speedy development is documentation.
+It is sufficient and provides all essential information, but it can sometimes be very sparse in detail.
+Often, there are multiple options to choose from when customizing something.
+For example, the default optimizer can be exchanged during the initialization of the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>, by simply passing another one to it. Or by overwriting the <code class="docutils literal notranslate"><span class="pre">.create_optimizer</span></code>-method.
+In cases like this one, the documentation lacks hints to decide which way to go.</p>
+<p>Other times the documentation does not paint the whole picture of the behavior of the described object.
+In these cases, it might become necessary to take a look into the source code itself.</p>
+<p>By looking into the source code of <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>, it becomes evident that it could use some refactoring.
+Especially, its high-level methods, like the <code class="docutils literal notranslate"><span class="pre">.train</span></code>-method, are very complex since they do much heavy lifting, for example, dispatching the training to multiple devices.
+While the preferred way to customize the training is to subclass the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> and overwrite methods, this is only feasible for the low-level methods that define single steps. Even tiny adjustments to the high-level methods can require copying code or rewriting certain parts.</p>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        
+            
+
+
+
+<div class='prev-next-bottom'>
+    
+    <div id="prev">
+        <a class="left-prev" href="Prerequisites.html" title="previous page">
+            <i class="prevnext-label fas fa-angle-left"></i>
+            <div class="prevnext-info">
+                <p class="prevnext-label">previous</p>
+                <p class="prevnext-title">Prerequisites</p>
+            </div>
+        </a>
+    </div>
+     <div id="next">
+        <a class="right-next" href="PyTorchLightning.html" title="next page">
+            <div class="prevnext-info">
+                <p class="prevnext-label">next</p>
+                <p class="prevnext-title">PyTorch Lightning</p>
+            </div>
+            <i class="prevnext-label fas fa-angle-right"></i>
+        </a>
+     </div>
+
+</div>
+        
+        </div>
+    </div>
+    <footer class="footer">
+    <div class="container">
+      <p>
+        
+          By Lennart Keller<br/>
+        
+            &copy; Copyright 2021.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>
